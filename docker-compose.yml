@@ -147,7 +147,6 @@ services:
         networks:
           - serverbase
         volumes:
-              - /mnt/docker/www:/var/www/
               - /mnt/docker/accounts:/var/accounts
               - /mnt/docker/accounts/id_rsa_postfixadmincontainer:/home/www-data/.ssh/id_rsa
               - /mnt/docker/accounts/exclude_names:/var/script/exclude_names
