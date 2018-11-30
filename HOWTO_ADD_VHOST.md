@@ -1,5 +1,5 @@
 ## DNS prerequisite
-- add CNAME entry for your new vhost to point to "mail.ecloud.global."
+- Add CNAME entry for your new vhost to point to "mail.ecloud.global."
 
 ## Login
 ssh root@mail.ecloud.global
