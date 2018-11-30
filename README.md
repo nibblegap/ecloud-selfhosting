@@ -9,30 +9,47 @@ hcloud server set-rdns server1 --hostname mail.example.com
 # Create A record to point to mail.example.com
 You probably know best how to do that with your specific setup^^
 
+Login to server as root. Execute this script (set USER to your user beforehand):
+
 ```shell
-ssh root@116.203.27.23
-# install stuff
-apt-get update && apt install -y git && apt-get -y upgrade -o Dpkg::Options::="--force-confold" && apt -y autoremove
-apt -y upgrade -o Dpkg::Options::="--force-confold" && apt -y autoremove && reboot && exit
+#!/bin/bash
+
+############################################################################
+# will be a parameters later
+USER=thilo
+BOOTSTRAPREPO=https://${USER}@gitlab.e.foundation/e/priv/cloud/compose.git
+apt-get update && apt install -y --asume-yes true git salt-minion
+############################################################################
 
 
+# Clone repo
+echo "Cloning repo .."
+git -C /mnt clone $BOOTSTRAPREPO repo-base
+ln -s /mnt/repo-base /mnt/docker
 
-# don't do this at home (aka in production) as piping from curl 2 bash is a bad idea
-curl -fsSL https://get.docker.com | bash
-systemctl enable docker
 
-curl -L "https://github.com/docker/compose/releases/download/1.23.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-chmod +x /usr/local/bin/docker-compose
+# Init salt-minion (masterless)
+cp /mnt/repo-base/deployment/salt/init-config/masterless.conf /etc/salt/minion.d/
 
-# checkout project
-git -C /mnt clone https://gitlab.e.foundation/e/priv/cloud/compose.git
-ln -s /mnt/compose /mnt/docker
+# Run repo init (might run a few minutes)
+echo "System update and pacakges installation .."
+salt-call state.apply init-repo
 
-# create folders
-cd /mnt/docker
-grep mnt docker-compose.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa| sort -u | while read line; do mkdir -p "$line"; done
-mv env-example .env
+# Login to /e/ registry
 docker login registry.gitlab.e.foundation:5000
-docker-compose up -d
 ```
+You need to login to gitlab twice during this process.
+
+Time to reboot:
+
+```shell
+reboot
+```
+Tweak /mnt/docker/.env file to your needs.
+
+Run services:
+```shell
+cd /mnt/docker && docker-compose up -d
+```
+
 to be continued...
