@@ -54,7 +54,7 @@ docker restart nginx
 
 ## Final checks
 Health check:
-- Is this still working or did we braek somehting: https://webmail.ecloud.global/
+- Is this still working or did we break something: https://webmail.ecloud.global/
 - Is new host working? https://thilo-test.ecloud.global
 
 # Happy hacking
