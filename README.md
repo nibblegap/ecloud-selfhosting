@@ -6,9 +6,11 @@ hcloud server create --image=ubuntu-18.04 --name server1 --type cx21 --ssh-key t
 hcloud server set-rdns server1 --hostname mail.example.com
 ```
 
-# Create A record to point to mail.example.com
+# DNS setup part 1
+Create A record to point to mail.example.com.
 You probably know best how to do that with your specific setup^^
 
+# Start bootstrap process
 Login to server as root. Execute this command:
 
 ```shell
@@ -26,7 +28,7 @@ reboot
 
 Tweak /mnt/docker/.env file to your needs.
 
-Run services:
+# Start services
 ```shell
 cd /mnt/docker && docker-compose up -d
 ```
