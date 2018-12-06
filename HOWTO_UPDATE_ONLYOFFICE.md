@@ -1,7 +1,3 @@
-1,5,7,8
-DE30600908000004489812
-
-
 # UPDATE PROCEDURE (expect downtime)
 
 ```shell
