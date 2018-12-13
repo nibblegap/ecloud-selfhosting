@@ -1,5 +1,5 @@
 #!/bin/bash
-#source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
+#source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-commons.sh)
 
 # Create folder structure
 #cd /mnt/docker
