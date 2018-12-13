@@ -2,37 +2,26 @@ DBPASS=supersecretpw
 RSPAMD_PASSWORD=supersecretpwRPSAMD
 ADD_DOMAINS=domainA.com,domainB.com
 #DISABLE_DNS_RESOLVER=true
-ENABLE_POP3=true
+#ENABLE_POP3=true
 #ENABLE_FETCHMAIL=true
 #DISABLE_CLAMAV=true
 #DISABLE_SIGNING=true
 #DISABLE_GREYLISTING=true
-DISABLE_RATELIMITING=true
+#DISABLE_RATELIMITING=true
 
 MYSQL_ROOT_PASSWORD=rootpwsecret
-MYSQL_DATABASE=postfix
-MYSQL_USER=postfix
 
-PMA_HOST=mariadb
-VHOSTS_DOMAINS=domainC.com
 VHOSTS_ACCOUNTS=welcome.domainA.com
-PFDB_HOST=mariadb
 PFDB_DB=postfix
 PFDB_USR=postfix
-SMTP_HOST=mail.domainA.com
 SMTP_FROM=welcome@domainA.com
 SMTP_PW=smtppw
 
 MYSQL_DATABASE_NC=nextcloud
 MYSQL_USER_NC=nextcloud
 MYSQL_PASSWORD_NC=ncdbpw
-MYSQL_HOST_NC=mariadb
 NEXTCLOUD_ADMIN_USER=adminusername
 NEXTCLOUD_ADMIN_PASSWORD=adminaccountpw
 
-DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server
-MAIL_SERVER_DB_HOST=onlyoffice-mail-server
-
 VIRTUAL_HOST=autoconfig.domainA.com,autodiscover.domainA.com,autoconfig.domainB.com,autodiscover.domainB.com
-DOMAIN=mail.domainA.com
-HOSTNAME=automx
+DOMAIN=domainA.com

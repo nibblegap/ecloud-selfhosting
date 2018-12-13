@@ -237,7 +237,7 @@ services:
     networks:
       - serverbase
     volumes:
-      - /mnt/docker/automx/automx-ecloud.conf:/etc/automx.conf
+      - /mnt/docker/automx/automx.conf:/etc/automx.conf
 networks:
   serverbase:
     driver: 'bridge'

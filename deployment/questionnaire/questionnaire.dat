@@ -1,0 +1,24 @@
+DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
+ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:
+
+# Generate and display
+RSPAMD_PASSWORD=@@@generate@@@:20@
+NEXTCLOUD_ADMIN_USER=ncadmin_@@@generate@@@:4@
+NEXTCLOUD_ADMIN_PASSWORD=@@@generate@@@:20@
+
+
+# Generate and use "under the hood"
+MYSQL_USER_NC=nc_@@@generate@@@:4@
+MYSQL_PASSWORD_NC=@@@generate@@@:20@
+MYSQL_DATABASE_NC=ncdb_@@@generate@@@:4@
+SMTP_PW=@@@generate@@@:20@
+PFDB_DB=postfix_@@@generate@@@:4@
+PFDB_USR=postfix_@@@generate@@@:4@
+MYSQL_ROOT_PASSWORD=@@@generate@@@:20@
+DBPASS=@@@generate@@@:20@
+
+
+# To be constructed repo specific
+#SMTP_FROM=welcome@domainA.com
+#VIRTUAL_HOST (for each domain two subdomains autoconfig/autodiscover)
+#VHOSTS_ACCOUNTS=welcome.domainA.com

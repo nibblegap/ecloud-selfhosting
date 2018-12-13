@@ -1,3 +1,4 @@
 .env
 .idea
 *.iml
+accounts/auth.file
