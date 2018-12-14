@@ -1,0 +1,34 @@
+server {
+  listen 8000;
+  server_name drive.@@@DOMAIN@@@;
+  return 301 https://$host$request_uri;
+}
+
+server {
+  listen 4430 ssl http2;
+  server_name drive.@@@DOMAIN@@@;
+
+  ssl_certificate /certs/live/drive.@@@DOMAIN@@@/fullchain.pem;
+  ssl_certificate_key /certs/live/drive.@@@DOMAIN@@@/privkey.pem;
+
+  include /etc/nginx/conf/ssl_params;
+  #include /etc/nginx/conf/headers_params;
+    add_header Strict-Transport-Security "max-age=15552000;includeSubDomains;preload";
+  client_max_body_size 4096M;
+
+  #auth_basic "Who's this?";
+  #auth_basic_user_file /passwds/<NAME>.htpasswd;
+  add_header 'Referrer-Policy' 'no-referrer';
+  location = /.well-known/carddav {
+      return 301 $scheme://$host/remote.php/dav;
+  }
+  location = /.well-known/caldav {
+    return 301 $scheme://$host/remote.php/dav;
+  }
+  location / {
+    proxy_set_header   X-Real-IP        $remote_addr;
+    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_pass http://nextcloud:80;
+    include /etc/nginx/conf/proxy_params;
+  }
+}

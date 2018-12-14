@@ -64,6 +64,10 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 # finished .env file generation
 
 # fille autrenew config
+echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,office.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+    echo "sub        $CURDOMAIN" >> letsencrypt/autrenew/ssl-domains.dat
+:; done
+cat letsencrypt/autrenew/template-ssl-renew.sh | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > letsencrypt/autrenew/ssl-renew.sh
 #tbd
 
 
@@ -72,5 +76,32 @@ cat automx/automx-template.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > automx/automx
 
 # Configure nginx vhost
 
+# automx
+echo "$DOMAIN,$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
+    cat nginx/templates/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > nginx/sites-enabled/autoconfig.$CURDOMAIN.conf
+    cat nginx/templates/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > nginx/sites-enabled/autodiscover.$CURDOMAIN.conf
+:; done
+
+# other hosts
+cat nginx/templates/dba | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/dba.$DOMAIN.conf"
+cat nginx/templates/drive | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/drive.$DOMAIN.conf"
+cat nginx/templates/mail | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/mail.$DOMAIN.conf"
+cat nginx/templates/office | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/office.$DOMAIN.conf"
+cat nginx/templates/spam | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/spam.$DOMAIN.conf"
+cat nginx/templates/webmail | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/webmail.$DOMAIN.conf"
+cat nginx/templates/welcome | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/welcome.$DOMAIN.conf"
 
 
+
+# Generate DKIM stuff in advance for DNS infor block...
+# tbd
+
+
+# display DNS setup info
+# confirm DNS is ready
+
+/mnt/docker/letsencrypt/autrenew/ssl-renew.sh
+cd /mnt/docker/
+docker-compose -f docker-compose-autogen.yml
+
+# display final message
