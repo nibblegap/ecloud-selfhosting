@@ -88,7 +88,7 @@ echo "==========================================================================
 echo "================================================================================================================================="
 echo ""
 echo "Type 'yes' and hit ENTER to confirm that you have setup DNS properly before we continue (everything else will abort the process):"
-read CONFIRM
+read CONFIRM < /dev/tty
 
 if [ "yes" != "$CONFIRM" ]
 then
