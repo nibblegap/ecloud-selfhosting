@@ -5,7 +5,7 @@ then
 fi
 
 MAILHOST="mail.@@@DOMAIN@@@"
-CONFIG=/mnt/docker/letsencrypt/autrenew/ssl-domains.dat
+CONFIG=/mnt/docker/letsencrypt/autorenew/ssl-domains.dat
 OPENSSLBIN=/usr/bin/openssl
 CERTSTOREBASE=/mnt/docker/letsencrypt/certstore
 CERTSTORE=$CERTSTOREBASE/live
