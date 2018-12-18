@@ -2,3 +2,7 @@
 .idea
 *.iml
 accounts/auth.file
+nginx/sites-enabled/*.conf
+automx/automx.conf
+letsencrypt/autorenew/*.dat
+letsencrypt/autorenew/ssl-renew.sh

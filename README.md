@@ -14,7 +14,7 @@ You probably know best how to do that with your specific setup^^
 Login to server as root. Execute this command:
 
 ```shell
-curl -L https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
+curl -L https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
 ```
 
 **ATTENTION:**

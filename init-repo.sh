@@ -1,35 +1,14 @@
 #!/bin/bash
-#source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-commons.sh)
+
+source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
 
 # Create folder structure
-#cd /mnt/docker
-#cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
+cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
 
-#ENVFILE="/mnt/docker/.env"
-ENVFILE=".env"
+ENVFILE="/mnt/docker/.env"
 rm -f "$ENVFILE"
 
-#########
-function getRandomString {
-        LENGTH=$1
-        cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $LENGTH | head -n 1
-}
-
-function replaceTokensWithRandomStrings {
-        INPUT="$1"
-        TOBEREPLACED=$(echo "$INPUT" | grep -o '@@@generate@@@:[0-9]\+@')
-        REPLACEMENT_LENGTH=$(echo "$TOBEREPLACED" | awk -F: '{ print $NF }' | sed 's/@$//g')
-        RANDOMPART=$(getRandomString $REPLACEMENT_LENGTH)
-        echo "$INPUT" | sed "s/$TOBEREPLACED/$RANDOMPART/g"
-}
-function doReplacementIfNecessary {
-    VALUE="$1"
-    echo "$VALUE" | grep -q "@@@generate@@@" && replaceTokensWithRandomStrings "$VALUE" || echo "$VALUE"
-}
-#########
-
 # Create .env file
-
 while read KEY VALUE; do
     PREVVALUE="$VALUE"
     VALUE=$(doReplacementIfNecessary "$VALUE")
@@ -63,12 +42,12 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 
 # finished .env file generation
 
-# fille autrenew config
+rm -f letsencrypt/autorenew/ssl-domains.dat
+# fille autorenew config
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,office.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
-    echo "sub        $CURDOMAIN" >> letsencrypt/autrenew/ssl-domains.dat
+    echo "sub        $CURDOMAIN" >> letsencrypt/autorenew/ssl-domains.dat
 :; done
-cat letsencrypt/autrenew/template-ssl-renew.sh | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > letsencrypt/autrenew/ssl-renew.sh
-#tbd
+cat letsencrypt/autorenew/template-ssl-renew.sh | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > letsencrypt/autorenew/ssl-renew.sh
 
 
 # Configure automx
@@ -83,25 +62,74 @@ echo "$DOMAIN,$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
 :; done
 
 # other hosts
-cat nginx/templates/dba | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/dba.$DOMAIN.conf"
-cat nginx/templates/drive | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/drive.$DOMAIN.conf"
-cat nginx/templates/mail | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/mail.$DOMAIN.conf"
-cat nginx/templates/office | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/office.$DOMAIN.conf"
-cat nginx/templates/spam | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/spam.$DOMAIN.conf"
-cat nginx/templates/webmail | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/webmail.$DOMAIN.conf"
-cat nginx/templates/welcome | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" > "nginx/sites-enabled/welcome.$DOMAIN.conf"
+cat nginx/templates/dba | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/dba.$DOMAIN.conf"
+cat nginx/templates/drive | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/drive.$DOMAIN.conf"
+cat nginx/templates/mail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/mail.$DOMAIN.conf"
+cat nginx/templates/office | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/office.$DOMAIN.conf"
+cat nginx/templates/spam | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/spam.$DOMAIN.conf"
+cat nginx/templates/webmail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/webmail.$DOMAIN.conf"
+cat nginx/templates/welcome | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/welcome.$DOMAIN.conf"
 
-
-
-# Generate DKIM stuff in advance for DNS infor block...
-# tbd
-
-
-# display DNS setup info
 # confirm DNS is ready
+echo ""
+echo ""
+echo "================================================================================================================================="
+echo "================================================================================================================================="
+echo "Please setup the following DNS records for your domains before you proceed (subsequent steps will fail if a record is missing):"
+echo ""
+echo "mail.$DOMAIN A record to your public IP"
+echo "PTR record for your public IP towards mail.$DOMAIN.com (reverse DNS to match A record above)"
+echo ""
+echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,office.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+    echo "CNAME record $CURDOMAIN towards mail.$DOMAIN."
+:; done
+echo "================================================================================================================================="
+echo "================================================================================================================================="
+echo ""
+echo "Type 'yes' and hit ENTER to confirm that you have setup DNS properly before we continue (everything else will abort the process):"
+read CONFIRM
 
-/mnt/docker/letsencrypt/autrenew/ssl-renew.sh
+if [ "yes" != "$CONFIRM" ]
+then
+    echo "Aborting"
+    exit 1
+fi
+
+# Verify DOMAIN lookup forward and reverse (very important)
+IP=$(dig mail.$DOMAIN| grep mail.$DOMAIN | grep -v '^;' | awk '{ print $NF }')
+
+if [ -z "$IP" ]
+then
+    echo "mail.$DOMAIN not resolving to IP"
+    exit 1
+fi
+PTR=$(nslookup $IP | grep "name = mail.$DOMAIN" | wc -l)
+
+if [ "1" != "$PTR" ]
+then
+    echo "$IP not resolving to mail.$DOMAIN (PTR record missing or wrong.."
+    exit 1
+fi
+
+# Run LE cert request
+sh letsencrypt/autorenew/ssl-renew.sh
+
+
+# verify LE status
+CTR_LE=$(find letsencrypt/certstore/live/dba.$DOMAIN/privkey.pem  letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem letsencrypt/certstore/live/office.$DOMAIN/privkey.pem letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem  letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem 2>/dev/null| wc -l)
+CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
+
+if [ "$CTR_LE$CTR_AC_LE" = "70" ]
+then
+    echo "All LE certs present."
+else
+    echo "Verification of LE status failed. Some expected certificates are missing"
+    echo "$CTR_LE of 7 certifcates found."
+    echo "$CTR_AC_LE autoconfig/autodiscovery certificates are missing."
+    exit 1
+fi
+
 cd /mnt/docker/
 docker-compose -f docker-compose-autogen.yml
 
-# display final message
+# display DNS setup info
