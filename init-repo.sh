@@ -1,6 +1,7 @@
 #!/bin/bash
 
-source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
+source <(curl -s https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-commons.sh)
+#source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
 
 # Create folder structure
 cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
