@@ -32,8 +32,8 @@ cat "$CONFIG" | while read TYPE DOMAIN; do
         then
                 docker stop nginx
                 #docker ps
-		#echo "docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt -p $PUBIP:80:80 -p $PUBIP:443:443 xataz/letsencrypt certonly --standalone --agree-tos -m $SERVERADMIN -d $DOMAIN $ALIAS"
-		        docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt -p $PUBIP:80:80 -p $PUBIP:443:443 xataz/letsencrypt certonly --standalone --agree-tos -m $SERVERADMIN -d $DOMAIN $ALIAS
+		#echo "docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt -p $PUBIP:80:80 -p $PUBIP:443:443 xataz/letsencrypt certonly --standalone --non-interactive --agree-tos -m $SERVERADMIN -d $DOMAIN $ALIAS"
+		        docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt -p $PUBIP:80:80 -p $PUBIP:443:443 xataz/letsencrypt certonly --standalone --non-interactive --agree-tos -m $SERVERADMIN -d $DOMAIN $ALIAS
                 docker start nginx
                 NVALIDTHRU=$($OPENSSLBIN x509 -enddate -noout -in $CERTSTORE/$DOMAIN/fullchain.pem | awk -F= '{ print $NF }')
                 echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU (was: $VALIDTHRU)"

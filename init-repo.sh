@@ -1,7 +1,7 @@
 #!/bin/bash
 
-source <(curl -s https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-commons.sh)
-#source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
+#source <(curl -s https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-commons.sh)
+source <(curl -s https://gitlab.e.foundation/e/cloud/bootstrap/raw/master/bootstrap-commons.sh)
 
 # Create folder structure
 cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
@@ -130,7 +130,10 @@ else
     exit 1
 fi
 
-cd /mnt/docker/
-docker-compose -f docker-compose-autogen.yml
+# Login to /e/ registry | not necessary when going public
+docker login registry.gitlab.e.foundation:5000
 
-# display DNS setup info
+cd /mnt/docker/
+docker-compose -f docker-compose-autogen.yml up -d
+
+# display DNS setup info and PW infos
