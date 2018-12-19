@@ -5,6 +5,7 @@ source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootst
 
 # Create folder structure
 cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
+rm -rf /mnt/docker/mail/dovecot-custom/*
 
 ENVFILE="/mnt/docker/.env"
 rm -f "$ENVFILE"
@@ -131,9 +132,9 @@ else
 fi
 
 # Login to /e/ registry | not necessary when going public
-docker login registry.gitlab.e.foundation:5000
+#docker login registry.gitlab.e.foundation:5000
 
-cd /mnt/docker/
-docker-compose -f docker-compose-autogen.yml up -d
+#cd /mnt/docker/
+#docker-compose -f docker-compose-autogen.yml up -d
 
 # display DNS setup info and PW infos

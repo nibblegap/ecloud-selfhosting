@@ -1,4 +1,4 @@
-erver {
+server {
   listen 8000;
   server_name mail.@@@DOMAIN@@@;
   return 301 https://$host$request_uri;

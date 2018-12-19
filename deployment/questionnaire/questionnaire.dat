@@ -17,6 +17,9 @@ PFDB_USR=postfix_@@@generate@@@:4@
 MYSQL_ROOT_PASSWORD=@@@generate@@@:20@
 DBPASS=@@@generate@@@:20@
 
+# fixed defaults
+ENABLE_POP3=false
+DISABLE_RATELIMITING=false
 
 # To be constructed repo specific
 #SMTP_FROM=welcome@domainA.com

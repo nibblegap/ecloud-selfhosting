@@ -5,7 +5,7 @@ services:
     image: hardware/mailserver:1.1-stable
     container_name: mailserver
     restart: unless-stopped
-    domainname: ecloud.global                 # Mail server A/MX/FQDN & reverse PTR = mail.ecloud.global.
+    domainname: ${DOMAIN}                # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
     hostname: mail
     restart: always
     networks:
@@ -51,7 +51,7 @@ services:
   postfixadmin:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin
     container_name: postfixadmin
-    domainname: ecloud.global
+    domainname: ${DOMAIN}
     hostname: mail
     restart: unless-stopped
     networks:
@@ -92,7 +92,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${PFDB_DB}
-      - MYSQL_USER=${PFDB_PW}
+      - MYSQL_USER=${PFDB_USR}
       - MYSQL_PASSWORD=${DBPASS}
     volumes:
       - /mnt/docker/mysql/db:/var/lib/mysql

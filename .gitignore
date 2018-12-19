@@ -6,3 +6,11 @@ nginx/sites-enabled/*.conf
 automx/automx.conf
 letsencrypt/autorenew/*.dat
 letsencrypt/autorenew/ssl-renew.sh
+letsencrypt/certstore/*
+mail/*
+mysql/*
+nextcloud/*
+nginx/log/*
+onlyoffice/*
+rainloop/*
+redis/*
