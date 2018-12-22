@@ -5,7 +5,6 @@ source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootst
 
 # Create folder structure
 cd /mnt/docker && grep mnt docker-compose-autogen.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g' | grep -v id_rsa | while read line; do dirname $line; done | sort -u | while read line; do mkdir -p "$line"; done
-rm -rf /mnt/docker/mail/dovecot-custom/*
 
 ENVFILE="/mnt/docker/.env"
 rm -f "$ENVFILE"
@@ -106,6 +105,7 @@ CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find l
 if [ "$CTR_LE$CTR_AC_LE" = "70" ]
 then
     echo "All LE certs present."
+    echo "Reboot server now."
 else
     echo "Verification of LE status failed. Some expected certificates are missing"
     echo "$CTR_LE of 7 certifcates found."
