@@ -11,7 +11,7 @@ ENVFILE="/mnt/docker/.env"
 rm -f "$ENVFILE"
 
 # Create .env file
-echo "$(generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat)" >> "$ENVFILE"
+generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
 
 DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
 ADD_DOMAINS=$(grep ^ADD_DOMAINS= "$ENVFILE" | awk -F= '{ print $NF }')
