@@ -1,2 +1,4 @@
 DOMAIN=maindomain.com
 ADD_DOMAINS=domainA.com,domainB.com
+ENABLE_POP3=false
+DISABLE_RATELIMITING=false

@@ -18,8 +18,8 @@ MYSQL_ROOT_PASSWORD=@@@generate@@@:20@
 DBPASS=@@@generate@@@:20@
 
 # fixed defaults
-ENABLE_POP3=false
-DISABLE_RATELIMITING=false
+ENABLE_POP3=false;default
+DISABLE_RATELIMITING=false;default
 
 # To be constructed repo specific
 #SMTP_FROM=welcome@domainA.com

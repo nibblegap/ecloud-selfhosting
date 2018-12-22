@@ -11,25 +11,7 @@ ENVFILE="/mnt/docker/.env"
 rm -f "$ENVFILE"
 
 # Create .env file
-while read KEY VALUE; do
-    PREVVALUE="$VALUE"
-    VALUE=$(doReplacementIfNecessary "$VALUE")
-    if [ "$PREVVALUE" = "$VALUE" ]
-    then
-        if [[ "$#" -ne 1 ]]
-        then
-            echo "$VALUE"
-            read INPUT < /dev/tty
-            echo "$KEY=$INPUT" >> "$ENVFILE"
-         else
-            ANSWERFILE="deployment/questionnaire/answers.dat"
-            VALUE=$(grep "^$KEY=" "$ANSWERFILE" | awk -F= '{ print $NF }')
-            echo "$KEY=$VALUE" >> "$ENVFILE"
-         fi
-     else
-        echo "$KEY=$VALUE" >> "$ENVFILE"
-     fi
-:;done <<< "$(grep -v \# deployment/questionnaire/questionnaire.dat | sed '/^$/d'| sed 's/=/        /g')"
+echo "$(generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat)" >> "$ENVFILE"
 
 DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
 ADD_DOMAINS=$(grep ^ADD_DOMAINS= "$ENVFILE" | awk -F= '{ print $NF }')
