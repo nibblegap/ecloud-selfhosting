@@ -12,8 +12,8 @@ MYSQL_USER_NC=nc_@@@generate@@@:4@
 MYSQL_PASSWORD_NC=@@@generate@@@:20@
 MYSQL_DATABASE_NC=ncdb_@@@generate@@@:4@
 SMTP_PW=@@@generate@@@:20@
-PFDB_DB=postfix_@@@generate@@@:4@
-PFDB_USR=postfix_@@@generate@@@:4@
+PFDB_DB=postfix;default
+PFDB_USR=postfix;default
 MYSQL_ROOT_PASSWORD=@@@generate@@@:20@
 DBPASS=@@@generate@@@:20@
 
