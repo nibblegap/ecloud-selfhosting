@@ -1,6 +1,8 @@
 # Howto setup a PoC of this project
 
 # Create Ubuntu VM & set reverse DNS
+This examplpes uses Hetzner cloud (sorry Gael ;)).
+You can use whatever provider you want. Just make sure to set rdns correctly before running the bootstrap script (works via Webui with some other hosters)
 ```shell
 hcloud server create --image=ubuntu-18.04 --name server1 --type cx31 --ssh-key ts@treehouse-sss
 hcloud server set-rdns server1 --hostname mail.example.com
