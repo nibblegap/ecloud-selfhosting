@@ -10,6 +10,7 @@ install-deps:
     - name: ca-certificates
     - name: curl
     - name: software-properties-common
+    - name: apache2-utils
     - require:
       - upgrade-all
 import-docker-key-repos:

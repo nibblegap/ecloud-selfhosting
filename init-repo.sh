@@ -15,9 +15,15 @@ generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionna
 DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
 ADD_DOMAINS=$(grep ^ADD_DOMAINS= "$ENVFILE" | awk -F= '{ print $NF }')
 
+DBA_USER=$(grep ^DBA_USER= "$ENVFILE" | awk -F= '{ print $NF }')
+DBA_PASSWORD=$(grep ^DBA_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
+
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
 echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
+
+# generate basic auth for phpmyadmin
+htpasswd -c  -b /mnt/docker/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
 
 VIRTUAL_HOST=$(echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do echo "autoconfig.$line,autodiscover.$line"; done | tr "\n" "," | sed 's/.$//g')
 
