@@ -1,0 +1,1 @@
+CREATE USER '@@@USER@@@'@'%' IDENTIFIED VIA mysql_native_password USING '@@@PASSWORD@@@';
