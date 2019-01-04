@@ -21,7 +21,7 @@ sed -i "s/);//g" /mnt/docker/nextcloud/config/config.php
 touch /mnt/docker/nextcloud/data/.ocdata
 
 # create admin account for nextcloud
-docker cp /mnt/docker/deployment/ncdb-templates/resetpw.sh nextcloud:/tmp/ && docker exec -t nextcloud bash /tmp/resetpw.sh $NEXTCLOUD_ADMIN_USER $NEXTCLOUD_ADMIN_PASSWORD $ALT_EMAIL
+docker cp /mnt/docker/deployment/ncdb-templates/resetpw.sh nextcloud:/tmp/ && docker exec -t nextcloud bash /tmp/resetpw.sh $NEXTCLOUD_ADMIN_USER $NEXTCLOUD_ADMIN_PASSWORD
 docker restart nextcloud
 
 # create postfix DB schema
