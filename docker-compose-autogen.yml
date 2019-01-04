@@ -53,6 +53,8 @@ services:
     container_name: postfixadmin
     domainname: ${DOMAIN}
     hostname: mail
+    volumes:
+      - /mnt/docker/postfixadmin:/postfixadmin
     restart: unless-stopped
     networks:
       - serverbase
