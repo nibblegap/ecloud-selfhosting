@@ -26,8 +26,10 @@ docker restart nextcloud
 curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 
 # set pfa setup password
+docker cp /mnt/docker/deployment/postfixadmin/pwgen.php postfixadmin:/postfixadmin
 SETUPPW_HASH=$(docker exec -t postfixadmin php /postfixadmin/pwgen.php "$PFA_SETUP_PASSWORD" | tail -n1)
 sed -i "s|\($CONF\['setup_password'\].*=\).*|\1 '${SETUPPW_HASH}';|" /mnt/docker/postfixadmin/config.inc.php
+docker exec -t postfixadmin rm /postfixadmin/pwgen.php
 
 # display DKIM DNS setup info/instructions to the user
 clear
