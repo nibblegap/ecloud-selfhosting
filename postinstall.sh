@@ -17,7 +17,7 @@ PFA_SUPERADMIN_PASSWORD=$(grep ^PFA_SUPERADMIN_PASSWORD= "$ENVFILE" | awk -F= '{
 # tweak nextcloud config
 sed -i "s/localhost/drive.$DOMAIN/g" /mnt/docker/nextcloud/config/config.php
 sed -i "s/);//g" /mnt/docker/nextcloud/config/config.php
-/bin/echo -e "   'dbuser' => '$MYSQL_USER_NC',\n   'dbpassword' => '$MYSQL_PASSWORD_NC',\n   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls',\n   'installed' => true,\n);" >> /mnt/docker/nextcloud/config/config.php
+/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls',\n);" >> /mnt/docker/nextcloud/config/config.php
 touch /mnt/docker/nextcloud/data/.ocdata
 
 # create admin account for nextcloud
