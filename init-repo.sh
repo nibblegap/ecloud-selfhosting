@@ -27,7 +27,7 @@ MYSQL_PASSWORD_NC=$(grep ^MYSQL_PASSWORD_NC= "$ENVFILE" | awk -F= '{ print $NF }
 # prepare nextcloud DB init scripts
 cat /mnt/docker/deployment/ncdb-templates/a_user.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@PASSWORD@@@/$MYSQL_PASSWORD_NC/g" > /mnt/docker/deployment/ncdb/a_user.sql
 cat /mnt/docker/deployment/ncdb-templates/b_db.sql | sed "s/@@@ADMINUSER@@@/$NEXTCLOUD_ADMIN_USER/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/docker/deployment/ncdb/b_db.sql
-cat /mnt/docker/deployment/ncdb-templates/c_grant.sql | sed "s/@@@USER@@@/$NEXTCLOUD_ADMIN_USER/g"  > /mnt/docker/deployment/ncdb/c_grant.sql
+cat /mnt/docker/deployment/ncdb-templates/c_grant.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/docker/deployment/ncdb/c_grant.sql
 
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
