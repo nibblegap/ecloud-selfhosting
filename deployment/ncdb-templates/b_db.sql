@@ -603,7 +603,6 @@ INSERT INTO `filecache` (`fileid`, `storage`, `path`, `path_hash`, `parent`, `na
 (19, 2, 'files/Nextcloud Community.jpeg', '30af45e46d4496087af49ca556429ef3', 7, 'Nextcloud Community.jpeg', 6, 5, 598877, 1546519305, 1546519305, 0, 0, 'a479db5dc6f65247374f633e9cf947a5', 27, ''),
 (20, 1, 'appdata_ocu2rsyyk8v2/theming', 'e741018d2076509da308942f168fae63', 2, 'theming', 2, 1, 1560, 1546519318, 1546519318, 0, 0, '5c2e031638a30', 31, ''),
 (21, 1, 'appdata_ocu2rsyyk8v2/avatar', '0cbc8dd269d849dbaa434de05c45381e', 2, 'avatar', 2, 1, 0, 1546519308, 1546519308, 0, 0, '5c2e030c6f00b', 31, ''),
-(22, 1, 'appdata_ocu2rsyyk8v2/avatar/@@@ADMINUSER@@@', '2609962b487e8ad5b69db41f37a716ef', 21, '@@@ADMINUSER@@@', 2, 1, 0, 1546519308, 1546519308, 0, 0, '5c2e030c6ddf7', 31, ''),
 (23, 1, 'appdata_ocu2rsyyk8v2/js', '00a53eac4e2352c54973159addf139e2', 2, 'js', 2, 1, 2134184, 1546519346, 1546519309, 0, 0, '5c2e0332bb158', 31, ''),
 (24, 1, 'appdata_ocu2rsyyk8v2/js/core', '229dd9642b63d2c24b1c0fc5a02d8197', 23, 'core', 2, 1, 391449, 1546519346, 1546519346, 0, 0, '5c2e0332bb158', 31, ''),
 (25, 1, 'appdata_ocu2rsyyk8v2/js/core/merged-template-prepend.js', 'da0aec0678b8323684dfebf65fe2631f', 24, 'merged-template-prepend.js', 14, 3, 156088, 1546519308, 1546519308, 0, 0, 'f83f5e96144598a84837bb8818786131', 27, ''),
@@ -826,13 +825,6 @@ CREATE TABLE `group_user` (
   `uid` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 
---
--- Daten für Tabelle `group_user`
---
-
-INSERT INTO `group_user` (`gid`, `uid`) VALUES
-('admin', '@@@ADMINUSER@@@');
-
 -- --------------------------------------------------------
 
 --
@@ -875,8 +867,7 @@ INSERT INTO `jobs` (`id`, `class`, `argument`, `last_run`, `last_checked`, `rese
 (18, 'OCA\\Support\\BackgroundJobs\\CheckSubscription', 'null', 0, 1546519303, 0, 0),
 (19, 'OC\\Authentication\\Token\\DefaultTokenCleanupJob', 'null', 0, 1546519305, 0, 0),
 (20, 'OC\\Log\\Rotate', 'null', 0, 1546519305, 0, 0),
-(21, 'OC\\Preview\\BackgroundCleanupJob', 'null', 0, 1546519305, 0, 0),
-(22, 'OCA\\FirstRunWizard\\Notification\\BackgroundJob', '{\"uid\":\"@@@ADMINUSER@@@\"}', 0, 1546519308, 0, 0);
+(21, 'OC\\Preview\\BackgroundCleanupJob', 'null', 0, 1546519305, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -976,12 +967,6 @@ CREATE TABLE `mounts` (
   `mount_id` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 
---
--- Daten für Tabelle `mounts`
---
-
-INSERT INTO `mounts` (`id`, `storage_id`, `root_id`, `user_id`, `mount_point`, `mount_id`) VALUES
-(1, 2, 6, '@@@ADMINUSER@@@', '/@@@ADMINUSER@@@/', NULL);
 
 -- --------------------------------------------------------
 
@@ -1067,16 +1052,6 @@ CREATE TABLE `preferences` (
   `configkey` varchar(64) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `configvalue` longtext COLLATE utf8mb4_bin DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-
---
--- Daten für Tabelle `preferences`
---
-
-INSERT INTO `preferences` (`userid`, `appid`, `configkey`, `configvalue`) VALUES
-('@@@ADMINUSER@@@', 'core', 'lang', 'de'),
-('@@@ADMINUSER@@@', 'firstrunwizard', 'show', '0'),
-('@@@ADMINUSER@@@', 'login', 'lastLogin', '1546519305');
-
 -- --------------------------------------------------------
 
 --
@@ -1182,8 +1157,7 @@ CREATE TABLE `storages` (
 --
 
 INSERT INTO `storages` (`numeric_id`, `id`, `available`, `last_checked`) VALUES
-(1, 'local::/var/www/html/data/', 1, NULL),
-(2, 'home::@@@ADMINUSER@@@', 1, NULL);
+(1, 'local::/var/www/html/data/', 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -1268,13 +1242,6 @@ CREATE TABLE `twofactor_providers` (
   `enabled` smallint(6) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
 
---
--- Daten für Tabelle `twofactor_providers`
---
-
-INSERT INTO `twofactor_providers` (`provider_id`, `uid`, `enabled`) VALUES
-('backup_codes', '@@@ADMINUSER@@@', 0);
-
 -- --------------------------------------------------------
 
 --
@@ -1288,13 +1255,6 @@ CREATE TABLE `users` (
   `password` varchar(255) COLLATE utf8mb4_bin NOT NULL DEFAULT '',
   `uid_lower` varchar(64) COLLATE utf8mb4_bin DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_bin ROW_FORMAT=COMPRESSED;
-
---
--- Daten für Tabelle `users`
---
-
-INSERT INTO `users` (`uid`, `displayname`, `password`, `uid_lower`) VALUES
-('@@@ADMINUSER@@@', NULL, '2|$argon2i$v=19$m=1024,t=2,p=2$SC8vZEhoUTgvRi5WMWpmNQ$z7A7AxlMapf4yWVfO08z4ZRoZT596MMyUb914Kuv/IY', '@@@ADMINUSER@@@');
 
 -- --------------------------------------------------------
 

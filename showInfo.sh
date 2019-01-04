@@ -13,5 +13,5 @@ DBA_USER=$(grep ^DBA_USER= "$ENVFILE"  | awk -F= '{ print $NF }')
 DBA_PASSWORD=$(grep ^DBA_PASSWORD= "$ENVFILE"  | awk -F= '{ print $NF }')
 
 echo "Your password for the SPAM filter mgmt UI (https://$SPAMUI) is: $RSPAMD_PASSWORD"
-echo "Your admin credentials for nextcloud are (https://$NCUI) is: $NEXTCLOUD_ADMIN_USER/$NEXTCLOUD_ADMIN_PASSWORD"
+echo "Your admin credentials for nextcloud are (https://$NCUI) is: $NEXTCLOUD_ADMIN_USER / $NEXTCLOUD_ADMIN_PASSWORD"
 echo "Your credentials for phpmyadmin (https://$DBAUI) are: $DBA_USER / $DBA_PASSWORD"
