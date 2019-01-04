@@ -77,11 +77,12 @@ echo "==========================================================================
 echo "================================================================================================================================="
 echo "Please setup the following DNS records for your domains before you proceed (subsequent steps will fail if a record is missing):"
 echo ""
-echo "mail.$DOMAIN A record to your public IP"
-echo "PTR record for your public IP towards mail.$DOMAIN.com (reverse DNS to match A record above)"
+echo "   mail.$DOMAIN A record to your public IP"
+echo "   For each domain in $ADD_DOMAINS add A record (@) to your public IP"
+echo "   PTR record for your public IP towards mail.$DOMAIN.com (reverse DNS to match A record above)"
 echo ""
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,office.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
-    echo "CNAME record $CURDOMAIN towards mail.$DOMAIN."
+    echo "   CNAME record $CURDOMAIN towards mail.$DOMAIN."
 :; done
 echo "================================================================================================================================="
 echo "================================================================================================================================="
