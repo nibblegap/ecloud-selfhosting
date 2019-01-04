@@ -1,5 +1,6 @@
 DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
 ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:
+ALT_EMAIL=Enter alternative email:
 
 # Generate and display
 RSPAMD_PASSWORD=@@@generate@@@:20@
@@ -19,7 +20,8 @@ DBPASS=@@@generate@@@:20@
 DBA_PASSWORD=@@@generate@@@:16@
 DRIVE_SMTP_PASSWORD=@@@generate@@@:16@
 
-PFA_SETUP_PASSWORD=@@@generate@@@:16@
+PFA_SETUP_PASSWORD=93@@@generate@@@:16@
+PFA_SUPERADMIN_PASSWORD=@@@generate@@@:16@
 
 # fixed defaults
 ENABLE_POP3=false;default
