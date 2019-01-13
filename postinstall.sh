@@ -26,6 +26,10 @@ sed -i "s/);//g" /mnt/docker/nextcloud/config/config.php
 cat /mnt/docker/deployment/nc-plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/docker/nextcloud/config/config.php
 touch /mnt/docker/nextcloud/data/.ocdata
 
+echo "Installing nextcloud plugin"
+docker exec -ti nextcloud  su - www-data -s /bin/bash -c "php /var/www/html/occ app:install user_backend_sql_raw"
+docker exec -ti nextcloud  su - www-data -s /bin/bash -c "php /var/www/html/occ upgrade"
+
 echo "Restarting Nextcloud container"
 docker restart nextcloud > /dev/null
 
@@ -48,6 +52,6 @@ echo "Adding email accounts used by system senders (drive, ...)"
 docker exec -t postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL
 
 # display DKIM DNS setup info/instructions to the user
-echo "\n\n\n"
-echo "Please add the following records to your domain's DNS configuration:\n"
+echo -e "\n\n\n"
+echo -e "Please add the following records to your domain's DNS configuration:\n"
 find /mnt/docker/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
