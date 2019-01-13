@@ -23,6 +23,4 @@ echo "Your password for the SPAM filter mgmt UI (https://$SPAM_UI) is: $RSPAMD_P
 echo "Your admin credentials for nextcloud are (https://$NEXTCLOUD_UI) is: $NEXTCLOUD_ADMIN_USER / $NEXTCLOUD_ADMIN_PASSWORD"
 echo "Your credentials for phpmyadmin (https://$DBA_UI) are: $DBA_USER / $DBA_PASSWORD"
 echo "Your credentials for postfix admin (https://$POSTFIX_UI) are: $POSTFIX_USER / $POSTFIX_PASSWORD"
-echo "Your password for the SPAM filter mgmt UI (https://$SPAMUI) is: $RSPAMD_PASSWORD"
-echo "Your admin credentials for nextcloud are (https://$NCUI) is: $NEXTCLOUD_ADMIN_USER / $NEXTCLOUD_ADMIN_PASSWORD"
-echo "Your credentials for phpmyadmin (https://$DBAUI) are: $DBA_USER / $DBA_PASSWORD"
+
