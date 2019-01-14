@@ -21,7 +21,7 @@ DBA_PASSWORD=@@@generate@@@:16@
 DRIVE_SMTP_PASSWORD=@@@generate@@@:16@
 
 PFA_SETUP_PASSWORD=93@@@generate@@@:16@
-PFA_SUPERADMIN_PASSWORD=@@@generate@@@:16@
+PFA_SUPERADMIN_PASSWORD=1@@@generate@@@:16@2
 
 # fixed defaults
 ENABLE_POP3=false;default
