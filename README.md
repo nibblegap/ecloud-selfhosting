@@ -1,18 +1,38 @@
-# Howto setup a PoC of this project
+# Requirements
 
-# Create Ubuntu VM & set reverse DNS
+For the full setup, the following server hardware is recommended:
+
+- 2 core CPU
+- 4 GB RAM
+- 20 GB disk space
+
+For the setup without OnlyOffice, requirements are a bit lower:
+
+- 1 core CPU
+- 2 GB RAM
+- 15 GB disk space
+
+Disk space only refers to the basic installation. You will need additional space for any emails, documents and files you store on the server.
+
+### Required packages (these should be included with Ubuntu by default)
+- curl
+- bash
+
+# Installation
+
+## Create Ubuntu VM & set reverse DNS
 This examplpes uses Hetzner cloud (sorry Gael ;)).
 You can use whatever provider you want. Just make sure to set rdns correctly before running the bootstrap script (works via Webui with some other hosters)
 ```shell
-hcloud server create --image=ubuntu-18.04 --name server1 --type cx31 --ssh-key ts@treehouse-sss
-hcloud server set-rdns server1 --hostname mail.example.com
+$ hcloud server create --image=ubuntu-18.04 --name server1 --type cx31 --ssh-key ts@treehouse-sss
+$ hcloud server set-rdns server1 --hostname mail.example.com
 ```
 
-# Start bootstrap process
+### Start bootstrap process
 Login to server as root. Execute this command and follow its on-screen instructions:
 
 ```shell
-curl -L https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
+# curl -L https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
 ```
 
 **ATTENTION:**
@@ -21,65 +41,42 @@ You need to login to gitlab once during this process.
 
 Time to reboot:
 ```shell
-reboot
+# reboot now
 ```
 
-# Login to /e/ registry (also not necessary when going public later)
+### Login to /e/ registry (also not necessary when going public later)
 ```shell
-docker login registry.gitlab.e.foundation:5000
+# docker login registry.gitlab.e.foundation:5000
 ```
 
-# Start services
+### Start services
 ```shell
-cd /mnt/docker/
-docker-compose -f docker-compose-autogen.yml up -d
+# cd /mnt/docker/
+# docker-compose up -d
 ```
 
-# DNS/DKIM setup: launch script to get on-screen instructions on this:
+### DNS/DKIM setup: launch script to get on-screen instructions on this:
 ```shell
-bash /mnt/docker/postinstall.sh
+# bash /mnt/docker/postinstall.sh
 ```
 
-# Retrieve some login information into your new system:
+### Retrieve some login information into your new system:
 ```shell
-bash /mnt/docker/showInfo.sh
+# bash /mnt/docker/showInfo.sh
 ```
 
+# Available Services
 
-# postfixadmin setup
-https://mail.yourdomain.tld/setup.php
+You can find login information for these services by running `showInfo.sh`.
 
-insert setup pw and note done the generated hash value afterwards bring the hash into your installation by specifying it here:
-```shell
-docker exec -ti postfixadmin setup
-```
+- welcome.$DOMAIN: Allows users to sign up for a new account, which will work for all of the following services
+- webmail.$DOMAIN: Send and receive emails ([rainloop.net](https://www.rainloop.net/))
+- drive.$DOMAIN: File hosting ([nextcloud.com](https://nextcloud.com/))
+- office.$DOMAIN: Create and edit office documents ([onlyoffice.com](https://www.onlyoffice.com/))
 
-Now you can use the setup pw to generate an admin account.
+# Administration
 
-Login with the admin account here:
-https://mail.yourdomain.tld/
+- spam.$DOMAIN: Email spam filter ([rspamd.com](https://www.rspamd.com/))
+- dba.$DOMAIN: Database administration ([phpmyadmin.net](https://www.phpmyadmin.net/))
+- mail.$DOMAIN: Administrate email and create accounts ([postfixadmin.sourceforge.net](http://postfixadmin.sourceforge.net/))
 
-You can now create your domains, mailboxes, alias...etc :smiley:
-
-
-# setup webmail
-
-Login to
-https://webmail.domain.tld/?admin
-
-Default login is "admin", password is "12345".
-
-You must add and configure your domains in your admin panel like this:
-
-![alt domains](https://camo.githubusercontent.com/a6f4ad35c115c988e4258dc857f22705b9edf0db/687474703a2f2f692e696d6775722e636f6d2f52624d56686b7a2e706e67)
-
-SMTP/IMAP configuration:
-
-![alt amtp/imap](https://camo.githubusercontent.com/fa9bf6188e34b4170cc9a8d8cfeba718f930dfb2/687474703a2f2f692e696d6775722e636f6d2f474662624a7a732e706e67)
-
-SIEVE configuration:
-
-![alt sieve](https://camo.githubusercontent.com/013beb92422e527c513d0daa12fb1ecc3f352904/687474703a2f2f692e696d6775722e636f6d2f6572764b7472472e706e67)
-
-
-to be continued...
