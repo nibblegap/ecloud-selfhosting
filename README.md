@@ -32,7 +32,7 @@ $ hcloud server set-rdns server1 --hostname mail.example.com
 Login to server as root. Execute this command and follow its on-screen instructions:
 
 ```shell
-# curl -L https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
+# curl -L https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
 ```
 
 **ATTENTION:**
