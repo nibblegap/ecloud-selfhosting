@@ -23,7 +23,7 @@ Disk space only refers to the basic installation. You will need additional space
 ## Create Ubuntu VM & set reverse DNS
 This examplpes uses Hetzner cloud (sorry Gael ;)).
 You can use whatever provider you want. Just make sure to set rdns correctly before running the bootstrap script (works via Webui with some other hosters)
-```shell
+```
 $ hcloud server create --image=ubuntu-18.04 --name server1 --type cx31 --ssh-key ts@treehouse-sss
 $ hcloud server set-rdns server1 --hostname mail.example.com
 ```
@@ -31,8 +31,9 @@ $ hcloud server set-rdns server1 --hostname mail.example.com
 ### Start bootstrap process
 Login to server as root. Execute this command and follow its on-screen instructions:
 
-```shell
-# curl -L https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-mail-drive.sh | bash
+```
+# wget https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-generic.sh
+# bash bootstrap-generic.sh https://gitlab.e.foundation/e/priv/infra/compose
 ```
 
 **ATTENTION:**
@@ -40,28 +41,28 @@ You need to login to gitlab once during this process.
 (repos will be public later making the bootstrapping run unattended)
 
 Time to reboot:
-```shell
+```
 # reboot now
 ```
 
 ### Login to /e/ registry (also not necessary when going public later)
-```shell
+```
 # docker login registry.gitlab.e.foundation:5000
 ```
 
 ### Start services
-```shell
+```
 # cd /mnt/docker/
 # docker-compose up -d
 ```
 
 ### DNS/DKIM setup: launch script to get on-screen instructions on this:
-```shell
+```
 # bash /mnt/docker/postinstall.sh
 ```
 
 ### Retrieve some login information into your new system:
-```shell
+```
 # bash /mnt/docker/showInfo.sh
 ```
 
