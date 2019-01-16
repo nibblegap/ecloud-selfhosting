@@ -1,0 +1,47 @@
+##################################################################################################################################
+  onlyoffice-documentserver:
+    image: onlyoffice/documentserver:latest
+    container_name: onlyoffice-document-server
+    stdin_open: true
+    restart: always
+    networks:
+      - serverbase
+    volumes:
+     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
+     - /mnt/docker/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
+  onlyoffice-mail-server:
+    image: onlyoffice/mailserver:latest
+    container_name: onlyoffice-mail-server
+    hostname: cleus.eu
+    stdin_open: true
+    restart: always
+    networks:
+      - serverbase
+    #ports:
+    #  - 25:25
+    #  - 143:143
+    #  - 587:587
+    volumes:
+     - /mnt/docker/onlyoffice/MailServer/data:/var/vmail
+     - /mnt/docker/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver
+     - /mnt/docker/onlyoffice/MailServer/logs:/var/log
+     - /mnt/docker/onlyoffice/MailServer/mysql:/var/lib/mysql
+  onlyoffice-community-server:
+    image: onlyoffice/communityserver:latest
+    container_name: onlyoffice-community-server
+    restart: always
+    networks:
+      - serverbase
+    ports:
+      - 5222:5222
+    environment:
+      - DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server
+      - MAIL_SERVER_DB_HOST=onlyoffice-mail-server
+    volumes:
+     - /mnt/docker/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data
+     - /mnt/docker/onlyoffice/CommunityServer/mysql:/var/lib/mysql
+     - /mnt/docker/onlyoffice/CommunityServer/logs:/var/log/onlyoffice
+     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData
+    depends_on:
+      - onlyoffice-documentserver
+      - onlyoffice-mail-server
