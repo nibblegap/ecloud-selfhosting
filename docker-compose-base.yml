@@ -124,6 +124,7 @@ services:
         container_name: accounts
         environment:
          - DOMAINS=${VHOSTS_ACCOUNTS}
+         - IS_WELCOME=true
          - PFDB_HOST=mariadb
          - PFDB_DB=${PFDB_DB}
          - PFDB_USR=${PFDB_USR}

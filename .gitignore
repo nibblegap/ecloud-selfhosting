@@ -14,3 +14,6 @@ nginx/log/*
 onlyoffice/*
 rainloop/*
 redis/*
+
+# this file is generated automatically during setup
+docker-compose.yml
