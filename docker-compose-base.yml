@@ -58,6 +58,8 @@ services:
       - serverbase
     environment:
       - DBPASS=${DBPASS}
+    volumes:
+      - /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub:/tmp/id_rsa_postfixadmincontainer.pub
     depends_on:
       - eelomailserver
       - mariadb
