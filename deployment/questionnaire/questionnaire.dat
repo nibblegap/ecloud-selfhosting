@@ -1,6 +1,7 @@
 DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
 ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:
 ALT_EMAIL=Enter alternative email:
+INSTALL_ONLYOFFICE=Do you want to install OnlyOffice? [y/n]||||^[yY|nN]$;;;;Please enter 'y' or 'n'
 
 # Generate and display
 RSPAMD_PASSWORD=@@@generate@@@:20@

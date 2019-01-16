@@ -124,7 +124,6 @@ services:
         container_name: accounts
         environment:
          - DOMAINS=${VHOSTS_ACCOUNTS}
-         - IS_WELCOME=true
          - PFDB_HOST=mariadb
          - PFDB_DB=${PFDB_DB}
          - PFDB_USR=${PFDB_USR}
@@ -161,71 +160,8 @@ services:
       - /mnt/docker/nextcloud/config:/var/www/html/config/
       - /mnt/docker/nextcloud/data:/var/www/html/data/
     depends_on:
-      - mariadb  
-##################################################################################################################################
-  onlyoffice-documentserver:
-    image: onlyoffice/documentserver:latest
-    container_name: onlyoffice-document-server
-    stdin_open: true
-    restart: always
-    networks:
-      - serverbase
-    volumes:
-     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
-     - /mnt/docker/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
-  onlyoffice-mail-server:
-    image: onlyoffice/mailserver:latest
-    container_name: onlyoffice-mail-server
-    hostname: cleus.eu
-    stdin_open: true
-    restart: always
-    networks:
-      - serverbase
-    #ports:
-    #  - 25:25
-    #  - 143:143
-    #  - 587:587
-    volumes:
-     - /mnt/docker/onlyoffice/MailServer/data:/var/vmail
-     - /mnt/docker/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver
-     - /mnt/docker/onlyoffice/MailServer/logs:/var/log
-     - /mnt/docker/onlyoffice/MailServer/mysql:/var/lib/mysql
-  onlyoffice-community-server:
-    image: onlyoffice/communityserver:latest
-    container_name: onlyoffice-community-server
-    restart: always
-    networks:
-      - serverbase
-    ports:
-      - 5222:5222
-    environment:
-      - DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server
-      - MAIL_SERVER_DB_HOST=onlyoffice-mail-server
-    volumes:
-     - /mnt/docker/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data
-     - /mnt/docker/onlyoffice/CommunityServer/mysql:/var/lib/mysql
-     - /mnt/docker/onlyoffice/CommunityServer/logs:/var/log/onlyoffice
-     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData
-    depends_on:
-      - onlyoffice-documentserver
-      - onlyoffice-mail-server
-  nginx:
-    image: wonderfall/boring-nginx
-    container_name: nginx
-    restart: unless-stopped
-    networks:
-      - serverbase
-    ports:
-      - "80:8000"
-      - "443:4430"
-    volumes:
-      - /mnt/docker/nginx/sites-enabled:/sites-enabled
-      - /mnt/docker/nginx/conf:/conf.d
-      - /mnt/docker/nginx/log:/var/log/nginx
-      - /mnt/docker/letsencrypt/certstore:/certs
-      - /mnt/docker/nginx/passwds:/passwds
-    depends_on:
-      - onlyoffice-community-server
+      - mariadb
+
   automx:
     image: seti/mailstack-automx
     container_name: automx
@@ -239,6 +175,3 @@ services:
       - serverbase
     volumes:
       - /mnt/docker/automx/automx.conf:/etc/automx.conf
-networks:
-  serverbase:
-    driver: 'bridge'
