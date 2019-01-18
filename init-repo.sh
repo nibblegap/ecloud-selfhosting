@@ -129,6 +129,18 @@ then
     exit 1
 fi
 
+# Generate ssh key for welcome
+ssh-keygen -f /mnt/docker/accounts/id_rsa_postfixadmincontainer -N ""
+ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u)
+chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/id_rsa_postfixadmincontainer
+PFEXEC_UID=$(docker-compose exec --user pfexec postfixadmin id -u)
+chown "$PFEXEC_UID:$PFEXEC_UID" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
+
+# needed to store created accounts, and needs to be writable by welcome
+touch /mnt/docker/accounts/auth.file.done
+chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/auth.file.done
+
+
 # Run LE cert request
 sh letsencrypt/autorenew/ssl-renew.sh
 
