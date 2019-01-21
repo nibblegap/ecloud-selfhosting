@@ -136,6 +136,7 @@ fi
 #PFEXEC_UID=$(docker-compose exec --user pfexec postfixadmin id -u | tr -d '\r')
 
 # Generate ssh key for welcome
+ssh-keygen -f /mnt/docker/accounts/id_rsa_postfixadmincontainer -N ""
 chown "33:33" /mnt/docker/accounts/id_rsa_postfixadmincontainer
 chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
 
