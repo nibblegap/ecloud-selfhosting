@@ -129,12 +129,16 @@ then
     exit 1
 fi
 
+# Need to get the numeric UIDs for chown. Unfortunately these commands fail because
+# the containers are not created yet. But the chown has to be performed before the
+# container is first started, or the ssh key copying in postfixadmin will fail.
+#ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
+#PFEXEC_UID=$(docker-compose exec --user pfexec postfixadmin id -u | tr -d '\r')
+
 # Generate ssh key for welcome
-ssh-keygen -f /mnt/docker/accounts/id_rsa_postfixadmincontainer -N ""
-ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u)
-chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/id_rsa_postfixadmincontainer
-PFEXEC_UID=$(docker-compose exec --user pfexec postfixadmin id -u)
-chown "$PFEXEC_UID:$PFEXEC_UID" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
+chown "33:33" /mnt/docker/accounts/id_rsa_postfixadmincontainer
+chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
+
 
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/docker/accounts/auth.file.done
