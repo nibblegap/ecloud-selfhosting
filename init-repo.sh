@@ -143,8 +143,7 @@ chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
 
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/docker/accounts/auth.file.done
-chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/auth.file.done
-
+chown "33:33" /mnt/docker/accounts/auth.file.done
 
 # Run LE cert request
 sh letsencrypt/autorenew/ssl-renew.sh
