@@ -59,7 +59,7 @@ services:
     environment:
       - DBPASS=${DBPASS}
     volumes:
-      - /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub:/tmp/id_rsa_postfixadmincontainer.pub
+      - /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub:/home/pfexec/.ssh/authorized_keys
     depends_on:
       - eelomailserver
       - mariadb
