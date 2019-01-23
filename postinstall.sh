@@ -19,7 +19,14 @@ PFDB_DB=$(grep ^PFDB_DB= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_USR=$(grep ^PFDB_USR= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_DBPASS=$(grep ^DBPASS= "$ENVFILE" | awk -F= '{ print $NF }')
 
+# We need to wait until both the config exists and occ works. If we only do one of these, it might
+# still not work.
 printf "Waiting for Nextcloud to be started"
+while [ ! -f /mnt/docker/nextcloud/config/config.php ]
+do
+    printf "."
+    sleep 0.1
+done
 while docker-compose exec --user www-data nextcloud php occ | grep "Nextcloud is not installed" > /dev/null;
 do
     printf "."

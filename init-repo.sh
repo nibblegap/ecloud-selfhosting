@@ -59,6 +59,7 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 
 # finished .env file generation
 
+mkdir letsencrypt/autorenew/
 rm -f letsencrypt/autorenew/ssl-domains.dat
 # fille autorenew config
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
@@ -139,14 +140,18 @@ ssh-keygen -f /mnt/docker/accounts/id_rsa_postfixadmincontainer -N ""
 chown "33:33" /mnt/docker/accounts/id_rsa_postfixadmincontainer
 chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
 
-
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/docker/accounts/auth.file.done
 chown "33:33" /mnt/docker/accounts/auth.file.done
 
-# Run LE cert request
-sh letsencrypt/autorenew/ssl-renew.sh
+# Login to /e/ registry | not necessary when going public
+docker login registry.gitlab.e.foundation:5000
 
+cd /mnt/docker/
+docker-compose up -d
+
+# Run LE cert request
+sh scripts/ssl-renew.sh
 
 # verify LE status
 CTR_LE=$(find letsencrypt/certstore/live/dba.$DOMAIN/privkey.pem letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
@@ -162,11 +167,5 @@ else
     echo "$CTR_AC_LE autoconfig/autodiscovery certificates are missing."
     exit 1
 fi
-
-# Login to /e/ registry | not necessary when going public
-docker login registry.gitlab.e.foundation:5000
-
-cd /mnt/docker/
-docker-compose up -d
 
 bash /mnt/repo-base/postinstall.sh
