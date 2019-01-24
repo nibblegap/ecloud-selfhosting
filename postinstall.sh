@@ -19,6 +19,13 @@ PFDB_DB=$(grep ^PFDB_DB= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_USR=$(grep ^PFDB_USR= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_DBPASS=$(grep ^DBPASS= "$ENVFILE" | awk -F= '{ print $NF }')
 
+printf "Waiting for Nextcloud to be started"
+while docker-compose exec --user www-data nextcloud php occ | grep "Nextcloud is not installed" > /dev/null;
+do
+    printf "."
+    sleep 0.1
+done
+
 echo "Tweaking nextcloud config"
 sed -i "s/localhost/drive.$DOMAIN/g" /mnt/docker/nextcloud/config/config.php
 sed -i "s/);//g" /mnt/docker/nextcloud/config/config.php
@@ -56,4 +63,11 @@ echo -e "\n\n\n"
 echo -e "Please add the following records to your domain's DNS configuration:\n"
 find /mnt/docker/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
 
-bash generate-signup-link.sh --user-email $ALT_EMAIL
+echo "================================================================================================================================="
+echo "================================================================================================================================="
+echo "Your logins:"
+bash /mnt/repo-base/showInfo.sh
+
+echo "================================================================================================================================="
+echo "Your signup link:"
+bash /mnt/repo-base/generate-signup-link.sh --user-email $ALT_EMAIL
