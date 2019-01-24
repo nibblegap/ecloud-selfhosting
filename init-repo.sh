@@ -165,9 +165,9 @@ else
 fi
 
 # Login to /e/ registry | not necessary when going public
-#docker login registry.gitlab.e.foundation:5000
+docker login registry.gitlab.e.foundation:5000
 
-#cd /mnt/docker/
-#docker-compose -f docker-compose-autogen.yml up -d
+cd /mnt/docker/
+docker-compose up -d
 
-# display DNS setup info and PW infos
+bash /mnt/repo-base/postinstall.sh

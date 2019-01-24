@@ -37,34 +37,8 @@ Login to server as root. Execute this command and follow its on-screen instructi
 ```
 
 **ATTENTION:**
-You need to login to gitlab once during this process.
+You need to login to gitlab once during this step.
 (repos will be public later making the bootstrapping run unattended)
-
-Time to reboot:
-```
-# reboot now
-```
-
-### Login to /e/ registry (also not necessary when going public later)
-```
-# docker login registry.gitlab.e.foundation:5000
-```
-
-### Start services
-```
-# cd /mnt/docker/
-# docker-compose up -d
-```
-
-### DNS/DKIM setup: launch script to get on-screen instructions on this:
-```
-# bash /mnt/docker/postinstall.sh
-```
-
-### Retrieve some login information into your new system:
-```
-# bash /mnt/docker/showInfo.sh
-```
 
 # Available Services
 
