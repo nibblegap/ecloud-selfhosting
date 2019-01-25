@@ -20,7 +20,7 @@ cat "$CONFIG" | while read TYPE DOMAIN; do
         fi
         if [ -f $CERTSTORE/$DOMAIN/fullchain.pem ]
         then
-                EXPIRESWITHINNEXT7DAYS=$($OPENSSLBIN x509 -checkend 604800 -noout -in $CERTSTORE/$DOMAIN/fullchain.pem && echo 0 || echo 1)
+                EXPIRESWITHINNEXT7DAYS=$($OPENSSLBIN x509 -checkend 604800 -noout -in $CERTSTORE/$DOMAIN/fullchain.pem >/dev/null && echo 0 || echo 1)
                 VALIDTHRU=$($OPENSSLBIN x509 -enddate -noout -in $CERTSTORE/$DOMAIN/fullchain.pem | awk -F= '{ print $NF }')
         else
                 echo "Initial certificate request for $DOMAIN"
