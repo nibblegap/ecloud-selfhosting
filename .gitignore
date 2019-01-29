@@ -5,7 +5,6 @@ accounts/auth.file
 nginx/sites-enabled/*.conf
 automx/automx.conf
 letsencrypt/autorenew/*.dat
-letsencrypt/autorenew/ssl-renew.sh
 letsencrypt/certstore/*
 mail/*
 mysql/*

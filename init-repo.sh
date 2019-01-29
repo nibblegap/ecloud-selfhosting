@@ -64,7 +64,6 @@ rm -f letsencrypt/autorenew/ssl-domains.dat
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
     echo "sub        $CURDOMAIN" >> letsencrypt/autorenew/ssl-domains.dat
 :; done
-cat letsencrypt/autorenew/template-ssl-renew.sh | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > letsencrypt/autorenew/ssl-renew.sh
 
 
 # Configure automx

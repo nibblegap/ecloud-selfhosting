@@ -24,4 +24,8 @@ server {
     proxy_pass http://automx:80;
     include /etc/nginx/conf/proxy_params;
   }
+
+  location /.well-known/acme-challenge/ {
+    alias /etc/letsencrypt/acme-challenge/.well-known/acme-challenge/;
+  }
 }
