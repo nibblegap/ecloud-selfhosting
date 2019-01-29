@@ -13,6 +13,7 @@
       - /mnt/docker/nginx/log:/var/log/nginx
       - /mnt/docker/letsencrypt/certstore:/certs
       - /mnt/docker/nginx/passwds:/passwds
+      - /mnt/docker/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge
 
 networks:
   serverbase:
