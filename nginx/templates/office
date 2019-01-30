@@ -11,8 +11,8 @@ server {
   ssl_certificate /certs/live/office.@@@DOMAIN@@@/fullchain.pem;
   ssl_certificate_key /certs/live/office.@@@DOMAIN@@@/privkey.pem;
 
-  include /etc/nginx/conf/ssl_params;
-  include /etc/nginx/conf/headers_params;
+  include /etc/nginx/params/ssl_params;
+  include /etc/nginx/params/headers_params;
 
   add_header Strict-Transport-Security "max-age=31536000;";
   client_max_body_size 1024M;
@@ -33,7 +33,7 @@ server {
         return 204;
      }
     proxy_pass http://onlyoffice-community-server:80;
-    include /etc/nginx/conf/proxy_params;
+    include /etc/nginx/params/proxy_params;
   }
 
   location /.well-known/acme-challenge/ {

@@ -11,8 +11,8 @@ server {
   ssl_certificate /certs/live/drive.@@@DOMAIN@@@/fullchain.pem;
   ssl_certificate_key /certs/live/drive.@@@DOMAIN@@@/privkey.pem;
 
-  include /etc/nginx/conf/ssl_params;
-  #include /etc/nginx/conf/headers_params;
+  include /etc/nginx/params/ssl_params;
+  #include /etc/nginx/params/headers_params;
     add_header Strict-Transport-Security "max-age=15552000;includeSubDomains;preload";
   client_max_body_size 4096M;
 
@@ -29,7 +29,7 @@ server {
     proxy_set_header   X-Real-IP        $remote_addr;
     proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
     proxy_pass http://nextcloud:80;
-    include /etc/nginx/conf/proxy_params;
+    include /etc/nginx/params/proxy_params;
   }
 
   location /.well-known/acme-challenge/ {
