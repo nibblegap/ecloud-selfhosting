@@ -1,8 +1,6 @@
-# Domain regex from https://stackoverflow.com/a/1019335
-DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):||||^\S+.\S+$;;;;Please enter a valid domain
-ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:||||^\S+.\S+$;;;;Please enter a comma seperated list of domains
-# Email regex from https://stackoverflow.com/a/742455
-ALT_EMAIL=Enter alternative email:||||^\S+@\S+$;;;;Please enter a valid email address
+DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
+ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:
+ALT_EMAIL=Enter alternative email:
 INSTALL_ONLYOFFICE=Do you want to install OnlyOffice? [y/n]||||^[yY|nN]$;;;;Please enter 'y' or 'n'
 
 # Generate and display
