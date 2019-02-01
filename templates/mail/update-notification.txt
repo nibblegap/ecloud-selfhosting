@@ -1,0 +1,5 @@
+Subject:Update available for @@@DOMAIN@@@
+A new update is available. Please login via ssh and run the following
+command:
+
+bash /mnt/repo-base/scripts/update.sh

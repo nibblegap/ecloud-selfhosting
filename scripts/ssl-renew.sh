@@ -30,7 +30,7 @@ cat "$CONFIG" | while read TYPE DOMAIN; do
         echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU (was: $VALIDTHRU)"
         if [ "$DOMAIN" = "$MAILHOST" ]
         then
-            cd /mnt/docker/compose
+            cd /mnt/repo-base/
             docker-compose restart eelomailserver
         fi
 :;done
