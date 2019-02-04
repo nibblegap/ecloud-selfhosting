@@ -26,6 +26,7 @@ server {
   }
 
   location /.well-known/acme-challenge/ {
+    auth_basic off;
     alias /etc/letsencrypt/acme-challenge/.well-known/acme-challenge/;
   }
 }
