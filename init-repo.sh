@@ -144,12 +144,6 @@ chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
 touch /mnt/docker/accounts/auth.file.done
 chown "33:33" /mnt/docker/accounts/auth.file.done
 
-# Login to /e/ registry | not necessary when going public
-docker login registry.gitlab.e.foundation:5000
-
-cd /mnt/docker/
-docker-compose up -d
-
 # Run LE cert request
 sh scripts/ssl-renew.sh
 
@@ -167,5 +161,11 @@ else
     echo "$CTR_AC_LE autoconfig/autodiscovery certificates are missing."
     exit 1
 fi
+
+# Login to /e/ registry | not necessary when going public
+docker login registry.gitlab.e.foundation:5000
+
+cd /mnt/docker/
+docker-compose up -d
 
 bash /mnt/repo-base/postinstall.sh
