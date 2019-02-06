@@ -34,14 +34,21 @@ cat "$CONFIG" | while read TYPE DOMAIN; do
             docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt \
                 -v /mnt/repo-base/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge \
                 "$CERTBOT_IMAGE" certonly --non-interactive --agree-tos -m $SERVERADMIN -d $DOMAIN $ALIAS \
-                --webroot -w /etc/letsencrypt/acme-challenge
-            docker exec nginx nginx -s reload
-            NVALIDTHRU=$($OPENSSLBIN x509 -enddate -noout -in $CERTSTORE/$DOMAIN/fullchain.pem | awk -F= '{ print $NF }')
-            echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU (was: $VALIDTHRU)"
-            if [ "$DOMAIN" = "$MAILHOST" ]
+                --webroot -w /etc/letsencrypt/acme-challenge \
+                --post-hook "touch /etc/letsencrypt/live/$DOMAIN/cert-updated"
+            CERT_UPDATED_FILE="$CERTSTORE/$DOMAIN/cert-updated"
+            if [ -f "$CERT_UPDATED_FILE" ]
             then
-                cd /mnt/repo-base/
-                docker-compose restart eelomailserver
+                echo "Reloading SSL certificates"
+                rm "$CERT_UPDATED_FILE"
+                docker exec nginx nginx -s reload
+                NVALIDTHRU=$($OPENSSLBIN x509 -enddate -noout -in $CERTSTORE/$DOMAIN/fullchain.pem | awk -F= '{ print $NF }')
+                echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU (was: $VALIDTHRU)"
+                if [ "$DOMAIN" = "$MAILHOST" ]
+                then
+                    cd /mnt/repo-base/
+                    docker-compose restart eelomailserver
+                fi
             fi
         fi
 :;done
