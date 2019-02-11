@@ -40,4 +40,3 @@ docker-running:
     - enable: true
     - require:
       - install-docker
-
