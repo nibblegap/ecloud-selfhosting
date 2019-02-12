@@ -154,7 +154,6 @@ CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find l
 if [ "$CTR_LE$CTR_AC_LE" = "${NUM_CERTIFICATES}0" ]
 then
     echo "All LE certs present."
-    echo "Reboot server now."
 else
     echo "Verification of LE status failed. Some expected certificates are missing"
     echo "$CTR_LE of $NUM_CERTIFICATES certifcates found."
@@ -163,6 +162,7 @@ else
 fi
 
 # Login to /e/ registry | not necessary when going public
+echo "Please login with your gitlab.e.foundation username and password"
 docker login registry.gitlab.e.foundation:5000
 
 cd /mnt/docker/

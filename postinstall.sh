@@ -78,3 +78,5 @@ bash /mnt/repo-base/showInfo.sh
 echo "================================================================================================================================="
 echo "Your signup link:"
 bash /mnt/repo-base/generate-signup-link.sh --user-email $ALT_EMAIL
+
+echo "Please reboot the server now"
