@@ -49,7 +49,7 @@ services:
   # http://postfixadmin.sourceforge.net/
   # Configuration : https://github.com/hardware/mailserver/wiki/Postfixadmin-initial-configuration
   postfixadmin:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.0
     container_name: postfixadmin
     domainname: ${DOMAIN}
     hostname: mail
@@ -70,7 +70,7 @@ services:
   # Configuration : https://github.com/hardware/mailserver/wiki/Rainloop-initial-configuration
   rainloop:
     #image: hardware/rainloop
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-rainloop
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-rainloop:0.1.0
     container_name: rainloop
     restart: unless-stopped
     networks:
@@ -85,7 +85,7 @@ services:
   # https://github.com/docker-library/mariadb
   # https://mariadb.org/
   mariadb:
-    image: mariadb:10.2
+    image: mariadb:10.3
     container_name: mariadb
     restart: unless-stopped
     networks:
@@ -122,7 +122,7 @@ services:
     depends_on:
       - mariadb
   accounts:
-        image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome
+        image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.1.0
         container_name: accounts
         environment:
          - DOMAINS=${VHOSTS_ACCOUNTS}
@@ -145,7 +145,7 @@ services:
               - mariadb
 ##################################################################################################################################
   nextcloud:
-    image: nextcloud:14
+    image: nextcloud:14.0
     container_name: nextcloud
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE_NC}
@@ -166,7 +166,7 @@ services:
       - mariadb
 
   automx:
-    image: seti/mailstack-automx
+    image: seti/mailstack-automx:latest
     container_name: automx
     hostname: automx
     environment:

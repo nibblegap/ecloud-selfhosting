@@ -1,6 +1,6 @@
 ##################################################################################################################################
   onlyoffice-documentserver:
-    image: onlyoffice/documentserver:latest
+    image: onlyoffice/documentserver:5.2.6.3
     container_name: onlyoffice-document-server
     stdin_open: true
     restart: always
@@ -10,7 +10,7 @@
      - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
      - /mnt/docker/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
   onlyoffice-mail-server:
-    image: onlyoffice/mailserver:latest
+    image: onlyoffice/mailserver:1.6.35
     container_name: onlyoffice-mail-server
     hostname: cleus.eu
     stdin_open: true
@@ -27,7 +27,7 @@
      - /mnt/docker/onlyoffice/MailServer/logs:/var/log
      - /mnt/docker/onlyoffice/MailServer/mysql:/var/lib/mysql
   onlyoffice-community-server:
-    image: onlyoffice/communityserver:latest
+    image: onlyoffice/communityserver:9.6.5.771
     container_name: onlyoffice-community-server
     restart: always
     networks:
