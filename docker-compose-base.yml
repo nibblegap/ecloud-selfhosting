@@ -112,7 +112,7 @@ services:
     volumes:
       - /mnt/docker/redis/db:/data
   pma:
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin/phpmyadmin:4.8
     container_name: pma
     restart: unless-stopped
     networks:
