@@ -1,23 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-echo "Getting info from .env file"
-ENVFILE="/mnt/docker/.env"
-
-DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
-ADD_DOMAINS=$(grep ^ADD_DOMAINS= "$ENVFILE" | awk -F= '{ print $NF }')
-
-MYSQL_USER_NC=$(grep ^MYSQL_USER_NC= "$ENVFILE" | awk -F= '{ print $NF }')
-MYSQL_PASSWORD_NC=$(grep ^MYSQL_PASSWORD_NC= "$ENVFILE" | awk -F= '{ print $NF }')
-DRIVE_SMTP_PASSWORD=$(grep ^DRIVE_SMTP_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
-
-PFA_SETUP_PASSWORD=$(grep ^PFA_SETUP_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
-ALT_EMAIL=$(grep ^ALT_EMAIL= "$ENVFILE" | awk -F= '{ print $NF }')
-PFA_SUPERADMIN_PASSWORD=$(grep ^PFA_SUPERADMIN_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
-
-PFDB_DB=$(grep ^PFDB_DB= "$ENVFILE" | awk -F= '{ print $NF }')
-PFDB_USR=$(grep ^PFDB_USR= "$ENVFILE" | awk -F= '{ print $NF }')
-PFDB_DBPASS=$(grep ^DBPASS= "$ENVFILE" | awk -F= '{ print $NF }')
+source /mnt/repo-base/scripts/base.sh
 
 # We need to wait until both the config exists and occ works. If we only do one of these, it might
 # still not work.
@@ -73,10 +57,10 @@ find /mnt/docker/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; d
 echo "================================================================================================================================="
 echo "================================================================================================================================="
 echo "Your logins:"
-bash /mnt/repo-base/showInfo.sh
+bash scripts/show-info.sh
 
 echo "================================================================================================================================="
 echo "Your signup link:"
-bash /mnt/repo-base/generate-signup-link.sh --user-email $ALT_EMAIL
+bash scripts/generate-signup-link.sh --user-email $ALT_EMAIL
 
 echo "Please reboot the server now"

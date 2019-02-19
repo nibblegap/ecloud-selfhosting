@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-ENVFILE="/mnt/docker/.env"
+source /mnt/repo-base/scripts/base.sh
 
 SPAM_UI=$(grep server_name $(grep -l mailserver:11334 /mnt/docker/nginx/sites-enabled/*.conf) | sort -u | head -n1 | awk '{ print $2 }' | sed 's/;$//g')
 RSPAMD_PASSWORD=$(grep ^RSPAMD_PASSWORD= "$ENVFILE"  | awk -F= '{ print $NF }')

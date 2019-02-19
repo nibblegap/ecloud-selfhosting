@@ -1,28 +1,16 @@
 #!/bin/bash
 set -e
 
-#source <(curl -s https://gitlab.e.foundation/thilo/bootstrap/raw/master/bootstrap-commons.sh)
 source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-commons.sh)
 
-ENVFILE="/mnt/docker/.env"
+cd "/mnt/repo-base/"
+ENVFILE="/mnt/repo-base/.env"
 rm -f "$ENVFILE"
 
 # Create .env file
 generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
 
-DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
-ADD_DOMAINS=$(grep ^ADD_DOMAINS= "$ENVFILE" | awk -F= '{ print $NF }')
-
-DBA_USER=$(grep ^DBA_USER= "$ENVFILE" | awk -F= '{ print $NF }')
-DBA_PASSWORD=$(grep ^DBA_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
-
-NEXTCLOUD_ADMIN_USER=$(grep ^NEXTCLOUD_ADMIN_USER= "$ENVFILE" | awk -F= '{ print $NF }')
-
-MYSQL_DATABASE_NC=$(grep ^MYSQL_DATABASE_NC= "$ENVFILE" | awk -F= '{ print $NF }')
-MYSQL_USER_NC=$(grep ^MYSQL_USER_NC= "$ENVFILE" | awk -F= '{ print $NF }')
-MYSQL_PASSWORD_NC=$(grep ^MYSQL_PASSWORD_NC= "$ENVFILE" | awk -F= '{ print $NF }')
-
-INSTALL_ONLYOFFICE=$(grep ^INSTALL_ONLYOFFICE= "$ENVFILE" | awk -F= '{ print $NF }')
+source /mnt/repo-base/scripts/base.sh
 
 DC_DIR="templates/docker-compose/"
 case $INSTALL_ONLYOFFICE in
@@ -169,4 +157,4 @@ docker login registry.gitlab.e.foundation:5000
 cd /mnt/docker/
 docker-compose up -d
 
-bash /mnt/repo-base/postinstall.sh
+bash scripts/postinstall.sh

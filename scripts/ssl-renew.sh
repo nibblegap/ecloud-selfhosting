@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 set -e
 
+source /mnt/repo-base/scripts/base.sh
+
 if [ "$(whoami)" != "root" ]
 then
         exit 1
 fi
 
-ENVFILE="/mnt/repo-base/.env"
-DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
 MAILHOST="mail.$DOMAIN"
 CONFIG=/mnt/repo-base/letsencrypt/autorenew/ssl-domains.dat
 OPENSSLBIN=/usr/bin/openssl

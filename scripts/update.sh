@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source /mnt/repo-base/scripts/base.sh
+
 CURRENT_VERSION_DATE=$(git show -s --format=%ci HEAD)
 git fetch --tags
 LATEST_TAG=$(git tag --sort=creatordate | tail -n 1)

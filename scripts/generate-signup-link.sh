@@ -1,6 +1,8 @@
 #!/bin/bash
 set -e
 
+source /mnt/repo-base/scripts/base.sh
+
 if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
   echo "Usage: `basename $0` -- Creates a new signup link
   options:
@@ -19,7 +21,6 @@ fi
 
 AUTH_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 echo "$EMAIL:$AUTH_SECRET" >> /mnt/docker/accounts/auth.file
-DOMAIN=$(grep ^DOMAIN= "/mnt/docker/.env" | awk -F= '{ print $NF }')
 SIGNUP_URL="https://welcome.$DOMAIN/?authmail=$EMAIL&authsecret=$AUTH_SECRET"
 echo "The new user can sign up now at $SIGNUP_URL"
 

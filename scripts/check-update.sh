@@ -1,9 +1,8 @@
 #!/bin/bash
 set -e
 
-ENVFILE="/mnt/docker/.env"
-DOMAIN=$(grep ^DOMAIN= "$ENVFILE" | awk -F= '{ print $NF }')
-ALT_EMAIL=$(grep ^ALT_EMAIL= "$ENVFILE" | awk -F= '{ print $NF }')
+source /mnt/repo-base/scripts/base.sh
+
 KNOWN_VERSION_FILE="/mnt/repo-base/config/latest-known-version"
 # TODO: delete this once config folder is included in the repo
 mkdir /mnt/repo-base/config/ || true
