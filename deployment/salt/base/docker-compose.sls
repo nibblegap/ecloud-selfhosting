@@ -3,7 +3,7 @@ upgrade-all:
     - name: update
     - refresh: true
   cmd.run:
-    - name: apt -y upgrade -o Dpkg::Options::="--force-confold" && apt -y autoremove
+    - name: apt-get -y upgrade -o Dpkg::Options::="--force-confold" && apt-get -y autoremove
     - shell: /bin/bash
 install-deps:
   pkg.installed:
@@ -40,3 +40,17 @@ docker-running:
     - enable: true
     - require:
       - install-docker
+
+cron-renew-ssl-certs:
+  cron.present:
+    - name: bash /mnt/repo-base/scripts/ssl-renew.sh
+    - user: root
+    - special: '@daily'
+    - identifier: 'refresh-tls-certs'
+
+cron-check-updates:
+  cron.present:
+    - name: bash /mnt/repo-base/scripts/check-update.sh
+    - user: root
+    - special: '@daily'
+    - identifier: 'check-updates'
