@@ -145,7 +145,7 @@ touch /mnt/docker/accounts/auth.file.done
 chown "33:33" /mnt/docker/accounts/auth.file.done
 
 # Run LE cert request
-sh scripts/ssl-renew.sh
+bash scripts/ssl-renew.sh
 
 # verify LE status
 CTR_LE=$(find letsencrypt/certstore/live/dba.$DOMAIN/privkey.pem letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)

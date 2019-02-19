@@ -27,7 +27,7 @@ do
     printf "."
     sleep 0.1
 done
-while docker-compose exec --user www-data nextcloud php occ | grep "Nextcloud is not installed" > /dev/null;
+while docker-compose exec --user www-data nextcloud php occ | grep -q "Nextcloud is not installed";
 do
     printf "."
     sleep 0.1
