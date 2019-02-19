@@ -24,16 +24,17 @@ MYSQL_PASSWORD_NC=$(grep ^MYSQL_PASSWORD_NC= "$ENVFILE" | awk -F= '{ print $NF }
 
 INSTALL_ONLYOFFICE=$(grep ^INSTALL_ONLYOFFICE= "$ENVFILE" | awk -F= '{ print $NF }')
 
+DC_DIR="templates/docker-compose/"
 case $INSTALL_ONLYOFFICE in
     [Yy]* )
-    cat docker-compose-base.yml docker-compose-onlyoffice.yml docker-compose-networks.yml > docker-compose.yml;
+    cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-onlyoffice.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml;
     cat nginx/templates/office | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/office.$DOMAIN.conf"
     OFFICE_DOMAIN=",office.$DOMAIN"
     OFFICE_LETSENCRYPT_KEY="letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
     NUM_CERTIFICATES="7"
     ;;
     [Nn]* )
-    cat docker-compose-base.yml docker-compose-networks.yml > docker-compose.yml
+    cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml
     NUM_CERTIFICATES="6"
     ;;
 esac
