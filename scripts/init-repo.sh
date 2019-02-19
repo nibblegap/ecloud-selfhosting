@@ -118,21 +118,6 @@ then
     exit 1
 fi
 
-# Need to get the numeric UIDs for chown. Unfortunately these commands fail because
-# the containers are not created yet. But the chown has to be performed before the
-# container is first started, or the ssh key copying in postfixadmin will fail.
-#ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
-#PFEXEC_UID=$(docker-compose exec --user pfexec postfixadmin id -u | tr -d '\r')
-
-# Generate ssh key for welcome
-ssh-keygen -f /mnt/docker/accounts/id_rsa_postfixadmincontainer -N ""
-chown "33:33" /mnt/docker/accounts/id_rsa_postfixadmincontainer
-chown "1000:1000" /mnt/docker/accounts/id_rsa_postfixadmincontainer.pub
-
-# needed to store created accounts, and needs to be writable by welcome
-touch /mnt/docker/accounts/auth.file.done
-chown "33:33" /mnt/docker/accounts/auth.file.done
-
 # Run LE cert request
 bash scripts/ssl-renew.sh
 
@@ -154,7 +139,11 @@ fi
 echo "Please login with your gitlab.e.foundation username and password"
 docker login registry.gitlab.e.foundation:5000
 
-cd /mnt/docker/
 docker-compose up -d
+
+# needed to store created accounts, and needs to be writable by welcome
+touch /mnt/docker/accounts/auth.file.done
+ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
+chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/auth.file.done
 
 bash scripts/postinstall.sh
