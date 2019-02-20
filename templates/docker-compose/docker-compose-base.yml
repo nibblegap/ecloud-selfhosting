@@ -36,9 +36,9 @@ services:
     volumes:
       - /mnt/docker/mail:/var/mail
       - /mnt/docker/letsencrypt/certstore:/etc/letsencrypt
-      - /mnt/docker/mail/dovecot-custom/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
-      - /mnt/docker/mail/dovecot-custom/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
-      - /mnt/docker/mail/dovecot-custom/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+      - config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
+      - config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
+      - config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
 #      - /mnt/docker/mail/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
     depends_on:
       - mariadb

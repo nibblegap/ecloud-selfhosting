@@ -57,7 +57,7 @@ echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.
 
 
 # Configure automx
-cat automx/automx-template.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > automx/automx.conf
+cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > config-dynamic/automx/automx.conf
 
 # Configure nginx vhost
 
