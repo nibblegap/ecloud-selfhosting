@@ -16,7 +16,7 @@ DC_DIR="templates/docker-compose/"
 case $INSTALL_ONLYOFFICE in
     [Yy]* )
     cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-onlyoffice.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml;
-    cat nginx/templates/office | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/office.$DOMAIN.conf"
+    cat templates/nginx/sites-enabled/office | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/office.$DOMAIN.conf"
     OFFICE_DOMAIN=",office.$DOMAIN"
     OFFICE_LETSENCRYPT_KEY="letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
     NUM_CERTIFICATES="7"
@@ -40,7 +40,7 @@ echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
 echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
 
 # generate basic auth for phpmyadmin
-htpasswd -c  -b /mnt/docker/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
+htpasswd -c  -b /mnt/docker/config-dynamic/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
 
 VIRTUAL_HOST=$(echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do echo "autoconfig.$line,autodiscover.$line"; done | tr "\n" "," | sed 's/.$//g')
 
@@ -63,17 +63,17 @@ cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > config-dynam
 
 # automx
 echo "$DOMAIN,$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
-    cat nginx/templates/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > nginx/sites-enabled/autoconfig.$CURDOMAIN.conf
-    cat nginx/templates/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > nginx/sites-enabled/autodiscover.$CURDOMAIN.conf
+    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > nginx/sites-enabled/autoconfig.$CURDOMAIN.conf
+    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > nginx/sites-enabled/autodiscover.$CURDOMAIN.conf
 :; done
 
 # other hosts
-cat nginx/templates/dba | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/dba.$DOMAIN.conf"
-cat nginx/templates/drive | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/drive.$DOMAIN.conf"
-cat nginx/templates/mail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/mail.$DOMAIN.conf"
-cat nginx/templates/spam | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/spam.$DOMAIN.conf"
-cat nginx/templates/webmail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/webmail.$DOMAIN.conf"
-cat nginx/templates/welcome | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "nginx/sites-enabled/welcome.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/dba | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/dba.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/drive | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/drive.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/mail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/mail.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/spam | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/spam.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/webmail | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/webmail.$DOMAIN.conf"
+cat templates/nginx/sites-enabled/welcome | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/welcome.$DOMAIN.conf"
 
 # confirm DNS is ready
 echo ""

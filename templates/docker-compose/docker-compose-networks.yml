@@ -8,8 +8,8 @@
       - "80:8000"
       - "443:4430"
     volumes:
-      - /mnt/docker/nginx/sites-enabled:/etc/nginx/conf.d/
-      - /mnt/docker/nginx/params:/etc/nginx/params/
+      - /mnt/docker/config-dynamic/nginx/sites-enabled:/etc/nginx/conf.d/
+      - /mnt/docker/config-static/nginx/params:/etc/nginx/params/
       - /mnt/docker/letsencrypt/certstore:/certs
       - /mnt/docker/nginx/passwds:/passwds
       - /mnt/docker/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge
