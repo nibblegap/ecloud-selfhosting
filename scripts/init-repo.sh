@@ -27,9 +27,6 @@ case $INSTALL_ONLYOFFICE in
     ;;
 esac
 
-# Create folder structure
-cd /mnt/docker && grep mnt docker-compose.yml  | grep -v \# | awk '{ print $2 }' | awk -F: '{ print $1 }' | sed 's@m/.*conf$@m@g'  | grep -v -e id_rsa -v -e exclude_names| sed 's@x/.*conf$@x@g' | sort -u | while read line; do mkdir -p "$line"; done
-
 # prepare nextcloud DB init scripts
 cat /mnt/docker/deployment/ncdb-templates/a_user.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@PASSWORD@@@/$MYSQL_PASSWORD_NC/g" > /mnt/docker/deployment/ncdb/a_user.sql
 cat /mnt/docker/deployment/ncdb-templates/b_db.sql | sed "s/@@@ADMINUSER@@@/$NEXTCLOUD_ADMIN_USER/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/docker/deployment/ncdb/b_db.sql
@@ -48,7 +45,6 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 
 # finished .env file generation
 
-mkdir letsencrypt/autorenew/
 rm -f letsencrypt/autorenew/ssl-domains.dat
 # fille autorenew config
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
@@ -63,8 +59,8 @@ cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > config-dynam
 
 # automx
 echo "$DOMAIN,$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
-    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > nginx/sites-enabled/autoconfig.$CURDOMAIN.conf
-    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > nginx/sites-enabled/autodiscover.$CURDOMAIN.conf
+    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > "config-dynamic/nginx/sites-enabled/autoconfig.$CURDOMAIN.conf"
+    cat templates/nginx/sites-enabled/autoconfig | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > "config-dynamic/nginx/sites-enabled/autodiscover.$CURDOMAIN.conf"
 :; done
 
 # other hosts

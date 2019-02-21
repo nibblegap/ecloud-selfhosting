@@ -36,9 +36,9 @@ services:
     volumes:
       - /mnt/docker/mail:/var/mail
       - /mnt/docker/letsencrypt/certstore:/etc/letsencrypt
-      - config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
-      - config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
-      - config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+      - /mnt/docker/config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
+      - /mnt/docker/config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
+      - /mnt/docker/config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
 #      - /mnt/docker/mail/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
     depends_on:
       - mariadb
@@ -176,7 +176,7 @@ services:
     networks:
       - serverbase
     volumes:
-      - /mnt/docker/automx/automx.conf:/etc/automx.conf
+      - /mnt/docker/config-dynamic/automx/automx.conf:/etc/automx.conf
 
   create-account:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.2
