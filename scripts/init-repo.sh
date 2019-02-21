@@ -18,7 +18,7 @@ case $INSTALL_ONLYOFFICE in
     cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-onlyoffice.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml;
     cat templates/nginx/sites-enabled/office | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/office.$DOMAIN.conf"
     OFFICE_DOMAIN=",office.$DOMAIN"
-    OFFICE_LETSENCRYPT_KEY="letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
+    OFFICE_LETSENCRYPT_KEY="config-dynamic/letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
     NUM_CERTIFICATES="7"
     ;;
     [Nn]* )
@@ -45,10 +45,9 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 
 # finished .env file generation
 
-rm -f letsencrypt/autorenew/ssl-domains.dat
 # fille autorenew config
 echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
-    echo "sub        $CURDOMAIN" >> letsencrypt/autorenew/ssl-domains.dat
+    echo "sub        $CURDOMAIN" >> config-dynamic/letsencrypt/autorenew/ssl-domains.dat
 :; done
 
 
@@ -118,8 +117,8 @@ fi
 bash scripts/ssl-renew.sh
 
 # verify LE status
-CTR_LE=$(find letsencrypt/certstore/live/dba.$DOMAIN/privkey.pem letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
-CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
+CTR_LE=$(find config-dynamic/letsencrypt/certstore/live/dba.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
+CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find config-dynamic/letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
 
 if [ "$CTR_LE$CTR_AC_LE" = "${NUM_CERTIFICATES}0" ]
 then

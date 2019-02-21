@@ -9,9 +9,9 @@ then
 fi
 
 MAILHOST="mail.$DOMAIN"
-CONFIG=/mnt/repo-base/letsencrypt/autorenew/ssl-domains.dat
+CONFIG=/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat
 OPENSSLBIN=/usr/bin/openssl
-CERTSTOREBASE=/mnt/repo-base/letsencrypt/certstore
+CERTSTOREBASE=/mnt/repo-base/config-dynamic/letsencrypt/certstore
 CERTSTORE=$CERTSTOREBASE/live
 SERVERADMIN="admin@$DOMAIN"
 PUBIP=0.0.0.0
