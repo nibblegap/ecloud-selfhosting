@@ -97,7 +97,7 @@ services:
       - MYSQL_PASSWORD=${DBPASS}
     volumes:
       - /mnt/docker/mysql/db:/var/lib/mysql
-      - /mnt/docker/deployment/ncdb:/docker-entrypoint-initdb.d
+      - /mnt/docker/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
   # Cache Database
   # https://github.com/docker-library/redis
   # https://redis.io/
