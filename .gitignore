@@ -1,18 +1,11 @@
-.env
+# ide files
 .idea
 *.iml
-accounts/auth.file
-nginx/sites-enabled/*.conf
-automx/automx.conf
-letsencrypt/autorenew/*.dat
-letsencrypt/certstore/*
-mail/*
-mysql/*
-nextcloud/*
-nginx/log/*
-onlyoffice/*
-rainloop/*
-redis/*
 
-# this file is generated automatically during setup
+# docker config files
 docker-compose.yml
+.env
+
+# data for the local installation
+config-dynamic/
+volumes/
