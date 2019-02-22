@@ -7,8 +7,8 @@
     networks:
       - serverbase
     volumes:
-     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
-     - /mnt/docker/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
+     - /mnt/repo-base/volumes/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
+     - /mnt/repo-base/volumes/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
   onlyoffice-mail-server:
     image: onlyoffice/mailserver:1.6.35
     container_name: onlyoffice-mail-server
@@ -22,10 +22,10 @@
     #  - 143:143
     #  - 587:587
     volumes:
-     - /mnt/docker/onlyoffice/MailServer/data:/var/vmail
-     - /mnt/docker/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver
-     - /mnt/docker/onlyoffice/MailServer/logs:/var/log
-     - /mnt/docker/onlyoffice/MailServer/mysql:/var/lib/mysql
+     - /mnt/repo-base/volumes/onlyoffice/MailServer/data:/var/vmail
+     - /mnt/repo-base/volumes/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver
+     - /mnt/repo-base/volumes/onlyoffice/MailServer/logs:/var/log
+     - /mnt/repo-base/volumes/onlyoffice/MailServer/mysql:/var/lib/mysql
   onlyoffice-community-server:
     image: onlyoffice/communityserver:9.6.5.771
     container_name: onlyoffice-community-server
@@ -38,10 +38,10 @@
       - DOCUMENT_SERVER_PORT_80_TCP_ADDR=onlyoffice-document-server
       - MAIL_SERVER_DB_HOST=onlyoffice-mail-server
     volumes:
-     - /mnt/docker/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data
-     - /mnt/docker/onlyoffice/CommunityServer/mysql:/var/lib/mysql
-     - /mnt/docker/onlyoffice/CommunityServer/logs:/var/log/onlyoffice
-     - /mnt/docker/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData
+     - /mnt/repo-base/volumes/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data
+     - /mnt/repo-base/volumes/onlyoffice/CommunityServer/mysql:/var/lib/mysql
+     - /mnt/repo-base/volumes/onlyoffice/CommunityServer/logs:/var/log/onlyoffice
+     - /mnt/repo-base/volumes/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData
     depends_on:
       - onlyoffice-documentserver
       - onlyoffice-mail-server

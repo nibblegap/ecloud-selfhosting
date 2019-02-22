@@ -34,12 +34,12 @@ services:
     # Full list : https://github.com/hardware/mailserver#environment-variables
     #
     volumes:
-      - /mnt/docker/mail:/var/mail
-      - /mnt/docker/letsencrypt/certstore:/etc/letsencrypt
-      - /mnt/docker/config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
-      - /mnt/docker/config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
-      - /mnt/docker/config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
-#      - /mnt/docker/mail/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
+      - /mnt/repo-base/volumes/mail:/var/mail
+      - /mnt/repo-base/config-dynamic/letsencrypt/certstore:/etc/letsencrypt
+      - /mnt/repo-base/config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
+      - /mnt/repo-base/config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
+      - /mnt/repo-base/config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+#      - /mnt/repo-base/mail/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
     depends_on:
       - mariadb
       - redis
@@ -75,7 +75,7 @@ services:
     networks:
       - serverbase
     volumes:
-       - /mnt/docker/rainloop/data:/rainloop/data
+       - /mnt/repo-base/volumes/rainloop/data:/rainloop/data
     depends_on:
       - eelomailserver
       - mariadb
@@ -96,8 +96,8 @@ services:
       - MYSQL_USER=${PFDB_USR}
       - MYSQL_PASSWORD=${DBPASS}
     volumes:
-      - /mnt/docker/mysql/db:/var/lib/mysql
-      - /mnt/docker/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
+      - /mnt/repo-base/volumes/mysql/db:/var/lib/mysql
+      - /mnt/repo-base/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
   # Cache Database
   # https://github.com/docker-library/redis
   # https://redis.io/
@@ -109,7 +109,7 @@ services:
       - serverbase
     command: redis-server --appendonly yes
     volumes:
-      - /mnt/docker/redis/db:/data
+      - /mnt/repo-base/volumes/redis/db:/data
   pma:
     image: phpmyadmin/phpmyadmin:4.8
     container_name: pma
@@ -138,8 +138,7 @@ services:
         networks:
           - serverbase
         volumes:
-              - /mnt/docker/accounts:/var/accounts
-              - /mnt/docker/accounts/exclude_names:/var/script/exclude_names
+              - /mnt/repo-base/volumes/accounts:/var/accounts
         depends_on:
               - mariadb
 ##################################################################################################################################
@@ -157,10 +156,10 @@ services:
     networks:
       - serverbase
     volumes:
-      - /mnt/docker/nextcloud/html:/var/www/html/
-      - /mnt/docker/nextcloud/custom_apps:/var/www/html/custom_apps/
-      - /mnt/docker/nextcloud/config:/var/www/html/config/
-      - /mnt/docker/nextcloud/data:/var/www/html/data/
+      - /mnt/repo-base/volumes/nextcloud/html:/var/www/html/
+      - /mnt/repo-base/volumes/nextcloud/custom_apps:/var/www/html/custom_apps/
+      - /mnt/repo-base/volumes/nextcloud/config:/var/www/html/config/
+      - /mnt/repo-base/volumes/nextcloud/data:/var/www/html/data/
     depends_on:
       - mariadb
 
@@ -176,7 +175,7 @@ services:
     networks:
       - serverbase
     volumes:
-      - /mnt/docker/config-dynamic/automx/automx.conf:/etc/automx.conf
+      - /mnt/repo-base/config-dynamic/automx/automx.conf:/etc/automx.conf
 
   create-account:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.2

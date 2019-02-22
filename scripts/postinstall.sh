@@ -6,7 +6,7 @@ source /mnt/repo-base/scripts/base.sh
 # We need to wait until both the config exists and occ works. If we only do one of these, it might
 # still not work.
 printf "Waiting for Nextcloud to be started"
-while [ ! -f /mnt/docker/nextcloud/config/config.php ]
+while [ ! -f /mnt/repo-base/volumes/nextcloud/config/config.php ]
 do
     printf "."
     sleep 0.1
@@ -18,11 +18,11 @@ do
 done
 
 echo "Tweaking nextcloud config"
-sed -i "s/localhost/drive.$DOMAIN/g" /mnt/docker/nextcloud/config/config.php
-sed -i "s/);//g" /mnt/docker/nextcloud/config/config.php
-/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/docker/nextcloud/config/config.php
-cat /mnt/docker/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/docker/nextcloud/config/config.php
-touch /mnt/docker/nextcloud/data/.ocdata
+sed -i "s/localhost/drive.$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
+sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
+/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/repo-base/volumes/nextcloud/config/config.php
+cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
+touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
 
 echo "Installing nextcloud plugin"
 docker exec -ti nextcloud  su - www-data -s /bin/bash -c "php /var/www/html/occ app:install user_backend_sql_raw"
@@ -35,7 +35,7 @@ echo "Creating postfix database schema"
 curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 
 echo "Setting Postfix admin setup password"
-docker cp /mnt/docker/deployment/postfixadmin/pwgen.php postfixadmin:/postfixadmin
+docker cp /mnt/repo-base/deployment/postfixadmin/pwgen.php postfixadmin:/postfixadmin
 SETUPPW_HASH=$(docker exec -t postfixadmin php /postfixadmin/pwgen.php "$PFA_SETUP_PASSWORD" | tail -n1)
 docker exec -t postfixadmin sed -i "s|\($CONF\['setup_password'\].*=\).*|\1 '${SETUPPW_HASH}';|" /postfixadmin/config.inc.php
 docker exec -t postfixadmin rm /postfixadmin/pwgen.php
@@ -52,7 +52,7 @@ docker exec -t postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php mailb
 # display DKIM DNS setup info/instructions to the user
 echo -e "\n\n\n"
 echo -e "Please add the following records to your domain's DNS configuration:\n"
-find /mnt/docker/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
+find /mnt/repo-base/volumes/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
 
 echo "================================================================================================================================="
 echo "================================================================================================================================="

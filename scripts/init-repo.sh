@@ -28,16 +28,16 @@ case $INSTALL_ONLYOFFICE in
 esac
 
 # prepare nextcloud DB init scripts
-cat /mnt/docker/templates/nextcloud/database/a_user.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@PASSWORD@@@/$MYSQL_PASSWORD_NC/g" > /mnt/docker/config-dynamic/nextcloud/database/a_user.sql
-cat /mnt/docker/templates/nextcloud/database/b_db.sql | sed "s/@@@ADMINUSER@@@/$NEXTCLOUD_ADMIN_USER/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/docker/config-dynamic/nextcloud/database/b_db.sql
-cat /mnt/docker/templates/nextcloud/database/c_grant.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/docker/config-dynamic/nextcloud/database/c_grant.sql
+cat /mnt/repo-base/templates/nextcloud/database/a_user.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@PASSWORD@@@/$MYSQL_PASSWORD_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/a_user.sql
+cat /mnt/repo-base/templates/nextcloud/database/b_db.sql | sed "s/@@@ADMINUSER@@@/$NEXTCLOUD_ADMIN_USER/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/b_db.sql
+cat /mnt/repo-base/templates/nextcloud/database/c_grant.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/c_grant.sql
 
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
 echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
 
 # generate basic auth for phpmyadmin
-htpasswd -c  -b /mnt/docker/config-dynamic/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
+htpasswd -c  -b /mnt/repo-base/config-dynamic/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
 
 VIRTUAL_HOST=$(echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do echo "autoconfig.$line,autodiscover.$line"; done | tr "\n" "," | sed 's/.$//g')
 
@@ -137,8 +137,8 @@ docker login registry.gitlab.e.foundation:5000
 docker-compose up -d
 
 # needed to store created accounts, and needs to be writable by welcome
-touch /mnt/docker/accounts/auth.file.done
+touch /mnt/repo-base/volumes/accounts/auth.file.done
 ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
-chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/docker/accounts/auth.file.done
+chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
 
 bash scripts/postinstall.sh
