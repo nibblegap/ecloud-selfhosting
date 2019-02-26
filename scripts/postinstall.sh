@@ -11,7 +11,7 @@ do
     printf "."
     sleep 0.1
 done
-while docker-compose exec --user www-data nextcloud php occ | grep -q "Nextcloud is not installed";
+while docker-compose exec -T --user www-data nextcloud php occ | grep -q "Nextcloud is not installed";
 do
     printf "."
     sleep 0.1
@@ -25,29 +25,38 @@ cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | 
 touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
 
 echo "Installing nextcloud plugin"
-docker-compose exec --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
-docker-compose exec --user www-data nextcloud php /var/www/html/occ  upgrade
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ  upgrade
 
 echo "Restarting Nextcloud container"
 docker-compose restart nextcloud
+
+echo "Configuring Rainloop"
+mkdir -p "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/"
+echo "$ADD_DOMAINS" | tr "," "\n" | while read add_domain; do
+    cat "templates/rainloop/domain-config.ini" | sed "s/@@@EMAIL_DOMAIN@@@/$DOMAIN/g" > "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/$add_domain.ini"
+done
+chown www-data:www-data /mnt/repo-base/volumes/nextcloud/ -R
 
 echo "Creating postfix database schema"
 curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 
 echo "Setting Postfix admin setup password"
 docker cp /mnt/repo-base/deployment/postfixadmin/pwgen.php postfixadmin:/postfixadmin
-SETUPPW_HASH=$(docker-compose exec postfixadmin php /postfixadmin/pwgen.php "$PFA_SETUP_PASSWORD" | tail -n1)
-docker-compose exec postfixadmin sed -i "s|\($CONF\['setup_password'\].*=\).*|\1 '${SETUPPW_HASH}';|" /postfixadmin/config.inc.php
-docker-compose exec postfixadmin rm /postfixadmin/pwgen.php
+SETUPPW_HASH=$(docker-compose exec -T postfixadmin php /postfixadmin/pwgen.php "$PFA_SETUP_PASSWORD" | tail -n1)
+docker-compose exec -T postfixadmin sed -i "s|\($CONF\['setup_password'\].*=\).*|\1 '${SETUPPW_HASH}';|" /postfixadmin/config.inc.php
+docker-compose exec -T postfixadmin rm /postfixadmin/pwgen.php
 
 echo "Adding Postfix admin superadmin account"
-docker-compose exec postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
+docker-compose exec -T postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
 
 echo "Adding domains to Postfix"
-echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker-compose exec postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php domain add $line; done
+echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker-compose exec -T postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php domain add $line; done
 
 echo "Adding email accounts used by system senders (drive, ...)"
-docker-compose exec postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL
+docker-compose exec -T postfixadmin php /postfixadmin/scripts/postfixadmin-cli.php mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL
 
 # display DKIM DNS setup info/instructions to the user
 echo -e "\n\n\n"

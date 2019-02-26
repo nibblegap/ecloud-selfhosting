@@ -63,23 +63,6 @@ services:
       - eelomailserver
       - mariadb
 
-  # Webmail (Optional)
-  # https://github.com/hardware/rainloop
-  # https://www.rainloop.net/
-  # Configuration : https://github.com/hardware/mailserver/wiki/Rainloop-initial-configuration
-  rainloop:
-    #image: hardware/rainloop
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-rainloop:0.1.1
-    container_name: rainloop
-    restart: unless-stopped
-    networks:
-      - serverbase
-    volumes:
-       - /mnt/repo-base/volumes/rainloop/data:/rainloop/data
-    depends_on:
-      - eelomailserver
-      - mariadb
-
   # Database
   # https://github.com/docker-library/mariadb
   # https://mariadb.org/
