@@ -49,7 +49,7 @@ services:
   # http://postfixadmin.sourceforge.net/
   # Configuration : https://github.com/hardware/mailserver/wiki/Postfixadmin-initial-configuration
   postfixadmin:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.1
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.2
     container_name: postfixadmin
     domainname: ${DOMAIN}
     hostname: mail
