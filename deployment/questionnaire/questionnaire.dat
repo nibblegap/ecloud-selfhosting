@@ -23,7 +23,6 @@ DRIVE_SMTP_PASSWORD=@@@generate@@@:16@
 POSTFIXADMIN_SSH_PASSWORD=@@@generate@@@:20@
 CREATE_ACCOUNT_PASSWORD=@@@generate@@@:20@
 
-PFA_SETUP_PASSWORD=93@@@generate@@@:16@
 PFA_SUPERADMIN_PASSWORD=1@@@generate@@@:16@2
 
 # fixed defaults
