@@ -18,7 +18,7 @@ do
 done
 
 echo "Tweaking nextcloud config"
-sed -i "s/localhost/drive.$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
+sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
 sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
 /bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/repo-base/volumes/nextcloud/config/config.php
 cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
