@@ -1,5 +1,6 @@
 #!/bin/bash
-set -e
+# No set -e, because that would close the ssh connection if we source base.sh
+# into an interactive shell.
 
 cd "/mnt/repo-base/"
 
