@@ -11,6 +11,11 @@ rm -f "$ENVFILE"
 generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
 
 source /mnt/repo-base/scripts/base.sh
+if ! echo "$ADD_DOMAINS" | grep -q "$DOMAIN" ; then
+    sed -i '/ADD_DOMAINS/d' "$ENVFILE"
+    echo "ADD_DOMAINS=$ADD_DOMAINS,$DOMAIN" >> "$ENVFILE"
+    source /mnt/repo-base/scripts/base.sh
+fi
 
 DC_DIR="templates/docker-compose/"
 case $INSTALL_ONLYOFFICE in
