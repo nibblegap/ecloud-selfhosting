@@ -12,7 +12,8 @@ For the setup without OnlyOffice, requirements are a bit lower:
 - 2 GB RAM
 - 15 GB disk space
 
-Disk space only refers to the basic installation. You will need additional space for any emails, documents and files you store on the server.
+Disk space only refers to the basic installation. You will need additional space for any emails,
+documents and files you store on the server.
 
 ### Required packages (these should be included with Ubuntu by default)
 - curl
@@ -22,7 +23,8 @@ Disk space only refers to the basic installation. You will need additional space
 
 ## Create Ubuntu VM & set reverse DNS
 This examplpes uses Hetzner cloud (sorry Gael ;)).
-You can use whatever provider you want. Just make sure to set rdns correctly before running the bootstrap script (works via Webui with some other hosters)
+You can use whatever provider you want. Just make sure to set rdns correctly before running the
+bootstrap script (works via Webui with some other hosters)
 ```
 $ hcloud server create --image=ubuntu-18.04 --name server1 --type cx31 --ssh-key ts@treehouse-sss
 $ hcloud server set-rdns server1 --hostname mail.example.com
@@ -44,9 +46,10 @@ You need to login to gitlab once during this step.
 
 You can find login information for these services by running `showInfo.sh`.
 
-- welcome.$DOMAIN: Allows users to sign up for a new account, which will work for all of the following services
-- webmail.$DOMAIN: Send and receive emails ([rainloop.net](https://www.rainloop.net/))
-- drive.$DOMAIN: File hosting ([nextcloud.com](https://nextcloud.com/))
+- $DOMAIN: File hosting with [Nextcloud](https://nextcloud.com/), email with
+           [rainloop.net](https://www.rainloop.net/)
+- welcome.$DOMAIN: Allows users to sign up for a new account (you can create signup links with
+                   `bash /mnt/repo-base/scripts/generate-signup-link.sh`)
 - office.$DOMAIN: Create and edit office documents ([onlyoffice.com](https://www.onlyoffice.com/))
 
 # Administration
