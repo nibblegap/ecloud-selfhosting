@@ -13,7 +13,7 @@ install-deps:
     - name: curl
     - name: software-properties-common
     - name: apache2-utils
-    - name: docker
+    - name: docker.io
     - name: docker-compose
     - require:
       - upgrade-all
