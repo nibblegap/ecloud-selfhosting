@@ -147,7 +147,7 @@ services:
       - mariadb
 
   automx:
-    image: seti/mailstack-automx:latest
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-mailstack:automx-0.1.0
     container_name: automx
     hostname: automx
     environment:
