@@ -24,11 +24,14 @@ sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
 cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
 touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
 
-echo "Installing nextcloud plugin"
+echo "Installing nextcloud plugins"
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install notes
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ  upgrade
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ upgrade
 
 echo "Restarting Nextcloud container"
 docker-compose restart nextcloud
