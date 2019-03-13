@@ -1,3 +1,5 @@
+# base installation
+
 upgrade-all:
   pkg.uptodate:
     - name: update
@@ -38,3 +40,33 @@ cron-check-updates:
     - user: root
     - special: '@daily'
     - identifier: 'check-updates'
+
+# security hardening
+
+haveged:
+  pkg.installed
+
+net.ipv4.icmp_ratelimit:
+  sysctl.present:
+    - value: 100
+
+net.ipv4.icmp_ratemask:
+  sysctl.present:
+    - value: 88089
+
+net.ipv4.tcp_rfc1337:
+  sysctl.present:
+    - value: 1
+
+login_defs1:
+  file.replace:
+    - name: /etc/login.defs
+    - repl: UMASK           027
+    - pattern: ^UMASK .*
+    - append_if_not_found: True
+login_defs2:
+  file.replace:
+    - name: /etc/login.defs
+    - repl: PASS_MIN_DAYS   7
+    - pattern: ^PASS_MIN_DAYS .*
+    - append_if_not_found: True
