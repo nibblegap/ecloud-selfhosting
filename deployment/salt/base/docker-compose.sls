@@ -41,6 +41,13 @@ cron-check-updates:
     - special: '@daily'
     - identifier: 'check-updates'
 
+/etc/docker/daemon.json:
+  file.managed:
+    - source: salt://docker-daemon.json
+    - user: root
+    - group: root
+    - mode: 644
+
 # security hardening
 
 haveged:
