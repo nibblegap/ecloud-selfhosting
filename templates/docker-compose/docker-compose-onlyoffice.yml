@@ -1,4 +1,4 @@
-##################################################################################################################################
+
   onlyoffice-documentserver:
     image: onlyoffice/documentserver:5.2.6.3
     container_name: onlyoffice-document-server
@@ -17,10 +17,6 @@
     restart: always
     networks:
       - serverbase
-    #ports:
-    #  - 25:25
-    #  - 143:143
-    #  - 587:587
     volumes:
      - /mnt/repo-base/volumes/onlyoffice/MailServer/data:/var/vmail
      - /mnt/repo-base/volumes/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver

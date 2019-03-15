@@ -5,7 +5,7 @@ services:
     image: hardware/mailserver:1.1-stable
     container_name: mailserver
     restart: unless-stopped
-    domainname: ${DOMAIN}                # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
+    domainname: ${DOMAIN} # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
     hostname: mail
     restart: always
     networks:
@@ -20,34 +20,22 @@ services:
       - "995:995"     # POP3S      SSL/TLS  - Optional - For webmails/desktop clients
       - "4190:4190"   # SIEVE      STARTTLS - Optional - Recommended for mail filtering
     environment:
-      - DBPASS=${DBPASS}                   # MariaDB database password (required)
+      - DBPASS=${DBPASS}
       - RSPAMD_PASSWORD=${RSPAMD_PASSWORD}
       - ADD_DOMAINS=${ADD_DOMAINS}
-    # - DISABLE_DNS_RESOLVER=${DISABLE_DNS_RESOLVER}
-      - ENABLE_POP3=${ENABLE_POP3}                    # Enable POP3 protocol
-    # - ENABLE_FETCHMAIL=${ENABLE_FETCHMAIL}               # Enable fetchmail forwarding
-    # - DISABLE_CLAMAV=${DISABLE_CLAMAV}                 # Disable virus scanning
-    #  - DISABLE_SIGNING=${DISABLE_SIGNING}                # Disable DKIM/ARC signing
-    # - DISABLE_GREYLISTING=${DISABLE_GREYLISTING}            # Disable greylisting policy
-      - DISABLE_RATELIMITING=${DISABLE_RATELIMITING}           # Disable ratelimiting policy
-    #
-    # Full list : https://github.com/hardware/mailserver#environment-variables
-    #
+      - ENABLE_POP3=${ENABLE_POP3}
+      - DISABLE_RATELIMITING=${DISABLE_RATELIMITING}
+      # Full list of options: https://github.com/hardware/mailserver#environment-variables
     volumes:
       - /mnt/repo-base/volumes/mail:/var/mail
       - /mnt/repo-base/config-dynamic/letsencrypt/certstore:/etc/letsencrypt
       - /mnt/repo-base/config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
       - /mnt/repo-base/config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
       - /mnt/repo-base/config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
-#      - /mnt/repo-base/mail/dovecot/dovecot.conf:/etc/dovecot/dovecot.conf
     depends_on:
       - mariadb
       - redis
 
-  # Administration interface
-  # https://github.com/hardware/postfixadmin
-  # http://postfixadmin.sourceforge.net/
-  # Configuration : https://github.com/hardware/mailserver/wiki/Postfixadmin-initial-configuration
   postfixadmin:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.2
     container_name: postfixadmin
@@ -63,17 +51,14 @@ services:
       - eelomailserver
       - mariadb
 
-  # Database
-  # https://github.com/docker-library/mariadb
-  # https://mariadb.org/
   mariadb:
     image: mariadb:10.3
     container_name: mariadb
     restart: unless-stopped
     networks:
       - serverbase
-    # Info : These variables are ignored when the volume already exists (databases created before).
     environment:
+      # Note: These variables are only used for the first start. Later changes are ignored.
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
       - MYSQL_DATABASE=${PFDB_DB}
       - MYSQL_USER=${PFDB_USR}
@@ -81,9 +66,7 @@ services:
     volumes:
       - /mnt/repo-base/volumes/mysql/db:/var/lib/mysql
       - /mnt/repo-base/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
-  # Cache Database
-  # https://github.com/docker-library/redis
-  # https://redis.io/
+
   redis:
     image: redis:4.0-alpine
     container_name: redis
@@ -93,6 +76,7 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - /mnt/repo-base/volumes/redis/db:/data
+
   pma:
     image: phpmyadmin/phpmyadmin:4.8
     container_name: pma
@@ -124,7 +108,7 @@ services:
               - /mnt/repo-base/volumes/accounts:/var/accounts
         depends_on:
               - mariadb
-##################################################################################################################################
+
   nextcloud:
     image: nextcloud:14.0
     container_name: nextcloud
