@@ -2,8 +2,6 @@
   "log-driver": "json-file",
   "log-opts": {
     "max-size": "50m",
-    "max-file": "4",
-    "labels": "production_status",
-    "env": "os,customer"
+    "max-file": "4"
   }
 }
