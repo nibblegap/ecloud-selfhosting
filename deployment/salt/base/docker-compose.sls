@@ -47,6 +47,7 @@ cron-check-updates:
     - user: root
     - group: root
     - mode: 644
+    - makedirs: True
 
 # security hardening
 
