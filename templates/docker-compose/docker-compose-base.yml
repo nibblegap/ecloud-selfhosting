@@ -4,7 +4,6 @@ services:
   eelomailserver:
     image: hardware/mailserver:1.1-stable
     container_name: mailserver
-    restart: unless-stopped
     domainname: ${DOMAIN} # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
     hostname: mail
     restart: always
@@ -41,7 +40,7 @@ services:
     container_name: postfixadmin
     domainname: ${DOMAIN}
     hostname: mail
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     environment:
@@ -54,7 +53,7 @@ services:
   mariadb:
     image: mariadb:10.3
     container_name: mariadb
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     environment:
@@ -70,7 +69,7 @@ services:
   redis:
     image: redis:4.0-alpine
     container_name: redis
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     command: redis-server --appendonly yes
@@ -80,7 +79,7 @@ services:
   pma:
     image: phpmyadmin/phpmyadmin:4.8
     container_name: pma
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     environment:
@@ -101,7 +100,7 @@ services:
          - SMTP_FROM=${SMTP_FROM}
          - SMTP_PW=${SMTP_PW}
          - CREATE_ACCOUNT_PASSWORD=${CREATE_ACCOUNT_PASSWORD}
-        restart: unless-stopped
+        restart: always
         networks:
           - serverbase
         volumes:
@@ -119,7 +118,7 @@ services:
       - MYSQL_HOST=mariadb
       - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
       - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     volumes:
@@ -138,7 +137,7 @@ services:
       - VIRTUAL_HOST=${VIRTUAL_HOST}
       - DOMAIN=${DOMAIN}
       - HOSTNAME=automx
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     volumes:
@@ -147,6 +146,7 @@ services:
   create-account:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.3
     container_name: create-account
+    restart: always
     environment:
       - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
       - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}

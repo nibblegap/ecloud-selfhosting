@@ -2,7 +2,7 @@
   nginx:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-nginx:1.15
     container_name: nginx
-    restart: unless-stopped
+    restart: always
     networks:
       - serverbase
     ports:
