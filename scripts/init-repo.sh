@@ -96,14 +96,13 @@ echo "$VIRTUAL_HOST,dba.$DOMAIN,drive.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welco
 echo "================================================================================================================================="
 echo "================================================================================================================================="
 echo ""
-echo "Type 'yes' and hit ENTER to confirm that you have setup DNS properly before we continue (everything else will abort the process):"
-read CONFIRM < /dev/tty
 
-if [ "yes" != "$CONFIRM" ]
-then
-    echo "Aborting"
-    exit 1
-fi
+echo "Type 'yes' and hit ENTER to confirm that you have setup DNS properly before we continue:"
+read CONFIRM
+while [ "$CONFIRM" != "yes" ]
+do
+    read CONFIRM
+done
 
 # Verify DOMAIN lookup forward and reverse (very important)
 IP=$(dig mail.$DOMAIN| grep mail.$DOMAIN | grep -v '^;' | awk '{ print $NF }')
