@@ -14,6 +14,15 @@
       - /mnt/repo-base/config-dynamic/letsencrypt/certstore:/certs
       - /mnt/repo-base/config-dynamic/nginx/passwds:/passwds
       - /mnt/repo-base/config-dynamic/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge
+    depends_on:
+      - nextcloud
+      - create-account
+      - automx
+      - pma
+      - postfixadmin
+      - accounts
+      - eelomailserver
+      #- onlyoffice-community-server
 
 networks:
   serverbase:
