@@ -57,11 +57,13 @@ curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 echo "Adding Postfix admin superadmin account"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
 
+# Adding domains to postfix is done by docker exec instead of docker-compose exec on purpose. Reason: with compose the loop aborts after the first item for an unknown reason
 echo "Adding domains to Postfix"
-echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli domain add $line; done
+echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker exec -t postfixadmin /postfixadmin/scripts/postfixadmin-cli domain add $line; done
 
 echo "Adding email accounts used by system senders (drive, ...)"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL
+docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add $SMTP_FROM --password $SMTP_PW --password2 $SMTP_PW --name "welcome" --email-other $ALT_EMAIL
 
 # display DKIM DNS setup info/instructions to the user
 echo -e "\n\n\n"
