@@ -28,3 +28,6 @@ PFA_SUPERADMIN_PASSWORD=$(grep ^PFA_SUPERADMIN_PASSWORD= "$ENVFILE" | awk -F= '{
 PFDB_DB=$(grep ^PFDB_DB= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_USR=$(grep ^PFDB_USR= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_DBPASS=$(grep ^DBPASS= "$ENVFILE" | awk -F= '{ print $NF }')
+
+SMTP_FROM=$(grep ^SMTP_FROM= "$ENVFILE" | awk -F= '{ print $NF }')
+SMTP_PW=$(grep ^SMTP_PW= "$ENVFILE" | awk -F= '{ print $NF }')
