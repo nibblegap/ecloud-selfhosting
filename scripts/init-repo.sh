@@ -43,6 +43,7 @@ echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
 
 # generate basic auth for phpmyadmin
 htpasswd -c  -b /mnt/repo-base/config-dynamic/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
+chown 100:101 config-dynamic/nginx/passwds/ -R
 
 VIRTUAL_HOST=$(echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do echo "autoconfig.$line,autodiscover.$line"; done | tr "\n" "," | sed 's/.$//g')
 
