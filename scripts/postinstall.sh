@@ -47,7 +47,7 @@ docker-compose restart nextcloud
 echo "Configuring Rainloop"
 mkdir -p "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/"
 echo "$ADD_DOMAINS" | tr "," "\n" | while read add_domain; do
-    cat "templates/rainloop/domain-config.ini" | sed "s/@@@EMAIL_DOMAIN@@@/$DOMAIN/g" > "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/$add_domain.ini"
+    cp "templates/rainloop/domain-config.ini" "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/$add_domain.ini"
 done
 chown www-data:www-data /mnt/repo-base/volumes/nextcloud/ -R
 
