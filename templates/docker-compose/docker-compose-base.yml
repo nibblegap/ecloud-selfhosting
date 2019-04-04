@@ -86,6 +86,7 @@ services:
       - PMA_HOST=mariadb
     depends_on:
       - mariadb
+
   accounts:
         image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.0
         container_name: accounts
@@ -96,7 +97,7 @@ services:
          - PFDB_DB=${PFDB_DB}
          - PFDB_USR=${PFDB_USR}
          - PFDB_PW=${DBPASS}
-         - SMTP_HOST=${DOMAIN}
+         - SMTP_HOST=${SMTP_HOST}
          - SMTP_FROM=${SMTP_FROM}
          - SMTP_PW=${SMTP_PW}
          - CREATE_ACCOUNT_PASSWORD=${CREATE_ACCOUNT_PASSWORD}
