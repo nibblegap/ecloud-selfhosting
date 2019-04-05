@@ -8,13 +8,16 @@ upgrade-all:
 
 install-deps:
   pkg.installed:
-    - name: apt-transport-https
-    - name: ca-certificates
-    - name: curl
-    - name: software-properties-common
-    - name: apache2-utils
-    - name: docker.io
-    - name: docker-compose
+    - pkgs:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - apache2-utils
+      - docker.io
+      - docker-compose
+      - gnupg2
+      - pass
     - require:
       - upgrade-all
 

@@ -1,5 +1,5 @@
 DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
-ADD_DOMAINS=Enter a domain (or a comma separated list of domains) to handle mail for (e.g. domainA.com,domainB.com) - might include mgmt domain:
+ADD_DOMAINS=Enter additional domain(s) (comma separated, no white spaces) to handle mail for (e.g. domainB.com,domainC.com) or just press enter:
 ALT_EMAIL=Enter alternative email:
 INSTALL_ONLYOFFICE=Do you want to install OnlyOffice? [y/n]||||^[yY|nN]$;;;;Please enter 'y' or 'n'
 
