@@ -31,3 +31,5 @@ PFDB_DBPASS=$(grep ^DBPASS= "$ENVFILE" | awk -F= '{ print $NF }')
 
 SMTP_FROM=$(grep ^SMTP_FROM= "$ENVFILE" | awk -F= '{ print $NF }')
 SMTP_PW=$(grep ^SMTP_PW= "$ENVFILE" | awk -F= '{ print $NF }')
+
+SMTP_HOST=$(grep ^SMTP_HOST= "$ENVFILE" | awk -F= '{ print $NF }')

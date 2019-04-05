@@ -40,6 +40,7 @@ cat /mnt/repo-base/templates/nextcloud/database/c_grant.sql | sed "s/@@@USER@@@/
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
 echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
+echo "SMTP_HOST=mail.$DOMAIN" >> "$ENVFILE"
 
 # generate basic auth for phpmyadmin
 htpasswd -c  -b /mnt/repo-base/config-dynamic/nginx/passwds/pma.htpasswd $DBA_USER "$DBA_PASSWORD"
