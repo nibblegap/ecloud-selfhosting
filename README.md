@@ -55,6 +55,5 @@ You can find login information for these services by running `showInfo.sh`.
 # Administration
 
 - spam.$DOMAIN: Email spam filter ([rspamd.com](https://www.rspamd.com/))
-- dba.$DOMAIN: Database administration ([phpmyadmin.net](https://www.phpmyadmin.net/))
 - mail.$DOMAIN: Administrate email and create accounts ([postfixadmin.sourceforge.net](http://postfixadmin.sourceforge.net/))
 

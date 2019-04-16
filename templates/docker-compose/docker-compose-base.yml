@@ -76,17 +76,6 @@ services:
     volumes:
       - /mnt/repo-base/volumes/redis/db:/data
 
-  pma:
-    image: phpmyadmin/phpmyadmin:4.8
-    container_name: pma
-    restart: always
-    networks:
-      - serverbase
-    environment:
-      - PMA_HOST=mariadb
-    depends_on:
-      - mariadb
-
   accounts:
         image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.0
         container_name: accounts
