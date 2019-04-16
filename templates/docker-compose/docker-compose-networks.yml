@@ -18,7 +18,6 @@
       - nextcloud
       - create-account
       - automx
-      - pma
       - postfixadmin
       - accounts
       - eelomailserver
