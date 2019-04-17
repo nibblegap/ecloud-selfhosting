@@ -3,19 +3,7 @@ set -e
 
 source /mnt/repo-base/scripts/base.sh
 
-# We need to wait until both the config exists and occ works. If we only do one of these, it might
-# still not work.
-printf "Waiting for Nextcloud to be started"
-while [ ! -f /mnt/repo-base/volumes/nextcloud/config/config.php ]
-do
-    printf "."
-    sleep 0.1
-done
-while docker-compose exec -T --user www-data nextcloud php occ | grep -q "Nextcloud is not installed";
-do
-    printf "."
-    sleep 0.1
-done
+docker-compose exec --user www-data nextcloud php occ maintenance:install --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" --admin-email="$ALT_EMAIL"
 
 echo "Tweaking nextcloud config"
 sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
