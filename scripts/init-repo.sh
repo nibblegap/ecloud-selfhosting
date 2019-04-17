@@ -24,11 +24,11 @@ case $INSTALL_ONLYOFFICE in
     cat "templates/nginx/sites-enabled/onlyoffice.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/onlyoffice.conf"
     OFFICE_DOMAIN=",office.$DOMAIN"
     OFFICE_LETSENCRYPT_KEY="config-dynamic/letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
-    NUM_CERTIFICATES="6"
+    NUM_CERTIFICATES="4"
     ;;
     [Nn]* )
     cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml
-    NUM_CERTIFICATES="5"
+    NUM_CERTIFICATES="3"
     ;;
 esac
 
@@ -49,7 +49,7 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 # finished .env file generation
 
 # fille autorenew config
-echo "$DOMAIN,$VIRTUAL_HOST,drive.$DOMAIN,mail.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+echo "$DOMAIN,$VIRTUAL_HOST,mail.$DOMAIN,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
     echo "$CURDOMAIN" >> config-dynamic/letsencrypt/autorenew/ssl-domains.dat
 :; done
 
@@ -71,10 +71,6 @@ cat "templates/nginx/sites-enabled/postfixadmin.conf" | sed "s/@@@DOMAIN@@@/$DOM
 cat "templates/nginx/sites-enabled/rspamd.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/rspamd.conf"
 cat "templates/nginx/sites-enabled/welcome.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/welcome.conf"
 
-# redirects for legacy subdomains
-cat "templates/nginx/sites-enabled/webmail-redirect.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/webmail-redirect.conf"
-cat "templates/nginx/sites-enabled/drive-redirect.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/drive-redirect.conf"
-
 # confirm DNS is ready
 echo ""
 echo ""
@@ -87,7 +83,7 @@ echo "   For each domain in $ADD_DOMAINS add an A record (@) to your public IP"
 echo "   For each domain in $ADD_DOMAINS add an MX record (@, priority 10) towards mail.$DOMAIN.com."
 echo "   PTR record for your public IP towards mail.$DOMAIN.com (reverse DNS to match A record above)"
 echo ""
-echo "$VIRTUAL_HOST,drive.$DOMAIN,spam.$DOMAIN,webmail.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+echo "$VIRTUAL_HOST,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
     echo "   CNAME record $CURDOMAIN towards mail.$DOMAIN."
 :; done
 echo "================================================================================================================================="
@@ -121,7 +117,7 @@ fi
 bash scripts/ssl-renew.sh
 
 # verify LE status
-CTR_LE=$(find config-dynamic/letsencrypt/certstore/live/drive.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/webmail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
+CTR_LE=$(find config-dynamic/letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
 CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find config-dynamic/letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
 
 if [ "$CTR_LE$CTR_AC_LE" = "${NUM_CERTIFICATES}0" ]

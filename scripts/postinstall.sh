@@ -3,7 +3,7 @@ set -e
 
 source /mnt/repo-base/scripts/base.sh
 
-docker-compose exec --user www-data nextcloud php occ maintenance:install --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" --admin-email="$ALT_EMAIL"
+docker-compose exec -T --user www-data nextcloud php occ maintenance:install --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" --admin-email="$ALT_EMAIL"
 
 echo "Tweaking nextcloud config"
 sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
