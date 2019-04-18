@@ -5,12 +5,9 @@ source /mnt/repo-base/scripts/base.sh
 
 docker-compose exec -T --user www-data nextcloud php occ maintenance:install --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" --admin-email="$ALT_EMAIL"
 
-echo "Tweaking nextcloud config"
-sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
-sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
-/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/repo-base/volumes/nextcloud/config/config.php
-cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
-touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
+docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --on
+docker-compose exec -T --user www-data nextcloud php occ db:add-missing-indices
+docker-compose exec -T --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
 
 echo "Installing nextcloud plugins"
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
@@ -21,6 +18,13 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ upgrade
 
+echo "Tweaking nextcloud config"
+sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
+sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
+/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/repo-base/volumes/nextcloud/config/config.php
+cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
+touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
+
 echo "Installing Nextcloud theme"
 wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz?private_token=qV5kExhz6mDY5QET8z56" -O "/tmp/nextcloud-theme.tar.gz"
 tar -xzf "/tmp/nextcloud-theme.tar.gz" -C "volumes/nextcloud/html/themes/" --strip-components=1
@@ -28,6 +32,8 @@ chown www-data:www-data "volumes/nextcloud/html/themes/" -R
 rm "/tmp/nextcloud-theme.tar.gz"
 
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:system:set theme --value eelo
+
+docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --off
 
 echo "Restarting Nextcloud container"
 docker-compose restart nextcloud
