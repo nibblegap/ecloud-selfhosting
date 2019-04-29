@@ -24,6 +24,7 @@ services:
       - ADD_DOMAINS=${ADD_DOMAINS}
       - ENABLE_POP3=${ENABLE_POP3}
       - DISABLE_RATELIMITING=${DISABLE_RATELIMITING}
+      - RELAY_NETWORKS=172.16.0.0/12
       # Full list of options: https://github.com/hardware/mailserver#environment-variables
     volumes:
       - /mnt/repo-base/volumes/mail:/var/mail
