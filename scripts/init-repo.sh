@@ -141,4 +141,6 @@ touch /mnt/repo-base/volumes/accounts/auth.file.done
 ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
 chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
 
+sleep 300
+
 bash scripts/postinstall.sh
