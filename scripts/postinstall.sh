@@ -3,10 +3,6 @@ set -e
 
 source /mnt/repo-base/scripts/base.sh
 
-docker-compose exec -T --user www-data nextcloud php occ maintenance:install \
-    --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" \
-    --admin-email="$ALT_EMAIL" --database="mysql"
-
 docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --on
 docker-compose exec -T --user www-data nextcloud php occ db:add-missing-indices
 docker-compose exec -T --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
