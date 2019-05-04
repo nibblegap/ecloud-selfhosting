@@ -78,10 +78,11 @@ services:
       - /mnt/repo-base/volumes/redis/db:/data
 
   accounts:
-        image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.0
+        image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.3.0
         container_name: accounts
         environment:
          - DOMAINS=${VHOSTS_ACCOUNTS}
+         - DOMAIN=${DOMAIN}
          - IS_WELCOME=true
          - PFDB_HOST=mariadb
          - PFDB_DB=${PFDB_DB}
