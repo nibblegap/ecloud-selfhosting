@@ -27,7 +27,7 @@ cat "$CONFIG" | while read DOMAIN; do
                 --standalone
         else
             docker run -t --rm -v $CERTSTOREBASE:/etc/letsencrypt \
-                -v /mnt/repo-base/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge \
+                -v /mnt/repo-base/config-dynamic/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge \
                 "$CERTBOT_IMAGE" certonly --non-interactive --agree-tos -m $SERVERADMIN -d $DOMAIN \
                 --webroot -w /etc/letsencrypt/acme-challenge \
                 --post-hook "touch /etc/letsencrypt/live/$DOMAIN/cert-updated"
