@@ -15,7 +15,7 @@ CERTSTOREBASE=/mnt/repo-base/config-dynamic/letsencrypt/certstore
 CERTSTORE=$CERTSTOREBASE/live
 SERVERADMIN="admin@$DOMAIN"
 PUBIP=0.0.0.0
-CERTBOT_IMAGE="certbot/certbot:v0.30.2"
+CERTBOT_IMAGE="certbot/certbot:v0.33.1"
 
 cat "$CONFIG" | while read DOMAIN; do
         # For the first run, we have to use standalone auth because Nginx won't start without the cert files present.
@@ -38,7 +38,7 @@ cat "$CONFIG" | while read DOMAIN; do
                 rm "$CERT_UPDATED_FILE"
                 docker exec nginx nginx -s reload
                 NVALIDTHRU=$($OPENSSLBIN x509 -enddate -noout -in $CERTSTORE/$DOMAIN/fullchain.pem | awk -F= '{ print $NF }')
-                echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU (was: $VALIDTHRU)"
+                echo "Certificate for $DOMAIN renewed and is valid until: $NVALIDTHRU"
                 if [ "$DOMAIN" = "$MAILHOST" ]
                 then
                     cd /mnt/repo-base/
