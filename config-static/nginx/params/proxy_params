@@ -7,3 +7,9 @@ proxy_redirect          off;
 
 proxy_headers_hash_max_size 1024;
 proxy_headers_hash_bucket_size 128;
+
+# No compression for json to avoid BREACH attack.
+gzip on;
+gzip_types text/plain text/xml text/css application/xml application/javascript image/svg+xml image/svg;
+gzip_proxied any;
+gzip_vary on;
