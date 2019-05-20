@@ -55,7 +55,8 @@ echo "$DOMAIN,$VIRTUAL_HOST,mail.$DOMAIN,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOM
 
 
 # Configure automx
-cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > config-dynamic/automx/automx.conf
+cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/automx/automx.conf"
+chown www-data:www-data "config-dynamic/automx/automx.conf"
 
 # Configure nginx vhost
 
