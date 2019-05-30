@@ -3,13 +3,25 @@ set -e
 
 source /mnt/repo-base/scripts/base.sh
 
+# Create Nextcloud mysql database and user
+docker-compose exec -T mariadb mysql --user=root --password="$MYSQL_ROOT_PASSWORD" \
+    -e "CREATE USER '$MYSQL_USER_NC'@'%' IDENTIFIED BY '$MYSQL_PASSWORD_NC';"
+docker-compose exec -T mariadb mysql --user=root --password="$MYSQL_ROOT_PASSWORD" \
+    -e "CREATE DATABASE $MYSQL_DATABASE_NC DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+docker-compose exec -T mariadb mysql --user=root --password="$MYSQL_ROOT_PASSWORD" \
+    -e "GRANT ALL PRIVILEGES ON $MYSQL_DATABASE_NC.* TO '$MYSQL_USER_NC'@'%' WITH GRANT OPTION;"
+
+# The maintenance:install command does not support environment variables for
+# database configuration.
+# https://github.com/nextcloud/server/issues/6185
 docker-compose exec -T --user www-data nextcloud php occ maintenance:install \
     --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" \
-    --admin-email="$ALT_EMAIL" --database="mysql"
-
-docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --on
-docker-compose exec -T --user www-data nextcloud php occ db:add-missing-indices
+    --admin-email="$ALT_EMAIL" --database="mysql" --database-pass="$MYSQL_PASSWORD_NC" \
+    --database-name="$MYSQL_DATABASE_NC" --database-host="mariadb" --database-user="$MYSQL_USER_NC"
 docker-compose exec -T --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
+
+# Nextcloud resets trusted_domains to localhost during installation, so we have to set it again
+docker-compose exec -T --user www-data nextcloud php occ config:system:set trusted_domains 0 --value="$DOMAIN"
 
 echo "Installing nextcloud plugins"
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
@@ -18,14 +30,6 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ upgrade
-
-echo "Tweaking nextcloud config"
-sed -i "s/localhost/$DOMAIN/g" /mnt/repo-base/volumes/nextcloud/config/config.php
-sed -i "s/);//g" /mnt/repo-base/volumes/nextcloud/config/config.php
-/bin/echo -e "   'skeletondirectory' => '',\n   'mail_from_address' => 'drive',\n   'mail_smtpmode' => 'smtp',\n   'mail_smtpauthtype' => 'PLAIN',\n   'mail_domain' => '$DOMAIN',\n   'mail_smtpauth' => 1,\n   'mail_smtphost' => 'mail.$DOMAIN',\n   'mail_smtpname' => 'drive@$DOMAIN',\n   'mail_smtppassword' => '$DRIVE_SMTP_PASSWORD',\n   'mail_smtpport' => '587',\n   'mail_smtpsecure' => 'tls'," >> /mnt/repo-base/volumes/nextcloud/config/config.php
-cat /mnt/repo-base/templates/nextcloud/plugin-config/user_sql_raw_config.conf | sed "s/@@@DBNAME@@@/$PFDB_DB/g" | sed "s/@@@DBUSER@@@/$PFDB_USR/g" | sed "s/@@@DBPW@@@/$PFDB_DBPASS/g" >> /mnt/repo-base/volumes/nextcloud/config/config.php
-touch /mnt/repo-base/volumes/nextcloud/data/.ocdata
 
 echo "Installing Nextcloud theme"
 wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz?private_token=qV5kExhz6mDY5QET8z56" -O "/tmp/nextcloud-theme.tar.gz"

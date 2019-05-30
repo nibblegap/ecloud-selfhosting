@@ -32,11 +32,6 @@ case $INSTALL_ONLYOFFICE in
     ;;
 esac
 
-# prepare nextcloud DB init scripts
-cat /mnt/repo-base/templates/nextcloud/database/a_user.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@PASSWORD@@@/$MYSQL_PASSWORD_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/a_user.sql
-cat /mnt/repo-base/templates/nextcloud/database/b_db.sql | sed "s/@@@ADMINUSER@@@/$NEXTCLOUD_ADMIN_USER/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/b_db.sql
-cat /mnt/repo-base/templates/nextcloud/database/c_grant.sql | sed "s/@@@USER@@@/$MYSQL_USER_NC/g" | sed "s/@@@DBNAME@@@/$MYSQL_DATABASE_NC/g" > /mnt/repo-base/config-dynamic/nextcloud/database/c_grant.sql
-
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
 echo "SMTP_FROM=welcome@$DOMAIN" >> "$ENVFILE"
@@ -131,11 +126,22 @@ else
     exit 1
 fi
 
+# create nextcloud config
+mkdir -p "/mnt/repo-base/volumes/nextcloud/config/"
+cat /mnt/repo-base/templates/nextcloud/config.php | sed "s/@@@DOMAIN@@@/$DOMAIN/g" | \
+    sed "s/@@@DRIVE_SMTP_PASSWORD@@@/$DRIVE_SMTP_PASSWORD/g" | sed "s/@@@MYSQL_PASSWORD_NC@@@/$MYSQL_PASSWORD_NC/g" | \
+    sed "s/@@@MYSQL_DATABASE_NC@@@/$MYSQL_DATABASE_NC/g" | sed "s/@@MYSQL_USER_NC@@@/$MYSQL_USER_NC/g" > \
+    "/mnt/repo-base/volumes/nextcloud/config/config.php"
+chown www-data:www-data "/mnt/repo-base/volumes/nextcloud/" -R
+
 # Login to /e/ registry | not necessary when going public
 echo "Please login with your gitlab.e.foundation username and password"
 docker login registry.gitlab.e.foundation:5000
 
 docker-compose up -d
+
+echo -e "\nHack: restart everything to ensure that database and nextcloud are initialized"
+docker-compose restart
 
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/repo-base/volumes/accounts/auth.file.done

@@ -19,6 +19,7 @@ NEXTCLOUD_ADMIN_PASSWORD=$(grep ^NEXTCLOUD_ADMIN_PASSWORD= "$ENVFILE" | awk -F= 
 MYSQL_DATABASE_NC=$(grep ^MYSQL_DATABASE_NC= "$ENVFILE" | awk -F= '{ print $NF }')
 MYSQL_USER_NC=$(grep ^MYSQL_USER_NC= "$ENVFILE" | awk -F= '{ print $NF }')
 MYSQL_PASSWORD_NC=$(grep ^MYSQL_PASSWORD_NC= "$ENVFILE" | awk -F= '{ print $NF }')
+MYSQL_ROOT_PASSWORD=$(grep ^MYSQL_ROOT_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
 
 INSTALL_ONLYOFFICE=$(grep ^INSTALL_ONLYOFFICE= "$ENVFILE" | awk -F= '{ print $NF }')
 
