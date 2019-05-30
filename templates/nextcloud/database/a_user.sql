@@ -1,1 +1,0 @@
-CREATE USER '@@@USER@@@'@'%' IDENTIFIED BY '@@@PASSWORD@@@';
