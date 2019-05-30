@@ -17,7 +17,8 @@ docker-compose exec -T mariadb mysql --user=root --password="$MYSQL_ROOT_PASSWOR
 docker-compose exec -T --user www-data nextcloud php occ maintenance:install \
     --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" \
     --admin-email="$ALT_EMAIL" --database="mysql" --database-pass="$MYSQL_PASSWORD_NC" \
-    --database-name="$MYSQL_DATABASE_NC" --database-host="mariadb" --database-user="$MYSQL_USER_NC"
+    --database-name="$MYSQL_DATABASE_NC" --database-host="mariadb" --database-user="$MYSQL_USER_NC" \
+    --database-port="3306" --database-table-prefix=""
 docker-compose exec -T --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
 
 # Nextcloud resets trusted_domains to localhost during installation, so we have to set it again

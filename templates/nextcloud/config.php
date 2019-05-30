@@ -23,10 +23,8 @@ $CONFIG = array (
     0 => '@@@DOMAIN@@@',
   ),
   'datadirectory' => '/var/www/html/data',
-  'dbtype' => 'mysql',
   'overwrite.cli.url' => 'https://@@@DOMAIN@@@',
   'overwriteprotocol' => 'https',
-  'dbtableprefix' => '',
   'mysql.utf8mb4' => true,
   'maintenance' => true,
   'mail_from_address' => 'drive',
@@ -39,11 +37,6 @@ $CONFIG = array (
   'mail_smtppassword' => '@@@DRIVE_SMTP_PASSWORD@@@',
   'mail_smtpport' => '587',
   'mail_smtpsecure' => 'tls',
-  'dbtype' => 'mysql',
-  'dbname' => 'nextcloud',
-  'dbhost' => 'mariadb',
-  'dbport' => '',
-  'dbuser' => 'nextcloud',
   'installed' => false,
   'user_backend_sql_raw' =>
     array (
