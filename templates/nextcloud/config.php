@@ -61,5 +61,7 @@ $CONFIG = array (
     ),
   'theme' => 'eelo',
   'loglevel' => 2,
+  'preview_max_x' => 1024,
+  'preview_max_y' => 1024,
 );
 ?>
