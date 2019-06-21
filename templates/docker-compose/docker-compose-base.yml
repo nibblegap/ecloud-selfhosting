@@ -136,7 +136,7 @@ services:
       - /mnt/repo-base/config-dynamic/automx/automx.conf:/etc/automx.conf
 
   create-account:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.3
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.6
     container_name: create-account
     restart: always
     environment:
