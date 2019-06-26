@@ -11,7 +11,11 @@ rm -f "$ENVFILE"
 generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
 
 source /mnt/repo-base/scripts/base.sh
-if ! echo "$ADD_DOMAINS" | grep -q "$DOMAIN" ; then
+if [ -z "$ADD_DOMAINS" ]; then
+    sed -i '/ADD_DOMAINS/d' "$ENVFILE"
+    echo "ADD_DOMAINS=$DOMAIN" >> "$ENVFILE"
+    source /mnt/repo-base/scripts/base.sh
+elif ! echo "$ADD_DOMAINS" | grep -q "$DOMAIN" ; then
     sed -i '/ADD_DOMAINS/d' "$ENVFILE"
     echo "ADD_DOMAINS=$ADD_DOMAINS,$DOMAIN" >> "$ENVFILE"
     source /mnt/repo-base/scripts/base.sh
@@ -43,7 +47,8 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 
 # finished .env file generation
 
-# fille autorenew config
+# fill autorenew config
+rm -f "/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat"
 echo "$DOMAIN,$VIRTUAL_HOST,mail.$DOMAIN,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
     echo "$CURDOMAIN" >> config-dynamic/letsencrypt/autorenew/ssl-domains.dat
 :; done
@@ -71,17 +76,25 @@ cat "templates/nginx/sites-enabled/welcome.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g
 echo ""
 echo ""
 echo "================================================================================================================================="
-echo "================================================================================================================================="
 echo "Please setup the following DNS records for your domains before you proceed (subsequent steps will fail if a record is missing):"
-echo ""
-echo "   mail.$DOMAIN A record to your public IP"
-echo "   For each domain in $ADD_DOMAINS add an A record (@) to your public IP"
-echo "   For each domain in $ADD_DOMAINS add an MX record (@, priority 10) towards mail.$DOMAIN.com."
-echo "   PTR record for your public IP towards mail.$DOMAIN.com (reverse DNS to match A record above)"
+echo "================================================================================================================================="
+tempfile=$(mktemp /tmp/ecloud.dns.XXXXXX)
+echo "RECORD,|,HOST,|,VALUE,|,Priority" >> "$tempfile"
+echo "------,|,----,|,-----,|,--------" >> "$tempfile"
+echo "A,|,mail.$DOMAIN,|,<Public IP>,|,-" >> "$tempfile"
+echo "$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
+    echo "A,|,$CURDOMAIN,|,<Public IP>,|,-" >> "$tempfile"
+:; done
+echo "$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
+    echo "MX,|,$CURDOMAIN,|,mail.$DOMAIN,|,10" >> "$tempfile"
+:; done
+echo "PTR(For reverse DNS),|,<Public IP>,|,mail.$DOMAIN,|,-" >> "$tempfile"
 echo ""
 echo "$VIRTUAL_HOST,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
-    echo "   CNAME record $CURDOMAIN towards mail.$DOMAIN."
+    echo "CNAME,|,$CURDOMAIN,|,mail.$DOMAIN,|,-" >> "$tempfile"
 :; done
+column "$tempfile" -t -s ","
+rm "$tempfile"
 echo "================================================================================================================================="
 echo "================================================================================================================================="
 echo ""
