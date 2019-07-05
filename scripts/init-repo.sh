@@ -1,25 +1,56 @@
 #!/bin/bash
 set -e
 
+function validateDomains {
+    INPUT="$1"
+    (INPUT=$(echo "$INPUT"| sed 's@;@,@g' | sed 's@ @,@g'); IFS=','; for DOMAIN in $INPUT; do echo "$DOMAIN" | xargs; done) | while read line; do echo "$line"; done | sort -u | while read line; do echo $line | grep -P '(?=^.{4,253}$)(^(?:[a-zA-Z0-9](?:(?:[a-zA-Z0-9\-]){0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$)'; done | tr "\n" "," | sed 's@,$@@g'
+}
+
 source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-commons.sh)
 
 cd "/mnt/repo-base/"
 ENVFILE="/mnt/repo-base/.env"
-rm -f "$ENVFILE"
 
-# Create .env file
-generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
+while true;
+do
+    rm -f "$ENVFILE"
+    # Create .env file
+    generateEnvFile deployment/questionnaire/questionnaire.dat deployment/questionnaire/answers.dat "$ENVFILE"
+    source /mnt/repo-base/scripts/base.sh
 
-source /mnt/repo-base/scripts/base.sh
-if [ -z "$ADD_DOMAINS" ]; then
+    VALIDATED_DOMAIN=$(validateDomains "$DOMAIN")
+
+    echo "$VALIDATED_DOMAIN" | grep -q "," && (echo "Error: You can specify only a single management domain, use the additional domains question for more domains - try again") && continue
+
+    if [ -z "$VALIDATED_DOMAIN" ]; then
+        echo "Error : Entering at least the managemnt domain is mandatory - try again"
+        continue
+    fi
+
+    VALIDATED_ADD_DOMAINS=$(validateDomains "$(echo $ADD_DOMAINS | sed "s@$VALIDATED_DOMAIN@@g")")
+
+    if [ -z "$VALIDATED_ADD_DOMAINS" ]; then
+        VALIDATED_ADD_DOMAINS="[N/A]"
+    fi
+
+    echo "Your management domain is: $VALIDATED_DOMAIN"
+    echo "Your additional domains are: $VALIDATED_ADD_DOMAINS"
+    read -r -p "Is this correct? (yes or no) " response   
+    if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+        break
+    fi
+done
+
+sed -i '/DOMAIN/d' "$ENVFILE"
+echo "DOMAIN=$VALIDATED_DOMAIN" >> "$ENVFILE"
+if [ "$VALIDATED_ADD_DOMAINS" == "[N/A]" ]; then
     sed -i '/ADD_DOMAINS/d' "$ENVFILE"
-    echo "ADD_DOMAINS=$DOMAIN" >> "$ENVFILE"
-    source /mnt/repo-base/scripts/base.sh
-elif ! echo "$ADD_DOMAINS" | grep -q "$DOMAIN" ; then
+    echo "ADD_DOMAINS=$VALIDATED_DOMAIN" >> "$ENVFILE"
+elif ! echo "$VALIDATED_ADD_DOMAINS" | grep -q "$VALIDATED_DOMAIN" ; then
     sed -i '/ADD_DOMAINS/d' "$ENVFILE"
-    echo "ADD_DOMAINS=$ADD_DOMAINS,$DOMAIN" >> "$ENVFILE"
-    source /mnt/repo-base/scripts/base.sh
+    echo "ADD_DOMAINS=$VALIDATED_ADD_DOMAINS,$VALIDATED_DOMAIN" >> "$ENVFILE"
 fi
+source /mnt/repo-base/scripts/base.sh
 
 DC_DIR="templates/docker-compose/"
 case $INSTALL_ONLYOFFICE in
@@ -161,5 +192,14 @@ docker-compose restart
 touch /mnt/repo-base/volumes/accounts/auth.file.done
 ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
 chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
+
+
+printf "$(date): Waiting for Nextcloud to finish installation"
+# sleep for 300 seconds
+for i in {0..300}; do
+  sleep 1
+  printf "."
+done
+
 
 bash scripts/postinstall.sh
