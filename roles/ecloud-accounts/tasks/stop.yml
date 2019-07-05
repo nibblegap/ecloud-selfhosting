@@ -1,0 +1,9 @@
+- name: Stopping accounts container
+  docker_container:
+    name: accounts
+    state: stopped
+
+- name: Stopping create-account container
+  docker_container:
+    name: create-account
+    state: stopped

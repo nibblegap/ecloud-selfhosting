@@ -1,0 +1,39 @@
+- name: Create Nextcloud mysql database and user
+  shell: |  
+    docker exec mariadb mysql --user=root --password="{{ ecloud_mysql_root_password }}" \
+        -e "CREATE USER '{{ ecloud_nextcloud_mysql_user }}'@'%' IDENTIFIED BY '{{ ecloud_nextcloud_mysql_password }}';"
+    docker exec mariadb mysql --user=root --password="{{ ecloud_mysql_root_password }}" \
+        -e "CREATE DATABASE {{ ecloud_nextcloud_mysql_database }} DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;"
+    docker exec mariadb mysql --user=root --password="{{ ecloud_mysql_root_password }}" \
+        -e "GRANT ALL PRIVILEGES ON {{ ecloud_nextcloud_mysql_database }}.* TO '{{ ecloud_nextcloud_mysql_user }}'@'%' WITH GRANT OPTION;"
+
+- name: Install Nextcloud
+  shell: |  
+    docker exec --user www-data nextcloud php occ maintenance:install \
+    --admin-user="{{ ecloud_nextcloud_admin_user }}" --admin-pass="{{ ecloud_nextcloud_admin_password }}" \
+    --admin-email="{{ user_alternate_email_for_signup }}" --database="mysql" --database-pass="{{ ecloud_nextcloud_mysql_password }}" \
+    --database-name="{{ ecloud_nextcloud_mysql_database }}" --database-host="mariadb" --database-user="{{ ecloud_nextcloud_mysql_user }}" \
+    --database-port="3306" --database-table-prefix=""
+
+- name: Configure Nextcloud
+  shell: |  
+    docker exec --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
+    docker exec --user www-data nextcloud php occ config:system:set trusted_domains 0 --value="{{ ecloud_domain }}"
+
+- name: Install Nextcloud Plugins
+  shell: |  
+    docker exec --user www-data nextcloud php /var/www/html/occ app:install calendar
+    docker exec --user www-data nextcloud php /var/www/html/occ app:install tasks
+    docker exec --user www-data nextcloud php /var/www/html/occ app:install notes
+    docker exec --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
+    docker exec --user www-data nextcloud php /var/www/html/occ app:install rainloop
+    docker exec --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
+
+- name: Install Nextcloud theme
+  shell: |  
+    wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz?private_token=qV5kExhz6mDY5QET8z56" -O "/tmp/nextcloud-theme.tar.gz"
+    tar -xzf "/tmp/nextcloud-theme.tar.gz" -C "/ecloud/volumes/nextcloud/html/themes/" --strip-components=1
+    chown www-data:www-data "/ecloud/volumes/nextcloud/html/themes/" -R
+    rm "/tmp/nextcloud-theme.tar.gz"
+    docker exec --user www-data nextcloud php /var/www/html/occ config:system:set theme --value eelo
+    docker exec --user www-data nextcloud php occ maintenance:mode --off

@@ -1,0 +1,29 @@
+- name: Create necessary directories for onlyoffice containers
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/volumes/onlyoffice/DocumentServer/data
+    - /ecloud/volumes/onlyoffice/DocumentServer/logs
+    - /ecloud/volumes/onlyoffice/MailServer/data
+    - /ecloud/volumes/onlyoffice/MailServer/data/certs
+    - /ecloud/volumes/onlyoffice/MailServer/logs
+    - /ecloud/volumes/onlyoffice/MailServer/mysql
+    - /ecloud/volumes/onlyoffice/CommunityServer/data
+    - /ecloud/volumes/onlyoffice/CommunityServer/mysql
+    - /ecloud/volumes/onlyoffice/CommunityServer/logs
+
+- name: Ensure onlyoffice documentserver docker image is pulled
+  docker_image:
+    name: "{{ docker_image_onlyoffice_documentserver }}"
+
+- name: Ensure onlyoffice mailserver docker image is pulled
+  docker_image:
+    name: "{{ docker_image_onlyoffice_mailserver }}"
+
+- name: Ensure onlyoffice communityserver docker image is pulled
+  docker_image:
+    name: "{{ docker_image_onlyoffice_communityserver }}"

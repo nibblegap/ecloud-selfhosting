@@ -1,0 +1,12 @@
+- import_tasks: "{{ role_path }}/tasks/setup.yml"
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/dns_configure.yml"
+  tags:
+    - setup
+    - dns-configure
+
+- import_tasks: "{{ role_path }}/tasks/docker_setup.yml"
+  tags:
+    - setup

@@ -1,0 +1,30 @@
+- name: Starting MariaDB container
+  docker_container:
+    name: mariadb
+    image: "{{ docker_image_mariadb }}"
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      MYSQL_ROOT_PASSWORD: "{{ ecloud_mysql_root_password }}"
+      MYSQL_DATABASE: "{{ ecloud_postfix_database }}"
+      MYSQL_USER: "{{ ecloud_postfix_user }}"
+      MYSQL_PASSWORD: "{{ ecloud_database_password }}"
+    volumes:
+      - /ecloud/volumes/mysql/db:/var/lib/mysql
+      - /ecloud/config/nextcloud/database:/docker-entrypoint-initdb.d
+
+- name: Starting Redis container
+  docker_container:
+    name: redis
+    image: "{{ docker_image_redis }}"
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    command: redis-server --appendonly yes
+    volumes:
+      - /ecloud/volumes/redis/db:/data

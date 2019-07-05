@@ -1,0 +1,58 @@
+- name: Upgrade all packages to the latest version
+  apt:
+    name: "*"
+    state: latest
+    update_cache: yes
+    force_apt_get: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- name: Ensure all APT package dependencies are installed (Ubuntu)
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - software-properties-common
+      - apache2-utils
+      - docker.io
+      - docker-compose
+      - gnupg2
+      - pass
+      - python3-pip
+      - virtualenv
+    state: present
+    update_cache: yes
+    force_apt_get: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+- pip:
+    name: docker
+    executable: pip3
+  
+- name: Remove dependencies that are no longer required
+  apt:
+    autoremove: yes
+    force_apt_get: yes
+  when: ansible_facts['distribution'] == "Ubuntu"
+
+
+- name: Fail if required variables are undefined
+  fail:
+    msg: "The `{{ item }}` variable must be defined and have a non-null value"
+  with_items:
+    - ecloud_domain
+    - ecloud_additional_domains
+    - ecloud_install_onlyoffice
+  when: "item not in vars or vars[item] is none"
+
+- name: Create ecloud directory structure
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud
+    - /ecloud/config
+    - /ecloud/volumes

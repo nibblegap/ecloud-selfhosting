@@ -1,0 +1,4 @@
+- name: Stopping nginx container
+  docker_container:
+    name: nginx
+    state: stopped

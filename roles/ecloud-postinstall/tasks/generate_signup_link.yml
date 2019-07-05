@@ -1,0 +1,18 @@
+- name: Generating new user signup link for ecloud server
+  shell: |  
+    touch /ecloud/volumes/accounts/auth.file.done
+    ACCOUNTS_UID=$(docker exec --user www-data accounts id -u | tr -d '\r')
+    chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /ecloud/volumes/accounts/auth.file.done
+    
+    AUTH_SECRET=$(tr -d -c "a-zA-Z0-9" < /dev/urandom | head -c 16)
+    echo "{{ new_user_email }}:$AUTH_SECRET" >> /ecloud/volumes/accounts/auth.file
+    SIGNUP_URL="https://welcome.{{ ecloud_domain }}/?authmail={{ new_user_email }}&authsecret=$AUTH_SECRET"
+    echo "The new user can sign up now at $SIGNUP_URL"
+    
+    #send mail to user with signup link
+    echo "You can now sign up for your {{ ecloud_domain }} account at $SIGNUP_URL" | docker exec -i mailserver sendmail -f "drive@{{ ecloud_domain }}" -t "{{ new_user_email }}" -s "Signup for {{ ecloud_domain }}"
+  register: newuserinfo
+
+- name: "===============================<---New User Sign Up Link--->===================================="
+  debug:
+    msg: "{{ newuserinfo.stdout.split('\n') }}"

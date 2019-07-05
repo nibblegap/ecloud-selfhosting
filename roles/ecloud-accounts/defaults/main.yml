@@ -1,0 +1,2 @@
+docker_image_welcome: "registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.2"
+docker_image_create_account: "registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.6"

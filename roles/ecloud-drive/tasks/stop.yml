@@ -1,0 +1,4 @@
+- name: Stopping nextcloud container
+  docker_container:
+    name: nextcloud
+    state: stopped

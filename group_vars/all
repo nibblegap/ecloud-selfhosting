@@ -1,0 +1,28 @@
+# MUST SPECIFY
+ecloud_domain: "<domain-name>"
+ecloud_additional_domains: []
+user_alternate_email_for_signup: "<user-email>"
+ecloud_install_onlyoffice: false
+ecloud_gitlab_docker_repo_user: "<e-foundation-gitlab-username>"
+ecloud_gitlab_docker_repo_password: "<e-foundation-gitlab-password>"
+
+# DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING
+ecloud_gitlab_docker_repo: "registry.gitlab.e.foundation:5000"
+ecloud_all_domains: "{{ [ ecloud_domain ] + ecloud_additional_domains }}"
+ecloud_mysql_root_password: "{{ lookup('password', 'credentials/mysql_root_password length=20') }}"
+ecloud_nextcloud_admin_user: "ncadmin"
+ecloud_nextcloud_admin_password: "{{ lookup('password', 'credentials/nextcloud_admin_password length=20') }}"
+ecloud_nextcloud_mysql_database: "ncdb"
+ecloud_nextcloud_mysql_user: "ncmysqluser"
+ecloud_nextcloud_mysql_password: "{{ lookup('password', 'credentials/nextcloud_mysql_password length=20') }}"
+ecloud_smtp_password: "{{ lookup('password', 'credentials/smtp_password length=20') }}"
+ecloud_drive_smtp_password: "{{ lookup('password', 'credentials/drive_smtp_password length=20') }}"
+ecloud_rspamd_password: "{{ lookup('password', 'credentials/rspamd_password length=20') }}"
+ecloud_postfix_database: "postfix"
+ecloud_postfix_user: "postfix"
+ecloud_postfix_admin_ssh_password: "{{ lookup('password', 'credentials/postfix_admin_ssh_password length=20') }}" 
+ecloud_postfix_superadmin_password: "{{ lookup('password', 'credentials/postfix_superadmin_password length=20') }}" 
+ecloud_database_password: "{{ lookup('password', 'credentials/database_password length=20') }}"
+ecloud_database_admin: "phpmyadmin"
+ecloud_database_admin_password: "{{ lookup('password', 'credentials/database_admin_password length=20') }}"
+ecloud_create_account_password: "{{ lookup('password', 'credentials/create_account_password length=20') }}"

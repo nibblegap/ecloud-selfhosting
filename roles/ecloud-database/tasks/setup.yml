@@ -1,0 +1,19 @@
+- name: Create necessary directories for mariadb and redis container
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/volumes/mysql/db
+    - /ecloud/config/nextcloud/database
+    - /ecloud/volumes/redis/db
+
+- name: Ensure mariadb Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_mariadb }}"
+
+- name: Ensure redis Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_redis }}"

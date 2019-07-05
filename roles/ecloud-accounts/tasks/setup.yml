@@ -1,0 +1,22 @@
+- name: Create necessary directories for accounts container
+  file:
+    path: /ecloud/volumes/accounts
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+
+- name: Log into e-foundation private docker repository
+  docker_login:
+    registry: "{{ ecloud_gitlab_docker_repo }}"
+    username: "{{ ecloud_gitlab_docker_repo_user }}"
+    password: "{{ ecloud_gitlab_docker_repo_password }}"
+    reauthorize: yes
+
+- name: Ensure accounts Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_welcome }}"
+
+- name: Ensure create-account Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_create_account }}"

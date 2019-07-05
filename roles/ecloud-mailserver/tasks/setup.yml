@@ -1,0 +1,42 @@
+- name: Create necessary directories for mailserver container
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/volumes/mail
+    - /ecloud/config/mail/dovecot
+    - /ecloud/config/automx
+
+- name: Copy mailserver configuration to server
+  copy:
+    src: "{{ role_path }}/files/dovecot/"
+    dest: /ecloud/config/mail/dovecot
+
+- name: Copy automx configuration to server
+  template:
+    src: "{{ role_path }}/templates/automx.j2"
+    dest: /ecloud/config/automx/automx.conf
+    owner: www-data
+    group: www-data
+
+- name: Log into e-foundation private docker repository
+  docker_login:
+    registry: "{{ ecloud_gitlab_docker_repo }}"
+    username: "{{ ecloud_gitlab_docker_repo_user }}"
+    password: "{{ ecloud_gitlab_docker_repo_password }}"
+    reauthorize: yes
+
+- name: Ensure mailserver Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_mailserver }}"
+
+- name: Ensure postfixadmin Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_postfixadmin }}"
+
+- name: Ensure automx Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_automx }}"

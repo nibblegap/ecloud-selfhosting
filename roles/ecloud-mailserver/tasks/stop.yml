@@ -1,0 +1,14 @@
+- name: Stopping mailserver container
+  docker_container:
+    name: mailserver
+    state: stopped
+
+- name: Stopping postfixadmin container
+  docker_container:
+    name: postfixadmin
+    state: stopped
+
+- name: Stopping automx container
+  docker_container:
+    name: automx
+    state: stopped

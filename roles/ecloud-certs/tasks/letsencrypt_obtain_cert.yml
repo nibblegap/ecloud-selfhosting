@@ -1,0 +1,57 @@
+- debug:
+    msg: "Dealing with SSL certificate retrieval for domain: {{ domain_name }}"
+  tags:
+  - setup
+
+- set_fact:
+    domain_name_certificate_path: "/ecloud/config/letsencrypt/certstore/live/{{ domain_name }}/fullchain.pem"
+  tags:
+  - setup
+
+- name: Check if a certificate for the domain already exists
+  stat:
+    path: "{{ domain_name_certificate_path }}"
+  register: domain_name_certificate_path_stat
+  tags:
+    - setup
+
+- set_fact:
+    domain_name_needs_cert: "{{ not domain_name_certificate_path_stat.stat.exists }}"
+  tags:
+    - setup
+
+- debug:
+    msg: "Certificates are already present. Skipping certificate retrivel!"
+  when: "not domain_name_needs_cert"
+  tags:
+    - setup
+
+- name: Attempt SSL certificate retrieval with Certbot
+  shell: >-
+    docker run 
+    -t 
+    --rm 
+    -v /ecloud/config/letsencrypt/certstore:/etc/letsencrypt 
+    -p 0.0.0.0:80:80 -p 0.0.0.0:443:443 
+    {{ docker_image_letsencrypt }} 
+    certonly 
+    --non-interactive 
+    --agree-tos 
+    -m admin@{{ domain_name }} 
+    -d {{ domain_name }} 
+    --standalone
+  when: domain_name_needs_cert|bool
+  register: result_certbot_direct
+  ignore_errors: true
+  tags:
+    - setup
+
+- name: Fail if all SSL certificate retrieval attempts failed
+  fail:
+    msg: |
+      Failed to obtain a certificate directly using Let's encrypt certbot
+      and no existing certificate is present as {{ domain_name_certificate_path }}
+      See above for details.
+  when: "domain_name_needs_cert and result_certbot_direct.failed"
+  tags:
+    - setup

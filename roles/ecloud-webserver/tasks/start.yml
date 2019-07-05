@@ -1,0 +1,18 @@
+- name: Starting nginx webserver container
+  docker_container:
+    image: "{{ docker_image_nginx }}"
+    name: nginx
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    ports:
+      - "80:8000"
+      - "443:4430"
+    volumes:
+      - /ecloud/config/nginx/sites-enabled:/etc/nginx/conf.d/
+      - /ecloud/config/nginx/params:/etc/nginx/params/
+      - /ecloud/config/nginx/passwds:/passwds
+      - /ecloud/config/letsencrypt/certstore:/certs
+      - /ecloud/config/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge

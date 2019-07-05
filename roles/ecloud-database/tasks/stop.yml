@@ -1,0 +1,9 @@
+- name: Stopping mariadb container
+  docker_container:
+    name: mariadb
+    state: stopped
+
+- name: Stopping redis container
+  docker_container:
+    name: redis
+    state: stopped

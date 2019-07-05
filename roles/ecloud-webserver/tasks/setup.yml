@@ -1,0 +1,64 @@
+- name: Create necessary directories for nginx webserver container
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/config/nginx
+    - /ecloud/config/nginx/params
+    - /ecloud/config/nginx/passwds
+    - /ecloud/config/nginx/sites-enabled
+
+- name: Copy nginx configuration to server
+  copy:
+    src: "{{ role_path }}/files/params/"
+    dest: /ecloud/config/nginx/params
+
+- name: Copy autoconfig nginx configuration to server
+  template:
+    src: "{{ role_path }}/templates/autoconfig.j2"
+    dest: "/ecloud/config/nginx/sites-enabled/autoconfig.{{ item }}.conf"
+    owner: root
+    group: root
+  with_items: "{{ ecloud_all_domains }}"
+
+- name: Copy autodiscover nginx configuration to server
+  template:
+    src: "{{ role_path }}/templates/autodiscover.j2"
+    dest: "/ecloud/config/nginx/sites-enabled/autodiscover.{{ item }}.conf"
+    owner: root
+    group: root
+  with_items: "{{ ecloud_all_domains }}"
+
+- name: Copy onlyoffice nginx configuration to server
+  template:
+    src: "{{ role_path }}/templates/onlyoffice.j2"
+    dest: "/ecloud/config/nginx/sites-enabled/onlyoffice.conf"
+    owner: root
+    group: root
+  when: ecloud_install_onlyoffice|bool
+
+- name: Copy other nginx configuration to server
+  template:
+    src: "{{ role_path }}/templates/{{ item }}.j2"
+    dest: "/ecloud/config/nginx/sites-enabled/{{ item }}.conf"
+    owner: root
+    group: root
+  with_items:
+    - nextcloud
+    - postfixadmin
+    - rspamd
+    - welcome
+
+- name: Log into e-foundation private docker repository
+  docker_login:
+    registry: "{{ ecloud_gitlab_docker_repo }}"
+    username: "{{ ecloud_gitlab_docker_repo_user }}"
+    password: "{{ ecloud_gitlab_docker_repo_password }}"
+    reauthorize: yes
+
+- name: Ensure nginx webserver Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_nginx }}"

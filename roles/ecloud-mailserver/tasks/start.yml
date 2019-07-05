@@ -1,0 +1,66 @@
+- name: Starting mailserver container
+  docker_container:
+    image: "{{ docker_image_mailserver }}"
+    name: mailserver
+    domainname: "{{ ecloud_domain }}" # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
+    hostname: mail
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    ports:
+      - "25:25"       # SMTP                - Required
+      - "110:110"     # POP3       STARTTLS - Optional - For webmails/desktop clients
+      - "143:143"     # IMAP       STARTTLS - Optional - For webmails/desktop clients
+    # - "465:465"     # SMTPS      SSL/TLS  - Optional - Enabled for compatibility reason, otherwise disabled
+      - "587:587"     # Submission STARTTLS - Optional - For webmails/desktop clients
+      - "993:993"     # IMAPS      SSL/TLS  - Optional - For webmails/desktop clients
+      - "995:995"     # POP3S      SSL/TLS  - Optional - For webmails/desktop clients
+      - "4190:4190"   # SIEVE      STARTTLS - Optional - Recommended for mail filtering
+    env:
+      DBPASS: "{{ ecloud_database_password }}"
+      RSPAMD_PASSWORD: "{{ ecloud_rspamd_password }}"
+      ADD_DOMAINS: "{{ ecloud_all_domains|join(',') }}"
+      ENABLE_POP3: "{{ enable_pop3 }}"
+      DISABLE_RATELIMITING: "{{ disable_ratelimiting }}"
+      RELAY_NETWORKS: 172.16.0.0/12
+    volumes:
+      - /ecloud/volumes/mail:/var/mail
+      - /ecloud/config/letsencrypt/certstore:/etc/letsencrypt
+      - /ecloud/config/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
+      - /ecloud/config/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
+      - /ecloud/config/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+
+- name: Starting postfixadmin container
+  docker_container:
+    image: "{{ docker_image_postfixadmin }}"
+    name: postfixadmin
+    domainname: "{{ ecloud_domain }}"
+    hostname: mail
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      DBPASS: "{{ ecloud_database_password }}"
+      POSTFIXADMIN_SSH_PASSWORD: "{{ ecloud_postfix_admin_ssh_password }}"
+
+- name: Starting automx container
+  docker_container:
+    image: "{{ docker_image_automx }}"
+    name: automx
+    domainname: "{{ ecloud_domain }}"
+    hostname: automx
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      VIRTUAL_HOST: "{{ automx_virtual_host }}"
+      DOMAIN: "{{ ecloud_domain }}"
+      HOSTNAME: automx
+    volumes:
+      - /ecloud/config/automx/automx.conf:/etc/automx.conf

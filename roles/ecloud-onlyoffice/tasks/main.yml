@@ -1,0 +1,15 @@
+- import_tasks: "{{ role_path }}/tasks/setup.yml"
+  when: ecloud_install_onlyoffice|bool
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/start.yml"
+  when: ecloud_install_onlyoffice|bool
+  tags:
+    - setup
+    - start
+
+- import_tasks: "{{ role_path }}/tasks/stop.yml"
+  when: ecloud_install_onlyoffice|bool
+  tags:
+    - stop

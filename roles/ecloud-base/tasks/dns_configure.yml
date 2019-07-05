@@ -1,0 +1,47 @@
+- name: Generating DNS Records
+  shell: |
+    rm -f /ecloud/config/dnsrecords.txt
+    echo "RECORD,|,HOST,|,VALUE,|,PRIORITY" >> /ecloud/config/dnsrecords.txt
+    echo "------,|,----,|,-----,|,--------" >> /ecloud/config/dnsrecords.txt
+    echo "A,|,mail.{{ ecloud_domain }},|,<Public IP>,|,-" >> /ecloud/config/dnsrecords.txt
+- shell: |
+    echo "A,|,{{ item }},|,<Public IP>,|,-" >> /ecloud/config/dnsrecords.txt
+  with_items: "{{ ecloud_all_domains }}"
+- shell: |
+    echo "MX,|,{{ item }},|,<Public IP>,|,10" >> /ecloud/config/dnsrecords.txt
+  with_items: "{{ ecloud_all_domains }}"
+- shell: |
+    echo "PTR (For Reverse DNS),|,<Public IP>,|,mail.{{ ecloud_domain }},|,-" >> /ecloud/config/dnsrecords.txt
+- shell: |
+    echo "CNAME,|,autoconfig.{{ item }},|,<Public IP>,|,-" >> /ecloud/config/dnsrecords.txt
+    echo "CNAME,|,autodiscover.{{ item }},|,<Public IP>,|,-" >> /ecloud/config/dnsrecords.txt
+  with_items: "{{ ecloud_all_domains }}"
+- shell: |
+    echo "CNAME,|,spam.{{ ecloud_domain }},|,mail.{{ ecloud_domain }},|,-" >> /ecloud/config/dnsrecords.txt
+    echo "CNAME,|,welcome.{{ ecloud_domain }},|,mail.{{ ecloud_domain }},|,-" >> /ecloud/config/dnsrecords.txt
+    echo "CNAME,|,office.{{ ecloud_domain }},|,mail.{{ ecloud_domain }},|,-" >> /ecloud/config/dnsrecords.txt
+    column "/ecloud/config/dnsrecords.txt" -t -s ","
+  register: dnsrecords
+
+- name: "===================================<-DNS Records->======================================="
+  debug:
+    msg: "{{ dnsrecords.stdout.split('\n') }}"
+
+- name: "Confirm DNS records"
+  pause:
+    prompt: 'Please verify that the DNS records are configured correctly! Press "Enter" to continue.'
+
+- name: "Checking if DNS is configured correctly"
+  shell: |
+    IP=$(dig mail.{{ ecloud_domain }}| grep mail.{{ ecloud_domain }} | grep -v '^;' | awk '{ print $NF }')
+    if [ -z "$IP" ]
+    then
+        echo "mail.{{ ecloud_domain }} not resolving to IP"
+        exit 1
+    fi
+    PTR=$(nslookup $IP | grep "name = mail.{{ ecloud_domain }}" | wc -l)
+    if [ "1" != "$PTR" ]
+    then
+        echo "$IP not resolving to mail.{{ ecloud_domain }} (PTR record missing or wrong.."
+        exit 1
+    fi

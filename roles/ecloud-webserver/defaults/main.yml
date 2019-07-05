@@ -1,0 +1,1 @@
+docker_image_nginx: "registry.gitlab.e.foundation:5000/e/infra/docker-nginx:1.15"

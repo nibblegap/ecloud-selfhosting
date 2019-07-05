@@ -1,0 +1,48 @@
+- name: Starting onlyoffice documentserver container
+  docker_container:
+    image: "{{ docker_image_onlyoffice_documentserver }}"
+    name: onlyoffice-document-server
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    volumes:
+     - /ecloud/volumes/onlyoffice/DocumentServer/data:/var/www/onlyoffice/Data
+     - /ecloud/volumes/onlyoffice/DocumentServer/logs:/var/log/onlyoffice
+
+- name: Starting onlyoffice mailserver container
+  docker_container:
+    image: "{{ docker_image_onlyoffice_mailserver }}"
+    name: onlyoffice-mail-server
+    hostname: cleus.eu
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    volumes:
+     - /ecloud/volumes/onlyoffice/MailServer/data:/var/vmail
+     - /ecloud/volumes/onlyoffice/MailServer/data/certs:/etc/pki/tls/mailserver
+     - /ecloud/volumes/onlyoffice/MailServer/logs:/var/log
+     - /ecloud/volumes/onlyoffice/MailServer/mysql:/var/lib/mysql
+
+- name: Starting onlyoffice communityserver container
+  docker_container:
+    image: "{{ docker_image_onlyoffice_communityserver }}"
+    name: onlyoffice-community-server
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      DOCUMENT_SERVER_PORT_80_TCP_ADDR: onlyoffice-document-server
+      MAIL_SERVER_DB_HOST: onlyoffice-mail-server
+    ports:
+      - 5222:5222
+    volumes:
+     - /ecloud/volumes/onlyoffice/CommunityServer/data:/var/www/onlyoffice/Data
+     - /ecloud/volumes/onlyoffice/CommunityServer/mysql:/var/lib/mysql
+     - /ecloud/volumes/onlyoffice/CommunityServer/logs:/var/log/onlyoffice
+     - /ecloud/volumes/onlyoffice/DocumentServer/data:/var/www/onlyoffice/DocumentServerData

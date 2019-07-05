@@ -1,0 +1,39 @@
+- name: Starting Accounts container
+  docker_container:
+    image: "{{ docker_image_welcome }}"
+    name: accounts
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      DOMAINS: "welcome.{{ ecloud_domain }}"
+      DOMAIN: "{{ ecloud_domain }}"
+      IS_WELCOME: true
+      PFDB_HOST: mariadb
+      PFDB_DB: "{{ ecloud_postfix_database }}"
+      PFDB_USR: "{{ ecloud_postfix_user }}"
+      PFDB_PW: "{{ ecloud_database_password }}"
+      SMTP_HOST: "mail.{{ ecloud_domain }}"
+      SMTP_FROM: "welcome@{{ ecloud_domain }}"
+      SMTP_PW: "{{ ecloud_smtp_password }}"
+      CREATE_ACCOUNT_PASSWORD: "{{ ecloud_create_account_password }}"
+    volumes:
+      - /ecloud/volumes/accounts:/var/accounts
+
+- name: Starting create-account container
+  docker_container:
+    image: "{{ docker_image_create_account }}"
+    name: create-account
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      NEXTCLOUD_ADMIN_USER: "{{ ecloud_nextcloud_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ ecloud_nextcloud_admin_password }}"
+      POSTFIXADMIN_SSH_PASSWORD: "{{ ecloud_postfix_admin_ssh_password }}"
+      DOMAIN: "{{ ecloud_domain }}"
+      CREATE_ACCOUNT_PASSWORD: "{{ ecloud_create_account_password }}"

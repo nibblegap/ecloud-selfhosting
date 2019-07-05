@@ -1,0 +1,13 @@
+- name: Create postfix database schema
+  uri:
+    url: https://mail.{{ ecloud_domain }}/setup.php
+    follow_redirects: all
+
+- name: Configure postfixadmin for first use
+  shell: |  
+    docker exec postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add "{{ user_alternate_email_for_signup }}" --password "{{ ecloud_postfix_superadmin_password }}" --password2 "{{ ecloud_postfix_superadmin_password }}" --superadmin
+    # Adding domains to postfixadmin
+    echo "{{ ecloud_all_domains|join(',') }}" | tr "," "\n" | while read line; do docker exec -t postfixadmin /postfixadmin/scripts/postfixadmin-cli domain add $line; done
+    # Adding email accounts used by system senders (drive, welcome, ...)
+    docker exec postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add drive@"{{ ecloud_domain }}" --password "{{ ecloud_drive_smtp_password }}" --password2 "{{ ecloud_drive_smtp_password }}" --name "drive" --email-other "{{ user_alternate_email_for_signup }}"
+    docker exec postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add welcome@"{{ ecloud_domain }}" --password "{{ ecloud_smtp_password }}" --password2 "{{ ecloud_smtp_password }}" --name "welcome" --email-other "{{ user_alternate_email_for_signup }}"

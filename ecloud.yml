@@ -1,0 +1,14 @@
+- name: "Set up a ecloud server"
+  hosts: "all"
+  become: true
+
+  roles:
+    - ecloud-base
+    - ecloud-certs
+    - ecloud-database
+    - ecloud-mailserver
+    - ecloud-drive
+    - ecloud-accounts
+    - ecloud-onlyoffice
+    - ecloud-webserver
+    - ecloud-postinstall

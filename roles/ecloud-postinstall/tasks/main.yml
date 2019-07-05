@@ -1,0 +1,34 @@
+- import_tasks: "{{ role_path }}/tasks/nextcloud.yml"
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/rainloop.yml"
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/postfixadmin.yml"
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/dkim_record.yml"
+  tags:
+    - setup
+    - dkim_record
+
+- import_tasks: "{{ role_path }}/tasks/admin_credentials.yml"
+  tags:
+    - setup
+    - admin_credentials
+
+- import_tasks: "{{ role_path }}/tasks/generate_signup_link.yml"
+  vars:
+    new_user_email: "{{ user_alternate_email_for_signup }}"
+  tags:
+    - setup
+    - generate_signup_link
+
+- name: "===============================<   Success!!! Important Instructions!!  >===================================="
+  debug:
+    msg: "Please note the DKIM DNS record for domain, Admin Credentials for the ecloud server and New user Sign Up link from the output of the previous tasks. Click on the sign up link to create your first e-cloud account! Enjoy!"
+  tags:
+    - setup

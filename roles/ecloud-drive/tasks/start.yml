@@ -1,0 +1,21 @@
+- name: Starting Nextcloud container
+  docker_container:
+    image: "{{ docker_image_nextcloud }}"
+    name: nextcloud
+    restart_policy: always
+    restart: yes
+    state: started
+    networks:
+      - name: serverbase
+    env:
+      MYSQL_DATABASE: "{{ ecloud_nextcloud_mysql_database }}"
+      MYSQL_USER: "{{ ecloud_nextcloud_mysql_user }}"
+      MYSQL_PASSWORD: "{{ ecloud_nextcloud_mysql_password }}"
+      MYSQL_HOST: mariadb
+      NEXTCLOUD_ADMIN_USER: "{{ ecloud_nextcloud_admin_user }}"
+      NEXTCLOUD_ADMIN_PASSWORD: "{{ ecloud_nextcloud_admin_password }}"
+    volumes:
+      - /ecloud/volumes/nextcloud/html:/var/www/html/
+      - /ecloud/volumes/nextcloud/custom_apps:/var/www/html/custom_apps/
+      - /ecloud/volumes/nextcloud/config:/var/www/html/config/
+      - /ecloud/volumes/nextcloud/data:/var/www/html/data/

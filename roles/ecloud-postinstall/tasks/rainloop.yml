@@ -1,0 +1,23 @@
+- name: Create necessary directories for rainloop
+  file:
+    path: /ecloud/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains
+    owner: www-data
+    group: www-data
+    state: directory
+    mode: '0755'
+
+- name: Copy rainloop configuration to server
+  copy:
+    src: "{{ role_path }}/files/domain-config.ini"
+    dest: "/ecloud/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/{{ item }}.ini"
+    owner: www-data
+    group: www-data
+  with_items: "{{ ecloud_all_domains }}"
+
+- name: Ensure nextcloud and rainloop has right permissiosn
+  file:
+    path: /ecloud/volumes/nextcloud
+    state: directory
+    recurse: yes
+    owner: www-data
+    group: www-data

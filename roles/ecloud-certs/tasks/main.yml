@@ -1,0 +1,18 @@
+- import_tasks: "{{ role_path }}/tasks/setup.yml"
+  tags:
+    - setup
+
+- name: Obtaining certificates using Let's Encrypt Certbot
+  include_tasks: "{{ role_path }}/tasks/letsencrypt_obtain_cert.yml"
+  with_flattened:
+    - "{{ ecloud_all_domains }}"
+    - "mail.{{ ecloud_domain }}"
+    - "spam.{{ ecloud_domain }}"
+    - "welcome.{{ ecloud_domain }}"
+    - "office.{{ ecloud_domain }}"
+    - "{{ ecloud_all_domains | map('regex_replace','^','autoconfig.') | list }}"
+    - "{{ ecloud_all_domains | map('regex_replace','^','autodiscover.') | list }}"
+  loop_control:
+    loop_var: domain_name
+  tags:
+    - setup

@@ -1,11 +1,2 @@
-# ide files
-.idea
-*.iml
-
-# docker config files
-docker-compose.yml
-.env
-
-# data for the local installation
-config-dynamic/
-volumes/
+*.retry
+credentials/

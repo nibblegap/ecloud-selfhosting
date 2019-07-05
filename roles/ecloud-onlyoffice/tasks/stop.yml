@@ -1,0 +1,14 @@
+- name: Stopping onlyoffice-document-server container
+  docker_container:
+    name: onlyoffice-document-server
+    state: stopped
+
+- name: Stopping onlyoffice-mail-server container
+  docker_container:
+    name: onlyoffice-mail-server
+    state: stopped
+
+- name: Stopping onlyoffice-community-server container
+  docker_container:
+    name: onlyoffice-community-server
+    state: stopped

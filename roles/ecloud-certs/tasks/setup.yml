@@ -1,0 +1,14 @@
+- name: Create Let's Encrypt config directory
+  file:
+    path: "{{ item }}"
+    owner: root
+    group: root
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/config/letsencrypt/certstore
+    - /ecloud/config/letsencrypt/acme-challenge
+
+- name: Ensure certbot Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_letsencrypt }}"

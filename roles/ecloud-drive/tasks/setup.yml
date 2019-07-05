@@ -1,0 +1,24 @@
+- name: Create necessary directories for Nextcloud container
+  file:
+    path: "{{ item }}"
+    owner: www-data
+    group: www-data
+    state: directory
+    mode: '0755'
+  with_items:
+    - /ecloud/volumes/nextcloud
+    - /ecloud/volumes/nextcloud/html
+    - /ecloud/volumes/nextcloud/custom_apps
+    - /ecloud/volumes/nextcloud/config
+    - /ecloud/volumes/nextcloud/data
+
+- name: Copy Nextcloud configuration to server
+  template:
+    src: "{{ role_path }}/templates/config.j2"
+    dest: /ecloud/volumes/nextcloud/config/config.php
+    owner: www-data
+    group: www-data
+
+- name: Ensure Nextcloud Docker image is pulled
+  docker_image:
+    name: "{{ docker_image_nextcloud }}"

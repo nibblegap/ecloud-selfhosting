@@ -1,0 +1,10 @@
+- name: Gathering DKIM record for domain
+  shell: |  
+    # display DKIM DNS setup info/instructions to the user
+    echo "Please add the following records to your domain's DNS configuration:"
+    find /ecloud/volumes/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
+  register: dkimrecordinfo
+
+- name: "===============================<   DKIM Record for Domain   >===================================="
+  debug:
+    msg: "{{ dkimrecordinfo.stdout.split('\n') }}"

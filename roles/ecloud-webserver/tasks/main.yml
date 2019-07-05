@@ -1,0 +1,12 @@
+- import_tasks: "{{ role_path }}/tasks/setup.yml"
+  tags:
+    - setup
+
+- import_tasks: "{{ role_path }}/tasks/start.yml"
+  tags:
+    - setup
+    - start
+
+- import_tasks: "{{ role_path }}/tasks/stop.yml"
+  tags:
+    - stop

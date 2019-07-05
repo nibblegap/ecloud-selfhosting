@@ -1,0 +1,10 @@
+- name: Ensure Docker is running
+  service: 
+    name: "docker"
+    state: started
+    enabled: yes
+
+- name: Creating Docker network
+  docker_network:
+    name: serverbase
+    driver: bridge

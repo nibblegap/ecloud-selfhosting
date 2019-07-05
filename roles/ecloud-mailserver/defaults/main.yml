@@ -1,0 +1,7 @@
+docker_image_mailserver: "hardware/mailserver:1.1-stable"
+docker_image_postfixadmin: "registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.2"
+docker_image_automx: "registry.gitlab.e.foundation:5000/e/infra/docker-mailstack:automx-0.1.0"
+
+automx_virtual_host: "{{ ecloud_all_domains | map('regex_replace','^','autoconfig.') | list | join(',') }},{{ ecloud_all_domains | map('regex_replace','^','autodiscover.') | list | join(',') }}"
+enable_pop3: false
+disable_ratelimiting: false

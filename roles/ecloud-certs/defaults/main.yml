@@ -1,0 +1,1 @@
+docker_image_letsencrypt: "certbot/certbot:v0.33.1"

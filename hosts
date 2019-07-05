@@ -1,0 +1,1 @@
+<domain-name> ansible_host=<ip-address> ansible_ssh_user=<root-user> ansible_ssh_pipelining=yes ansible_python_interpreter=/usr/bin/python3
