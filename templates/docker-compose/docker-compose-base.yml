@@ -101,7 +101,7 @@ services:
               - mariadb
 
   nextcloud:
-    image: nextcloud:15.0.8
+    image: nextcloud:15.0.10
     container_name: nextcloud
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE_NC}
