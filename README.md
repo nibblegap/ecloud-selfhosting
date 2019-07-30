@@ -31,7 +31,7 @@ but you will probably have problems with sending email (most providers will clas
 First, create your VPS and point the domain at it. Then set the reverse DNS to the same domain
 (this is usually possible in the VPS settings on the hoster's website).
 
-In the following text, $DOMAIN refers to the domain that you configured for your selfhosting server.
+In the following text, `$DOMAIN` refers to the domain that you configured for your selfhosting server.
 
 ### Start bootstrap process
 
@@ -48,26 +48,26 @@ $ ssh root@$DOMAIN
 A few services can't be configured automatically and need manual account creation to secure them:
 
 **Rainloop**: It uses a hardcoded login by default, and can be accessed by anyone with a Nextcloud account.
-To change it, visit https://$DOMAIN/apps/rainloop/app/?admin and enter username: `admin` and password: `12345`.
+To change it, visit `https://$DOMAIN/apps/rainloop/app/?admin` and enter username: `admin` and password: `12345`.
 Go to the security tab to change the password.
 
-**OnlyOffice**: Open office.$DOMAIN, then follow the instructions to add a new admin user. This
+**OnlyOffice**: Open `office.$DOMAIN`, then follow the instructions to add a new admin user. This
 is only necessary if you chose to install OnlyOffice.
 
 ## Available Services
 
 You can find login information for these services by running `bash /mnt/repo-base/scripts/showInfo.sh`.
 
-- $DOMAIN: File hosting with [Nextcloud](https://nextcloud.com/), email with
-           [rainloop.net](https://www.rainloop.net/)
-- welcome.$DOMAIN: Allows users to sign up for a new account (you can create signup links with
+- `$DOMAIN`: File hosting with [Nextcloud](https://nextcloud.com/), email with
+           [rainloop](https://www.rainloop.net/)
+- `welcome.$DOMAIN`: Allows users to sign up for a new account (you can create signup links with
                    `bash /mnt/repo-base/scripts/generate-signup-link.sh`)
-- office.$DOMAIN: Create and edit office documents ([onlyoffice.com](https://www.onlyoffice.com/))
+- `office.$DOMAIN`: Create and edit office documents ([OnlyOffice](https://www.onlyoffice.com/))
 
 ## Administration
 
-- spam.$DOMAIN: Email spam filter ([rspamd.com](https://www.rspamd.com/))
-- mail.$DOMAIN: Administrate email and create accounts ([postfixadmin.sourceforge.net](http://postfixadmin.sourceforge.net/))
+- `spam.$DOMAIN`: Email spam filter ([rspamd](https://www.rspamd.com/))
+- `mail.$DOMAIN`: Administrate email and create accounts ([postfixadmin](http://postfixadmin.sourceforge.net/))
 
 ## Setting up /e/ OS with /e/ selfhosting
 
