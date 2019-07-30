@@ -80,7 +80,7 @@ For a new installation, enter the selfhosting domain in the fist time usage wiza
 
 If you already have /e/ OS installed, you can add your selfhosting domain under
 
-Settings->Users & accounts->Add account->/e/ account, and choose using "Login with another account":
+Settings->Users & accounts->Add account->/e/ account, and specify your custom server URL using the "Login with another account" field.
 
 
 
