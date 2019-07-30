@@ -3,6 +3,11 @@
 This project allows you to install ecloud services on your own server. It is the same
 setup that is used on [ecloud.global](https://ecloud.global).
 
+The project is currently in beta. You should have some experience with Linux server
+administration if you want to use it. The current setup makes updates difficult,
+so manual intervention might be necessary. In the future, we will switch to Ansible
+for deployment to simplify this.
+
 ## Requirements
 
 For the full setup, the following server hardware is recommended:
