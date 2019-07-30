@@ -2,7 +2,7 @@
 
 For the full setup, the following server hardware is recommended:
 
-- 2 core CPU
+- 2 core CPU (x86/x86-64 only, ARM not supported yet)
 - 4 GB RAM
 - 20 GB disk space
 
