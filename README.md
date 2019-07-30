@@ -8,7 +8,7 @@ For the full setup, the following server hardware is recommended:
 
 For the setup without OnlyOffice, requirements are a bit lower:
 
-- 1 core CPU
+- 1 core CPU (x86/x86-64 only, ARM not supported yet)
 - 2 GB RAM
 - 15 GB disk space
 
