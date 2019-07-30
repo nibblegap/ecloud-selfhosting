@@ -82,7 +82,9 @@ If you already have /e/ OS installed, you can add your selfhosting domain under
 
 Settings->Users & accounts->Add account->/e/ account, and specify your custom server URL using the "Login with another account" field.
 
+[](https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
 
+![screenshot](image https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
 
 ## License
 
