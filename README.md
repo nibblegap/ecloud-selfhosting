@@ -80,7 +80,9 @@ For a new installation, enter the selfhosting domain in the fist time usage wiza
 
 If you already have /e/ OS installed, you can add your selfhosting domain under
 During installation, add your selfhosting domain in the first time usage wizard under
-Settings->accounts->add /e/ account.
+Settings->accounts->add /e/ account using "Login with another account":
+
+
 
 ## License
 
