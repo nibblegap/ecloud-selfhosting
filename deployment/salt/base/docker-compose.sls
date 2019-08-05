@@ -30,7 +30,7 @@ docker-running:
 
 cron-renew-ssl-certs:
   cron.present:
-    - name: bash /mnt/repo-base/scripts/ssl-renew.sh
+    - name: bash /mnt/repo-base/scripts/ssl-renew.sh >> /mnt/repo-base/volumes/letsencrypt/letsencrypt-cron.log 2>&1
     - user: root
     - special: '@daily'
     - identifier: 'refresh-tls-certs'
