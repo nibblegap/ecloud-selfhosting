@@ -1,6 +1,6 @@
 
   nginx:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-nginx:1.16
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-nginx:1.17
     container_name: nginx
     restart: always
     networks:
