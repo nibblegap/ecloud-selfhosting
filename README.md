@@ -1,6 +1,6 @@
 # Ecloud Selfhosting (Beta)
 
-This project allows you to install ecloud services on your own server. It is the same
+This project allows you to install ecloud services on your own server. It is a similar
 setup that is used on [ecloud.global](https://ecloud.global).
 
 The project is currently in beta. You should have some experience with Linux server
@@ -25,6 +25,8 @@ For the setup without OnlyOffice, requirements are a bit lower:
 Disk space only refers to the basic installation. You will need additional space for any emails,
 documents and files you store on the server.
 
+Additionally you will need to have a minimum of one domain registered.
+
 ## Installation
 
 ### Create Ubuntu VPS
@@ -33,7 +35,14 @@ The project should work with any Ubuntu VPS. Suggestions include [Hetzner](https
 or [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml). Hosting at home is also possible in principle,
 but you will probably have problems with sending email (most providers will classify your email as spam).
 
-First, create your VPS and point the domain at it. Then set the reverse DNS to the same domain
+The below example will use `yourdomain.com` to explain the (initial) DNS setup you need to have for this to work.
+
+TBD this is maybe a bit too technical?
+First, create your VPS (note down its IP, 1.2.3.4 in this example) and create two A records in the zone file of your domain on your DNS server (or the corresponding webui of the domain registrar):
+ - A record from @ -> 1.2.3.4 (@ stands for the main domain itself - but not as a placeholder in this text, literally use @!)
+ - A record from mail -> 1.2.3.4 (CNAME would NOT be sufficient!)
+
+Then set the reverse DNS of 1.2.3.4 to mail.yourdomain.com.
 (this is usually possible in the VPS settings on the hoster's website).
 
 In the following text, `$DOMAIN` refers to the domain that you configured for your selfhosting server.
@@ -45,7 +54,51 @@ Login to server as root. Execute this command and follow its on-screen instructi
 ```
 $ ssh root@$DOMAIN
 # wget https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-generic.sh
-# bash bootstrap-generic.sh https://gitlab.e.foundation/e/priv/infra/compose
+# TBD this pasth will change once made public (/priv/):
+# bash bootstrap-generic.sh https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting
+```
+The setup script will ask you to input some details of your setup (like your domain name) and to setup additional DNS records (the two A records plus the PTR record were set already above).
+
+Example session for yourdomain.com:
+```
+bash bootstrap-generic.sh https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting
+[...]
+Resolving deltas: 100% (681/681), done.
+System update and packages installation ..
+[...]
+Total run time: 148.039 s
+Enter your mailserver (management) domain (e.g. domainA.com):
+yourdomain.com
+Optionally enter additional domain(s) (comma separated, no white spaces) to handle mail for (e.g. domainB.com,domainC.com) or just press enter if you need none:
+
+Enter alternative email:
+someone@example.org
+Do you want to install OnlyOffice? [y/n]
+n
+Your management domain is: yourdomain.com
+Your additional domains are: [N/A]
+Is this correct? (yes or no) yes
+=================================================================================================================================
+Please setup the following DNS records for your domains before you proceed (subsequent steps will fail if a record is missing):
+=================================================================================================================================
+
+RECORD                |  HOST                         |  VALUE                |  Priority
+------                |  ----                         |  -----                |  --------
+A                     |  mail.yourdomain.com          |  <Public IP>          |  -
+A                     |  yourdomain.com               |  <Public IP>          |  -
+MX                    |  yourdomain.com               |  mail.yourdomain.com  |  10
+PTR(For reverse DNS)  |  <Public IP>                  |  mail.yourdomain.com  |  -
+CNAME                 |  autoconfig.yourdomain.com    |  mail.yourdomain.com  |  -
+CNAME                 |  autodiscover.yourdomain.com  |  mail.yourdomain.com  |  -
+CNAME                 |  spam.yourdomain.com          |  mail.yourdomain.com  |  -
+CNAME                 |  welcome.yourdomain.com       |  mail.yourdomain.com  |  -
+=================================================================================================================================
+=================================================================================================================================
+
+Type 'yes' and hit ENTER to confirm that you have setup DNS properly before we continue:
+yes
+[...]
+
 ```
 
 ### Manual account creation
@@ -68,6 +121,7 @@ You can find login information for these services by running `bash /mnt/repo-bas
 - `welcome.$DOMAIN`: Allows users to sign up for a new account (you can create signup links with
                    `bash /mnt/repo-base/scripts/generate-signup-link.sh`)
 - `office.$DOMAIN`: Create and edit office documents ([OnlyOffice](https://www.onlyoffice.com/))
+  (only when you answered yes to the question "Install OnlyOffice?" during setup obviously)
 
 ## Administration
 
