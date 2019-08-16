@@ -36,6 +36,7 @@ SMTP_PW=$(grep ^SMTP_PW= "$ENVFILE" | awk -F= '{ print $NF }')
 
 SMTP_HOST=$(grep ^SMTP_HOST= "$ENVFILE" | awk -F= '{ print $NF }')
 
+MYSQL_ROOT_PASSWORD=$(grep ^MYSQL_ROOT_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
 
 # the encoding/decoding is taken from here: https://stackoverflow.com/questions/296536/how-to-urlencode-data-for-curl-command/10660730#10660730
 urlencode() {

@@ -28,7 +28,7 @@ echo "Installing nextcloud plugins"
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install notes
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_external
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
 
@@ -60,7 +60,9 @@ docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin
 
 # Adding domains to postfix is done by docker exec instead of docker-compose exec on purpose. Reason: with compose the loop aborts after the first item for an unknown reason
 echo "Adding domains to Postfix"
-echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker exec -t postfixadmin /postfixadmin/scripts/postfixadmin-cli domain add $line; done
+# The password_expiry parameter is only a workaround, and does not have any effect
+# https://github.com/postfixadmin/postfixadmin/issues/280#issuecomment-511788887
+echo "$ADD_DOMAINS" | tr "," "\n" | while read line; do docker exec -t postfixadmin /postfixadmin/scripts/postfixadmin-cli domain add $line --password_expiry 0; done
 
 echo "Adding email accounts used by system senders (drive, ...)"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL

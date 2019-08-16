@@ -24,6 +24,8 @@ echo "$EMAIL:$AUTH_SECRET" >> /mnt/repo-base/volumes/accounts/auth.file
 SIGNUP_URL="https://welcome.$DOMAIN/?authmail=$(urlencode "$EMAIL")&authsecret=$AUTH_SECRET"
 echo "The new user can sign up now at $SIGNUP_URL"
 
-echo -e "Subject:Signup for $DOMAIN
+echo -e "to:$EMAIL
+from:drive@$DOMAIN
+subject:Signup for $DOMAIN
 You can now sign up for your $DOMAIN account at $SIGNUP_URL" | \
-docker-compose exec -T eelomailserver sendmail -f "drive@$DOMAIN" -t "$EMAIL"
+    docker exec -i $(docker-compose ps -q eelomailserver) sendmail -t
