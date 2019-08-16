@@ -37,16 +37,18 @@ services:
       - redis
 
   postfixadmin:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:0.1.2
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:admin-smtp-password
     container_name: postfixadmin
     domainname: ${DOMAIN}
-    hostname: mail
     restart: always
     networks:
       - serverbase
     environment:
       - DBPASS=${DBPASS}
+      - DOMAIN=${DOMAIN}
       - POSTFIXADMIN_SSH_PASSWORD=${POSTFIXADMIN_SSH_PASSWORD}
+      - SMTPHOST=${SMTP_HOST}
+      - ADMIN_SMTP_PASSWORD=${DRIVE_SMTP_PASSWORD}
     depends_on:
       - eelomailserver
       - mariadb
@@ -103,13 +105,6 @@ services:
   nextcloud:
     image: nextcloud:15.0.10
     container_name: nextcloud
-    environment:
-      - MYSQL_DATABASE=${MYSQL_DATABASE_NC}
-      - MYSQL_USER=${MYSQL_USER_NC}
-      - MYSQL_PASSWORD=${MYSQL_PASSWORD_NC}
-      - MYSQL_HOST=mariadb
-      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
-      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
     restart: always
     networks:
       - serverbase
@@ -136,7 +131,7 @@ services:
       - /mnt/repo-base/config-dynamic/automx/automx.conf:/etc/automx.conf
 
   create-account:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:0.1.6
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:trigger-nextcloud-account
     container_name: create-account
     restart: always
     environment:

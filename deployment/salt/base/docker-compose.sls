@@ -42,6 +42,13 @@ cron-check-updates:
     - special: '@daily'
     - identifier: 'check-updates'
 
+cron-sync-emails:
+  cron.present:
+    - name: bash /mnt/repo-base/scripts/sync-emails.sh
+    - user: root
+    - special: '@hourly'
+    - identifier: 'sync-emails'
+
 /etc/docker/daemon.json:
   file.managed:
     - source: salt://docker-daemon.json
