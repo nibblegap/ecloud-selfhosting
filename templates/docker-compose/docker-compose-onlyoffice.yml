@@ -1,7 +1,7 @@
 
   onlyoffice-documentserver:
     image: onlyoffice/documentserver:5.2.6.3
-    container_name: onlyoffice-document-server
+    container_name: onlyoffice-documentserver
     stdin_open: true
     restart: always
     networks:
@@ -12,7 +12,6 @@
   onlyoffice-mail-server:
     image: onlyoffice/mailserver:1.6.35
     container_name: onlyoffice-mail-server
-    hostname: cleus.eu
     stdin_open: true
     restart: always
     networks:

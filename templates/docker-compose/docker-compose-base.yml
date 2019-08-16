@@ -3,7 +3,7 @@ version: '2.1'
 services:
   eelomailserver:
     image: hardware/mailserver:1.1-stable
-    container_name: mailserver
+    container_name: eelomailserver
     domainname: ${DOMAIN} # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
     hostname: mail
     restart: always
@@ -77,28 +77,28 @@ services:
     volumes:
       - /mnt/repo-base/volumes/redis/db:/data
 
-  accounts:
-        image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.2
-        container_name: accounts
-        environment:
-         - DOMAINS=${VHOSTS_ACCOUNTS}
-         - DOMAIN=${DOMAIN}
-         - IS_WELCOME=true
-         - PFDB_HOST=mariadb
-         - PFDB_DB=${PFDB_DB}
-         - PFDB_USR=${PFDB_USR}
-         - PFDB_PW=${DBPASS}
-         - SMTP_HOST=${SMTP_HOST}
-         - SMTP_FROM=${SMTP_FROM}
-         - SMTP_PW=${SMTP_PW}
-         - CREATE_ACCOUNT_PASSWORD=${CREATE_ACCOUNT_PASSWORD}
-        restart: always
-        networks:
-          - serverbase
-        volumes:
-              - /mnt/repo-base/volumes/accounts:/var/accounts
-        depends_on:
-              - mariadb
+  welcome:
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.2
+    container_name: welcome
+    environment:
+      - DOMAINS=${VHOSTS_ACCOUNTS}
+      - DOMAIN=${DOMAIN}
+      - IS_WELCOME=true
+      - PFDB_HOST=mariadb
+      - PFDB_DB=${PFDB_DB}
+      - PFDB_USR=${PFDB_USR}
+      - PFDB_PW=${DBPASS}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_PW=${SMTP_PW}
+      - CREATE_ACCOUNT_PASSWORD=${CREATE_ACCOUNT_PASSWORD}
+    restart: always
+    networks:
+      - serverbase
+    volumes:
+      - /mnt/repo-base/volumes/accounts:/var/accounts
+    depends_on:
+      - mariadb
 
   nextcloud:
     image: nextcloud:15.0.10
