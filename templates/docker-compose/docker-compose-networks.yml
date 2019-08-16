@@ -19,7 +19,7 @@
       - create-account
       - automx
       - postfixadmin
-      - accounts
+      - welcome
       - eelomailserver
       #- onlyoffice-community-server
 
