@@ -1,9 +1,18 @@
 # Ecloud Selfhosting (Beta)
 
-This project allows you to install ecloud services on your own server. It is the same
-setup that is used on [ecloud.global](https://ecloud.global).
+This project allows users to install ecloud services on their own server, using a single identity.
 
-The project is currently in beta. You should have some experience with Linux server
+This way, a user can use [/e/OS](https://e.foundation/products/) on a smartphone while self-hosting and syncing data:
+ 1. pictures, videos, files...
+ 2. calendar
+ 3. contacts
+ 4. notes
+ 5. tasks
+ 6. device configuration...
+
+The setup, which is relying on NextCloud, OnlyOffice, Postfix, and other open source components, is very close to the one used on [ecloud.global](https://ecloud.global).
+
+Important note: this project is currently in beta. You should have some experience with Linux server
 administration if you want to use it. The current setup makes updates difficult,
 so manual intervention might be necessary. In the future, we will switch to Ansible
 for deployment to simplify this.
@@ -27,13 +36,20 @@ documents and files you store on the server.
 
 ## Installation
 
-### Create Ubuntu VPS
+### Create an Ubuntu server instance
 
-The project should work with any Ubuntu VPS. Suggestions include [Hetzner](https://www.hetzner.com/cloud)
-or [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml). Hosting at home is also possible in principle,
-but you will probably have problems with sending email (most providers will classify your email as spam).
+The project should work with any Ubuntu server (VPS, dedicated server...) versions 16.04 and 18.04. 
 
-First, create your VPS and point the domain at it. Then set the reverse DNS to the same domain
+Debian server should work as well, though it has not been tested yet.
+
+Suggestions include:
+ - [Hetzner](https://www.hetzner.com/cloud)
+ - [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml)
+ - [Scaleway](https://scaleway.com)
+ 
+Hosting at home is also possible in principle, but you will probably have problems with sending email (email providers may classify your email as spam).
+
+First, create your hosting server and point the domain to it. Then set the reverse DNS to the same domain
 (this is usually possible in the VPS settings on the hoster's website).
 
 In the following text, `$DOMAIN` refers to the domain that you configured for your selfhosting server.
@@ -76,11 +92,13 @@ You can find login information for these services by running `bash /mnt/repo-bas
 
 ## Setting up /e/ OS with /e/ selfhosting
 
-For a new installation, enter the selfhosting domain in the fist time usage wizard.
+For a new installation, enter login (email address - username@domain), password and selfhosting domain FQDN in the fist time usage wizard.
 
 If you already have /e/ OS installed, you can add your selfhosting domain under
 
-Settings->Users & accounts->Add account->/e/ account, and specify your custom server URL using the "Server URL" field in "Login with another account":
+    Settings->Users & accounts->Add account->/e/ account
+
+using login (email address - username@domain), password, and specifying your custom server URL using the "Server URL" (https//domain) field in "Login with another account":
 
 [](https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
 
@@ -89,4 +107,3 @@ Settings->Users & accounts->Add account->/e/ account, and specify your custom se
 ## License
 
 The project is licensed under [AGPL](LICENSE).
-
