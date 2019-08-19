@@ -36,18 +36,20 @@ documents and files you store on the server.
 
 Additionally you will need to have a minimum of **one domain registered**. You can register a domain name from many providers.
 
+Note about TLS certificates: a certificate will be added automatically during setup, using Certbot.
+
 ## Installation
 
 ### Create an Ubuntu server instance
 
-The project should work with any Ubuntu server (Virtual Private Server (VPS), dedicated server...) versions 16.04 and 18.04. 
+The project should work with any Ubuntu server (Virtual Private Server (VPS), dedicated server...) versions 18.04 (should work on 16.04). 
 
 Debian server should work as well, though it has not been tested yet.
 
 Suggestions include:
  - [Hetzner](https://www.hetzner.com/cloud)
- - [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml)
  - [Scaleway](https://scaleway.com)
+ - [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml)
  
 Hosting at home is also possible in principle, but you will probably have problems with sending email (email providers may classify your email as spam).
 
