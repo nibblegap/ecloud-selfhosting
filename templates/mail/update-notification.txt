@@ -1,5 +1,4 @@
-Subject:Update available for @@@DOMAIN@@@
-A new update is available. Please login via ssh and run the following
-command:
+Subject:Update available for ecloud selfhosting
+Please visit the following link to see the update instructions:
 
-bash /mnt/repo-base/scripts/update.sh
+https://gitlab.e.foundation/e/infra/ecloud-selfhosting/-/tags/@@@VERSION@@@
