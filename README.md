@@ -85,13 +85,13 @@ Execute this command and follow its on-screen instructions:
 ```
 $ ssh root@$DOMAIN
 # wget https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-generic.sh
-# bash bootstrap-generic.sh https://gitlab.e.foundation/XXXTO BE UPDATED WITH CORRECT PATHXXXXXX/ecloud-selfhosting
+# bash bootstrap-generic.sh https://gitlab.e.foundation/e/infra/ecloud-selfhosting
 ```
 The setup script will ask you to input some details of your setup (like your domain name) and to setup additional DNS records (the two A records plus the PTR record were set already above).
 
 Example session for yourdomain.com:
 ```
-bash bootstrap-generic.sh https://gitlab.e.foundation/XXXTO BE UPDATED WITH CORRECT PATHXXXXXX/ecloud-selfhostingg
+bash bootstrap-generic.sh https://gitlab.e.foundation/e/infra/ecloud-selfhosting
 [...]
 Resolving deltas: 100% (681/681), done.
 System update and packages installation ..
@@ -176,9 +176,9 @@ If you already have /e/ OS installed, you can add your selfhosting domain under
 
 using login (email address - username@yourdomain.com), password, and specifying your custom server URL using the "Server URL" (https://yourdomain.com) field in "Login with another account":
 
-[](https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
+[](https://gitlab.e.foundation/e/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
 
-![screenshot](https://gitlab.e.foundation/e/priv/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
+![screenshot](https://gitlab.e.foundation/e/infra/ecloud-selfhosting/raw/1e3cb6cd56ade9d3489d30f56ea941edce4533c8/e_os_custom_server_screenshot.jpg)
 
 ## License
 
