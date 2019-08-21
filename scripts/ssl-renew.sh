@@ -1,6 +1,8 @@
 #!/bin/bash
 #set -e
 
+source /mnt/repo-base/scripts/base.sh
+
 CONFIG=/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat
 CONFIG_DIR=/mnt/repo-base/config-dynamic/letsencrypt/certstore
 LIVE_DIR=$CONFIG_DIR/live
