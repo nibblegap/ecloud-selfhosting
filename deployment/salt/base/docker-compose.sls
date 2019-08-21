@@ -18,6 +18,7 @@ install-deps:
       - docker-compose
       - gnupg2
       - pass
+      - certbot
     - require:
       - upgrade-all
 
