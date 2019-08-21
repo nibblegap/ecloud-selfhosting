@@ -70,7 +70,7 @@ services:
       - /mnt/repo-base/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
 
   redis:
-    image: redis:4.0-alpine
+    image: redis:5.0-alpine
     container_name: redis
     restart: always
     networks:
