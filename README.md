@@ -35,6 +35,10 @@ Disk space only refers to the basic installation. You will need additional space
 documents and files you store on the server.
 
 Additionally you will need to have a minimum of **one domain registered**. You can register a domain name from many providers.
+For example (non-exhaustive list):
+ - [Gandi](https://gandi.net)
+ - [Hosteurope](https://hosteurope.de)
+ - [Godaddy](https://godaddy.com)
 
 Note about TLS certificates: a certificate will be added automatically during setup, using Certbot.
 
@@ -46,7 +50,7 @@ The project should work with any Ubuntu server (Virtual Private Server (VPS), de
 
 Debian server should work as well, though it has not been tested yet.
 
-Suggestions include:
+Suggestions include (non-exhaustive list):
  - [Hetzner](https://www.hetzner.com/cloud)
  - [Scaleway](https://scaleway.com)
  - [OVH](https://www.ovh.co.uk/vps/vps-ssd.xml)
@@ -74,7 +78,9 @@ In the following text, `$DOMAIN` refers to the domain (`youdomain.com`) that you
 
 ### Start bootstrap process
 
-Login to server as root. Execute this command and follow its on-screen instructions:
+Login to the server via ssh as root (on Linux/macOS the ssh client is available out of the box, on Windows you need to use an ssh client like [Putty](https://www.putty.org/) for example).
+
+Execute this command and follow its on-screen instructions:
 
 ```
 $ ssh root@$DOMAIN
@@ -140,17 +146,25 @@ is only necessary if you chose to install OnlyOffice.
 
 You can find login information for these services by running `bash /mnt/repo-base/scripts/showInfo.sh`.
 
+Sample output of showInfo.sh:
+```
+Your password for the SPAM filter mgmt UI (https://spam.yourdomain.com) is: secret
+Your admin credentials for nextcloud are (https://yourdomain.com) is:  user/password
+Your credentials for postfix admin (https://mail.yourdomain.com) are:  user/password
+
+```
+
 - `$DOMAIN`: File hosting with [Nextcloud](https://nextcloud.com/), email with
            [rainloop](https://www.rainloop.net/)
 - `welcome.$DOMAIN`: Allows users to sign up for a new account (you can create signup links with
-                   `bash /mnt/repo-base/scripts/generate-signup-link.sh`)
+                   `bash /mnt/repo-base/scripts/generate-signup-link.sh`, account creation with this "self service" is only possible when such a link is generated)
 - `office.$DOMAIN`: Create and edit office documents ([OnlyOffice](https://www.onlyoffice.com/))
   (only when you answered yes to the question "Install OnlyOffice?" during setup obviously)
 
 ## Administration
 
 - `spam.$DOMAIN`: Email spam filter ([rspamd](https://www.rspamd.com/))
-- `mail.$DOMAIN`: Administrate email and create accounts ([postfixadmin](http://postfixadmin.sourceforge.net/))
+- `mail.$DOMAIN`: Administrate email and create accounts ([postfixadmin](http://postfixadmin.sourceforge.net/)) when not using the "self service" `welcome.$DOMAIN` - this requires you to set a intermediate password during account creation.
 
 ## Setting up /e/ OS with /e/ selfhosting
 
