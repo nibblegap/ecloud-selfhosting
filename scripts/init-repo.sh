@@ -187,7 +187,7 @@ docker-compose restart
 
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/repo-base/volumes/accounts/auth.file.done
-ACCOUNTS_UID=$(docker-compose exec --user www-data accounts id -u | tr -d '\r')
+ACCOUNTS_UID=$(docker-compose exec --user www-data welcome id -u | tr -d '\r')
 chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
 
 
