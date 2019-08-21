@@ -176,10 +176,6 @@ cat /mnt/repo-base/templates/nextcloud/config.php | sed "s/@@@DOMAIN@@@/$DOMAIN/
     sed "s/@@@DRIVE_SMTP_PASSWORD@@@/$DRIVE_SMTP_PASSWORD/g" > "/mnt/repo-base/volumes/nextcloud/config/config.php"
 chown www-data:www-data "/mnt/repo-base/volumes/nextcloud/" -R
 
-# Login to /e/ registry | not necessary when going public
-echo "Please login with your gitlab.e.foundation username and password"
-docker login registry.gitlab.e.foundation:5000
-
 docker-compose up -d
 
 echo -e "\nHack: restart everything to ensure that database and nextcloud are initialized"
@@ -190,13 +186,11 @@ touch /mnt/repo-base/volumes/accounts/auth.file.done
 ACCOUNTS_UID=$(docker-compose exec --user www-data welcome id -u | tr -d '\r')
 chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
 
-
 printf "$(date): Waiting for Nextcloud to finish installation"
 # sleep for 300 seconds
 for i in {0..300}; do
   sleep 1
   printf "."
 done
-
 
 bash scripts/postinstall.sh

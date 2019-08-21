@@ -33,7 +33,7 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
 
 echo "Installing Nextcloud theme"
-wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz?private_token=qV5kExhz6mDY5QET8z56" -O "/tmp/nextcloud-theme.tar.gz"
+wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz" -O "/tmp/nextcloud-theme.tar.gz"
 tar -xzf "/tmp/nextcloud-theme.tar.gz" -C "volumes/nextcloud/html/themes/" --strip-components=1
 chown www-data:www-data "volumes/nextcloud/html/themes/" -R
 rm "/tmp/nextcloud-theme.tar.gz"

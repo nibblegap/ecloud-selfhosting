@@ -36,13 +36,6 @@ cron-renew-ssl-certs:
     - special: '@daily'
     - identifier: 'refresh-tls-certs'
 
-cron-check-updates:
-  cron.present:
-    - name: bash /mnt/repo-base/scripts/check-update.sh
-    - user: root
-    - special: '@daily'
-    - identifier: 'check-updates'
-
 cron-sync-emails:
   cron.present:
     - name: bash /mnt/repo-base/scripts/sync-emails.sh
