@@ -37,7 +37,7 @@ services:
       - redis
 
   postfixadmin:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:admin-smtp-password
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:1.0.0
     container_name: postfixadmin
     domainname: ${DOMAIN}
     restart: always
@@ -131,7 +131,7 @@ services:
       - /mnt/repo-base/config-dynamic/automx/automx.conf:/etc/automx.conf
 
   create-account:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:trigger-nextcloud-account
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-create-account:1.0.0
     container_name: create-account
     restart: always
     environment:
