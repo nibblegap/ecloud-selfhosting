@@ -18,7 +18,6 @@ PFDB_DB=postfix;default
 PFDB_USR=postfix;default
 MYSQL_ROOT_PASSWORD=@@@generate@@@:20@
 DBPASS=@@@generate@@@:20@
-DBA_PASSWORD=@@@generate@@@:16@
 DRIVE_SMTP_PASSWORD=@@@generate@@@:16@
 POSTFIXADMIN_SSH_PASSWORD=@@@generate@@@:20@
 CREATE_ACCOUNT_PASSWORD=@@@generate@@@:20@
@@ -28,7 +27,6 @@ PFA_SUPERADMIN_PASSWORD=1@@@generate@@@:16@2
 # fixed defaults
 ENABLE_POP3=false;default
 DISABLE_RATELIMITING=false;default
-DBA_USER=phpmyadmin;default
 
 # To be constructed repo specific
 #SMTP_FROM=welcome@domainA.com
