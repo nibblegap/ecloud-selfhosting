@@ -39,7 +39,6 @@ services:
   postfixadmin:
     image: registry.gitlab.e.foundation:5000/e/infra/docker-postfixadmin:1.0.0
     container_name: postfixadmin
-    domainname: ${DOMAIN}
     restart: always
     networks:
       - serverbase
