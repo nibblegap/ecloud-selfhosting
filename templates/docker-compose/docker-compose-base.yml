@@ -53,7 +53,7 @@ services:
       - mariadb
 
   mariadb:
-    image: mariadb:10.3
+    image: mariadb:10.2
     container_name: mariadb
     restart: always
     networks:
