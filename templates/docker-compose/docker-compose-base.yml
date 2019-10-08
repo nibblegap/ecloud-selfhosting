@@ -102,7 +102,7 @@ services:
       - mariadb
 
   nextcloud:
-    image: nextcloud:15.0.10
+    image: nextcloud:15.0.12
     container_name: nextcloud
     restart: always
     networks:
