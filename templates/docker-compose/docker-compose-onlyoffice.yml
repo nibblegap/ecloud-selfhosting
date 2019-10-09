@@ -13,6 +13,7 @@
     image: onlyoffice/mailserver:1.6.35
     container_name: onlyoffice-mail-server
     stdin_open: true
+    hostname: onlyoffice.${DOMAIN}
     restart: always
     networks:
       - serverbase
