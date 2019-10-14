@@ -64,6 +64,7 @@ services:
       - MYSQL_DATABASE=${PFDB_DB}
       - MYSQL_USER=${PFDB_USR}
       - MYSQL_PASSWORD=${DBPASS}
+      - MYSQL_INITDB_SKIP_TZINFO=1
     volumes:
       - /mnt/repo-base/volumes/mysql/db:/var/lib/mysql
       - /mnt/repo-base/config-dynamic/nextcloud/database:/docker-entrypoint-initdb.d
