@@ -8,15 +8,10 @@ Delete User Cccount
     - search for the username on the top right
     - delete the correct account
 
-2. delete nextcloud files and data
-    - Note: we need to delete this manually at the moment, maybe it will work automatically with the user_external plugin.
+2. delete nextcloud account
     - `ssh user@$DOMAIN`
     - `cd /mnt/repo-base/`
-    - `sudo rm -r volumes/nextcloud/data/user@$DOMAIN/`
-    - `sudo docker-compose exec mariadb mysql -u root -p`
-    - `use nextcloud;`
-    - `DELETE FROM calendars WHERE principaluri='principals/users/user@$DOMAIN';`
-    - `DELETE FROM addressbooks WHERE principaluri='principals/users/user@$DOMAIN';`
+    - `sudo docker-compose exec -u www-data nextcloud php occ user:delete user@$DOMAIN`
 
 4. onlyoffice data
     - go to [https://office.$DOMAIN/products/people/#sortorder=ascending](https://office.$DOMAIN/products/people/#sortorder=ascending)
