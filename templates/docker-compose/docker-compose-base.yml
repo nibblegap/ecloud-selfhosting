@@ -79,7 +79,7 @@ services:
       - /mnt/repo-base/volumes/redis/db:/data
 
   welcome:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:0.2.2
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:1.0.0
     container_name: welcome
     environment:
       - DOMAINS=${VHOSTS_ACCOUNTS}
