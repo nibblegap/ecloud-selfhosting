@@ -85,6 +85,7 @@ Execute this command and follow its on-screen instructions:
 ```
 $ ssh root@$DOMAIN
 # wget https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-generic.sh
+# in case you are just testing and do not need trusted certificates (avoid being ratelimied due to testing) run: export LE_STAGING="--staging"
 # bash bootstrap-generic.sh https://gitlab.e.foundation/e/infra/ecloud-selfhosting
 ```
 The setup script will ask you to input some details of your setup (like your domain name) and to setup additional DNS records (the two A records plus the PTR record were set already above).
