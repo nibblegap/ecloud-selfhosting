@@ -42,14 +42,27 @@ $CONFIG = array (
   'mail_smtppassword' => '@@@DRIVE_SMTP_PASSWORD@@@',
   'mail_smtpport' => '587',
   'mail_smtpsecure' => 'tls',
-  'installed' => false,
-  'user_backends' => array(
-    array(
-        'class' => 'OC_User_IMAP',
-        'arguments' => array(
-            'mail.@@@DOMAIN@@@', 993, 'ssl'
-        ),
+  'installed' => false,,
+  'user_backend_sql_raw' =>
+  array (
+    'db_type' => 'mariadb',
+    'db_host' => 'mariadb',
+    'db_port' => '3306',
+    'db_name' => 'postfix',
+    'db_user' => 'postfix',
+    'db_password' => 'NL8Jqyqt_PF1',
+    'mariadb_charset' => 'utf8mb4',
+    'queries' =>
+    array (
+      'get_password_hash_for_user' => 'SELECT substr(password,15,3000) AS password_hash FROM mailbox WHERE username = BINARY :username',
+      'user_exists' => 'SELECT EXISTS(SELECT 1 FROM mailbox WHERE username = :username)',
+      'get_users' => 'select username as fqda from mailbox where username like :search or name like :search',
+      'set_password_hash_for_user' => 'UPDATE mailbox SET password = CONCAT(\'{SHA512-CRYPT}\',:new_password_hash) WHERE username = BINARY :username',
+      'get_display_name' => 'SELECT name FROM mailbox where username = BINARY :username',
+      'set_display_name' => 'UPDATE mailbox SET name = :new_display_name WHERE username = BINARY :username',
+      'count_users' => 'SELECT COUNT(*) FROM mailbox',
     ),
+    'hash_algorithm_for_new_passwords' => 'sha512',
   ),
   'theme' => 'eelo',
   'loglevel' => 2,

@@ -28,7 +28,7 @@ echo "Installing nextcloud plugins"
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install notes
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_external
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
 
