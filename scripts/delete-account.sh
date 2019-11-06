@@ -5,8 +5,19 @@ source /mnt/repo-base/scripts/base.sh
 
 ACCOUNT=$1
 
-docker-compose exec -T -u www-data nextcloud php occ user:delete "$ACCOUNT"
+if ! docker-compose exec -T -u www-data nextcloud php occ user:info "$ACCOUNT" | grep "$ACCOUNT" --quiet; then
+    echo "Error: The account $ACCOUNT does not exist"
+    exit
+fi
 
-docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox delete "$ACCOUNT"
+echo "Please confirm to delete the user account $ACCOUNT including all data. This is not reversible."
+read -r -p "[y/N] " response
+if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
+    echo "Deleting Nextcloud account"
+    docker-compose exec -T -u www-data nextcloud php occ user:delete "$ACCOUNT"
 
-# TODO: delete onlyoffice account???
+    echo "Deleting email account"
+    docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox delete "$ACCOUNT"
+
+    # TODO: delete onlyoffice account???
+fi
