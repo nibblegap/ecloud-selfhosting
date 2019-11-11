@@ -6,7 +6,7 @@ source /mnt/repo-base/scripts/base.sh
 SPAM_UI=$(grep server_name $(grep -l mailserver:11334 /mnt/repo-base/config-dynamic/nginx/sites-enabled/*.conf) | sort -u | head -n1 | awk '{ print $2 }' | sed 's/;$//g')
 RSPAMD_PASSWORD=$(grep ^RSPAMD_PASSWORD= "$ENVFILE"  | awk -F= '{ print $NF }')
 
-NEXTCLOUD_UI=$(grep server_name $(grep -l nextcloud:80 /mnt/repo-base/config-dynamic/nginx/sites-enabled/*.conf) | sort -u | head -n1 | awk '{ print $2 }' | sed 's/;$//g')
+NEXTCLOUD_UI=$(grep server_name $(grep -l nextcloud:9000 /mnt/repo-base/config-dynamic/nginx/sites-enabled/*.conf) | sort -u | head -n1 | awk '{ print $2 }' | sed 's/;$//g')
 NEXTCLOUD_ADMIN_USER=$(grep ^NEXTCLOUD_ADMIN_USER= "$ENVFILE" | awk -F= '{ print $NF }')
 NEXTCLOUD_ADMIN_PASSWORD=$(grep ^NEXTCLOUD_ADMIN_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
 
