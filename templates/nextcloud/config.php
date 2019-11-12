@@ -42,7 +42,7 @@ $CONFIG = array (
   'mail_smtppassword' => '@@@DRIVE_SMTP_PASSWORD@@@',
   'mail_smtpport' => '587',
   'mail_smtpsecure' => 'tls',
-  'installed' => false,,
+  'installed' => false,
   'user_backend_sql_raw' =>
   array (
     'db_type' => 'mariadb',
