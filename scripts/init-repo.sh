@@ -103,6 +103,9 @@ cat "templates/nginx/sites-enabled/postfixadmin.conf" | sed "s/@@@DOMAIN@@@/$DOM
 cat "templates/nginx/sites-enabled/rspamd.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/rspamd.conf"
 cat "templates/nginx/sites-enabled/welcome.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/welcome.conf"
 
+cp "templates/nextcloud/x-fpm-overloads.conf" "config-dynamic/nextcloud/x-fpm-overloads.conf"
+cp "templates/nextcloud/x-php-overloads.ini" "config-dynamic/nextcloud/x-php-overloads.ini"
+
 # confirm DNS is ready
 echo ""
 echo ""

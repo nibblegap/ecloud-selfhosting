@@ -112,6 +112,8 @@ services:
       - /mnt/repo-base/volumes/nextcloud/custom_apps:/var/www/html/custom_apps/
       - /mnt/repo-base/volumes/nextcloud/config:/var/www/html/config/
       - /mnt/repo-base/volumes/nextcloud/data:/var/www/html/data/
+      - /mnt/repo-base/config-dynamic/nextcloud/x-fpm-overloads.conf:/usr/local/etc/php-fpm.d/x-fpm-overloads.conf
+      - /mnt/repo-base/config-dynamic/nextcloud/x-php-overloads.ini:/usr/local/etc/php/conf.d/x-php-overloads.ini
     depends_on:
       - mariadb
 
