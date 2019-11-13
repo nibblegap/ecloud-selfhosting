@@ -19,6 +19,7 @@ install-deps:
       - gnupg2
       - pass
       - certbot
+      - jq
     - require:
       - upgrade-all
 

@@ -21,7 +21,8 @@ fi
 
 AUTH_SECRET=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 16 | head -n 1)
 echo "$EMAIL:$AUTH_SECRET" >> /mnt/repo-base/volumes/accounts/auth.file
-SIGNUP_URL="https://welcome.$DOMAIN/?authmail=$(urlencode "$EMAIL")&authsecret=$AUTH_SECRET"
+ENCODED_EMAIL=$(jq -nr --arg v "$EMAIL" '$v|@uri')
+SIGNUP_URL="https://welcome.$DOMAIN/?authmail=$ENCODED_EMAIL&authsecret=$AUTH_SECRET"
 echo "The new user can sign up now at $SIGNUP_URL"
 
 echo -e "to:$EMAIL
