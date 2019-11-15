@@ -176,8 +176,8 @@ fi
 # create nextcloud config
 mkdir -p "/mnt/repo-base/volumes/nextcloud/config/"
 cat /mnt/repo-base/templates/nextcloud/config.php | sed "s/@@@DOMAIN@@@/$DOMAIN/g" | \
-    sed "s/@@@DRIVE_SMTP_PASSWORD@@@/$DRIVE_SMTP_PASSWORD/g" | sed "s/@@@MYSQL_PASSWORD_NC@@@/$MYSQL_PASSWORD_NC/g" | \
-    sed "s/@@@MYSQL_DATABASE_NC@@@/$MYSQL_DATABASE_NC/g" | sed "s/@@@MYSQL_USER_NC@@@/$MYSQL_USER_NC/g" > \
+    sed "s/@@@DRIVE_SMTP_PASSWORD@@@/$DRIVE_SMTP_PASSWORD/g" | sed "s/@@@PFDB_DB@@@/$PFDB_DB/g" | \
+    sed "s/@@@PFDB_USR@@@/$PFDB_USR/g" | sed "s/@@@DBPASS@@@/$PFDB_DBPASS/g" > \
     "/mnt/repo-base/volumes/nextcloud/config/config.php"
 chown www-data:www-data "/mnt/repo-base/volumes/nextcloud/" -R
 

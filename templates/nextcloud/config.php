@@ -48,9 +48,9 @@ $CONFIG = array (
     'db_type' => 'mariadb',
     'db_host' => 'mariadb',
     'db_port' => '3306',
-    'db_name' => '@@@MYSQL_DATABASE_NC@@@',
-    'db_user' => '@@@MYSQL_USER_NC@@@',
-    'db_password' => '@@@MYSQL_PASSWORD_NC@@@',
+    'db_name' => '@@@PFDB_DB@@@',
+    'db_user' => '@@@PFDB_USR@@@',
+    'db_password' => '@@@DBPASS@@@',
     'mariadb_charset' => 'utf8mb4',
     'queries' =>
     array (
