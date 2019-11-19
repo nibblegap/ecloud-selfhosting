@@ -20,6 +20,7 @@ install-deps:
       - pass
       - certbot
       - jq
+      - dnsutils
     - require:
       - upgrade-all
 
