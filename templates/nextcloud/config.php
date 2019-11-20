@@ -68,5 +68,15 @@ $CONFIG = array (
   'loglevel' => 2,
   'preview_max_x' => 1024,
   'preview_max_y' => 1024,
+  'app.mail.accounts.default' =>
+    array (
+      'email' => '%USERID%',
+      'imapHost' => '@@@DOMAIN@@@',
+      'imapPort' => 993,
+      'imapSslMode' => 'ssl',
+      'smtpHost' => '@@@DOMAIN@@@',
+      'smtpPort' => 25,
+      'smtpSslMode' => 'tls',
+    ),
 );
 ?>

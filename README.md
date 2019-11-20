@@ -135,10 +135,6 @@ yes
 
 A few services can't be configured automatically and need manual account creation to secure them:
 
-**Rainloop**: It uses a hardcoded login by default, and can be accessed by anyone with a Nextcloud account.
-To change it, visit `https://$DOMAIN/apps/rainloop/app/?admin` and enter username: `admin` and password: `12345`.
-Go to the security tab to change the password.
-
 **OnlyOffice**: Open `office.$DOMAIN`, then follow the instructions to add a new admin user. This
 is only necessary if you chose to install OnlyOffice.
 
@@ -155,7 +151,7 @@ Your credentials for postfix admin (https://mail.yourdomain.com) are:  user/pass
 ```
 
 - `$DOMAIN`: File hosting with [Nextcloud](https://nextcloud.com/), email with
-           [rainloop](https://www.rainloop.net/)
+           [Nextcloud Mail](https://github.com/nextcloud/mail)
 - `welcome.$DOMAIN`: Allows users to sign up for a new account (you can create signup links with
                    `bash /mnt/repo-base/scripts/generate-signup-link.sh`, account creation with this "self service" is only possible when such a link is generated)
 - `office.$DOMAIN`: Create and edit office documents ([OnlyOffice](https://www.onlyoffice.com/))

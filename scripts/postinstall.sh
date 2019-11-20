@@ -29,8 +29,7 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install notes
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install mail
 
 echo "Installing Nextcloud theme"
 wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz" -O "/tmp/nextcloud-theme.tar.gz"
@@ -44,13 +43,6 @@ docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --off
 
 echo "Restarting Nextcloud container"
 docker-compose restart nextcloud
-
-echo "Configuring Rainloop"
-mkdir -p "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/"
-echo "$ADD_DOMAINS" | tr "," "\n" | while read add_domain; do
-    cp "templates/rainloop/domain-config.ini" "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/$add_domain.ini"
-done
-chown www-data:www-data /mnt/repo-base/volumes/nextcloud/ -R
 
 echo "Creating postfix database schema"
 curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
