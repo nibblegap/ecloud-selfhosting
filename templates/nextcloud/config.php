@@ -1,6 +1,6 @@
 <?php
 $CONFIG = array (
-  'lost_password_link' => 'https://mail.@@@DOMAIN@@@/users/password-recover.php',
+  'lost_password_link' => 'https://mail.{{ domain }}/users/password-recover.php',
   'htaccess.RewriteBase' => '/',
   'memcache.local' => '\OC\Memcache\APCu',
   'memcache.locking' => '\OC\Memcache\Redis',
@@ -25,20 +25,20 @@ $CONFIG = array (
   ),
   'trusted_domains' =>
   array (
-    0 => '@@@DOMAIN@@@',
+    0 => '{{ domain }}',
   ),
   'datadirectory' => '/var/www/html/data',
-  'overwrite.cli.url' => 'https://@@@DOMAIN@@@',
+  'overwrite.cli.url' => 'https://{{ domain }}',
   'overwriteprotocol' => 'https',
   'mysql.utf8mb4' => true,
   'maintenance' => true,
   'mail_from_address' => 'drive',
   'mail_smtpmode' => 'smtp',
   'mail_smtpauthtype' => 'PLAIN',
-  'mail_domain' => '@@@DOMAIN@@@',
+  'mail_domain' => '{{ domain }}',
   'mail_smtpauth' => 1,
-  'mail_smtphost' => 'mail.@@@DOMAIN@@@',
-  'mail_smtpname' => 'drive@@@@DOMAIN@@@',
+  'mail_smtphost' => 'mail.{{ domain }}',
+  'mail_smtpname' => 'drive@{{ domain }}',
   'mail_smtppassword' => '@@@DRIVE_SMTP_PASSWORD@@@',
   'mail_smtpport' => '587',
   'mail_smtpsecure' => 'tls',
@@ -48,9 +48,9 @@ $CONFIG = array (
     'db_type' => 'mariadb',
     'db_host' => 'mariadb',
     'db_port' => '3306',
-    'db_name' => '@@@PFDB_DB@@@',
-    'db_user' => '@@@PFDB_USR@@@',
-    'db_password' => '@@@DBPASS@@@',
+    'db_name' => '{{ mysql_database_nextcloud }}',
+    'db_user' => '{{ mysql_user_nextcloud }}',
+    'db_password' => '{{ mysql_password_nextcloud }}',
     'mariadb_charset' => 'utf8mb4',
     'queries' =>
     array (

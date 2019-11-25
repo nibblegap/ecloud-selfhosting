@@ -1,0 +1,6 @@
+{{ domain }}
+autoconfig.{{ domain }}
+autodiscover.{{ domain }}
+mail.{{ domain }}
+spam.{{ domain }}
+welcome.{{ domain }}
