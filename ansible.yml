@@ -1,0 +1,213 @@
+---
+- hosts: all
+
+  # Install python if required
+  # https://www.josharcher.uk/code/ansible-python-connection-failure-ubuntu-server-1604/
+  gather_facts: False
+  pre_tasks:
+    - name: install python for Ansible
+      raw: test -e /usr/bin/python || (apt -y update && apt install -y python-minimal python-setuptools)
+      args:
+        executable: /bin/bash
+      register: output
+      changed_when: output.stdout != ""
+    - setup: # gather facts
+
+  tasks:
+  - name: install dependencies
+    apt:
+      pkg: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'apache2-utils',
+            'docker.io', 'docker-compose', 'gnupg2', 'pass', 'certbot', 'dnsutils']
+
+  - name: detect if ecloud selfhosting is already installed (compatibility with old versions)
+    shell: ls /mnt/repo-base/.git/ /mnt/repo-base/volumes/nextcloud/config/config.php && touch /mnt/repo-base/config-dynamic/.installation-complete
+    args:
+      creates: /mnt/repo-base/config-dynamic/.installation-complete
+    ignore_errors: yes
+    register: installation_complete_result
+
+  - name: fetch existing passwords from server
+    block:
+      - name: fetch env file to read passwords
+        fetch:
+          src: /mnt/repo-base/.env
+          dest: credentials/env
+          flat: yes
+
+      - name: create credentials folder
+        shell: mkdir -p credentials/{{ inventory_hostname }}/
+        delegate_to: localhost
+
+      - name: read variables from env file and write to credentials folder
+        shell: grep {{ item.env_var }} credentials/env | cut -d '=' -f2 > credentials/{{ inventory_hostname }}/{{ item.credentials_var }}
+        delegate_to: localhost
+        with_items:
+          - { env_var: 'RSPAMD_PASSWORD', credentials_var: 'rspamd_password' }
+          #- { env_var: 'NEXTCLOUD_ADMIN_USER', credentials_var: 'nextcloud_admin_user' }
+          - { env_var: 'NEXTCLOUD_ADMIN_PASSWORD', credentials_var: 'nextcloud_admin_password' }
+          - { env_var: 'MYSQL_USER_NC', credentials_var: 'mysql_user_nextcloud' }
+          - { env_var: 'MYSQL_PASSWORD_NC', credentials_var: 'mysql_password_nextcloud' }
+          - { env_var: 'MYSQL_DATABASE_NC', credentials_var: 'mysql_database_nextcloud' }
+          - { env_var: 'SMTP_PW', credentials_var: 'smtp_password' }
+          - { env_var: 'MYSQL_ROOT_PASSWORD', credentials_var: 'mysql_root_password' }
+          - { env_var: 'DBPASS', credentials_var: 'postfix_database_password' }
+          - { env_var: 'DRIVE_SMTP_PASSWORD', credentials_var: 'drive_smtp_password' }
+          - { env_var: 'POSTFIXADMIN_SSH_PASSWORD', credentials_var: 'postfixadmin_ssh_password' }
+          - { env_var: 'CREATE_ACCOUNT_PASSWORD', credentials_var: 'create_account_password' }
+          - { env_var: 'PFA_SUPERADMIN_PASSWORD', credentials_var: 'pfa_superadmin_password' }
+
+      - name: remove local copy of env file
+        command: rm credentials/env
+        delegate_to: localhost
+    when: installation_complete_result is changed # meaning that an existing ecloud installation was found on the server
+
+  - name: create folders
+    file: path={{item.path}} state=directory owner={{item.owner}}
+    with_items:
+      - { path: '/mnt/repo-base/', owner: root}
+      - { path: '/mnt/repo-base/volumes/', owner: root }
+      - { path: '/mnt/repo-base/volumes/nextcloud/config/', owner: www-data }
+      - { path: '/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/', owner: www-data }
+      - { path: '/mnt/repo-base/config-static/', owner: root }
+      - { path: '/mnt/repo-base/config-static/mail/', owner: root }
+      - { path: '/mnt/repo-base/config-static/nginx/', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/automx/', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/letsencrypt/', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/nginx/', owner: root }
+      - { path: '/mnt/repo-base/scripts/', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/letsencrypt/autorenew', owner: root }
+      - { path: '/mnt/repo-base/config-dynamic/nginx/sites-enabled', owner: root }
+      - { path: '/mnt/repo-base/volumes/accounts/', owner: www-data }
+
+  # NOTE: This does not delete files that have been deleted from the repo, need to do that manually.
+  - name: copy static config files
+    copy:
+      src: config-static/
+      dest: /mnt/repo-base/config-static/
+
+  - name: copy scripts
+    copy:
+      src: scripts/
+      dest: /mnt/repo-base/scripts/
+      mode: 0755
+
+  - name: generate random usernames if they dont exist
+    shell: if [ ! -e "credentials/{{ inventory_hostname }}/{{ item.name }}" ]; then echo "{{ item.prefix }}{{ item.random_id }}" > "credentials/{{ inventory_hostname }}/{{ item.name }}"; fi
+    delegate_to: localhost
+    vars:
+      mysql_user_nextcloud:     "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=4') }}"
+      nextcloud_admin_user:     "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=4') }}"
+      mysql_database_nextcloud: "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=4') }}"
+    with_items:
+      - { name: "mysql_user_nextcloud", prefix: 'nc_', random_id: "{{ mysql_user_nextcloud }}" }
+      - { name: "nextcloud_admin_user", prefix: 'ncadmin_', random_id: "{{ nextcloud_admin_user }}" }
+      - { name: "mysql_database_nextcloud", prefix: 'ncdb_', random_id: "{{ mysql_database_nextcloud }}" }
+
+  - name:  add all template files
+    template: src={{item.src}} dest={{item.dest}} force={{item.force}} owner={{item.owner}} mode={{item.mode}}
+    with_items:
+      - { src: 'templates/docker-compose/env', dest: '/mnt/repo-base/.env', force: yes, owner: root, mode: '0600' }
+      - { src: 'templates/automx/automx.conf', dest: '/mnt/repo-base/config-dynamic/automx/automx.conf', force: yes, owner: www-data, mode: '0644' }
+      - { src: 'templates/nextcloud/config.php', dest: '/mnt/repo-base/volumes/nextcloud/config/config.php', force: no, owner: www-data, mode: '0644' }
+      - { src: 'templates/rainloop/domain-config.ini', dest: '/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/{{ domain }}.ini', force: yes, owner: www-data, mode: '0644' }
+      - { src: 'templates/letsencrypt/ssl-domains.dat', dest: '/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat', force: yes, owner: root, mode: '0644' }
+      - { src: 'templates/docker/docker-daemon.json', dest: '/etc/docker/daemon.json', force: no, owner: root, mode: '0644' }
+    vars:
+      rspamd_password:              "{{ lookup('password', 'credentials/{{ inventory_hostname }}/rspamd_password chars=ascii_letters,digits') }}"
+      nextcloud_admin_password:     "{{ lookup('password', 'credentials/{{ inventory_hostname }}/nextcloud_admin_password chars=ascii_letters,digits') }}"
+      mysql_password_nextcloud:     "{{ lookup('password', 'credentials/{{ inventory_hostname }}/mysql_password_nextcloud chars=ascii_letters,digits') }}"
+      smtp_password:                "{{ lookup('password', 'credentials/{{ inventory_hostname }}/smtp_password chars=ascii_letters,digits') }}"
+      mysql_root_password:          "{{ lookup('password', 'credentials/{{ inventory_hostname }}/mysql_root_password chars=ascii_letters,digits') }}"
+      postfix_database_password:    "{{ lookup('password', 'credentials/{{ inventory_hostname }}/postfix_database_password chars=ascii_letters,digits') }}"
+      drive_smtp_password:          "{{ lookup('password', 'credentials/{{ inventory_hostname }}/drive_smtp_password chars=ascii_letters,digits') }}"
+      postfixadmin_ssh_password:    "{{ lookup('password', 'credentials/{{ inventory_hostname }}/postfixadmin_ssh_password chars=ascii_letters,digits') }}"
+      create_account_password:      "{{ lookup('password', 'credentials/{{ inventory_hostname }}/create_account_password chars=ascii_letters,digits') }}"
+      pfa_superadmin_password:      "{{ lookup('password', 'credentials/{{ inventory_hostname }}/pfa_superadmin_password chars=ascii_letters,digits') }}"
+      mysql_user_nextcloud:         "{{ lookup('file', 'credentials/{{ inventory_hostname }}/mysql_user_nextcloud') }}"
+      nextcloud_admin_user:         "{{ lookup('file', 'credentials/{{ inventory_hostname }}/nextcloud_admin_user') }}"
+      mysql_database_nextcloud:     "{{ lookup('file', 'credentials/{{ inventory_hostname }}/mysql_database_nextcloud') }}"
+
+  - name:  add nginx config files
+    template: src=templates/nginx/sites-enabled/{{item.src}} dest=/mnt/repo-base/config-dynamic/nginx/sites-enabled/{{item.dest}}
+    with_items:
+      - { src: 'autoconfig.conf', dest: 'autodiscover.{{ domain }}.conf', service: 'autodiscover' }
+      - { src: 'autoconfig.conf', dest: 'autoconfig.{{ domain }}.conf', service: 'autoconfig' }
+      - { src: 'nextcloud.conf', dest: 'nextcloud.conf' }
+      - { src: 'postfixadmin.conf', dest: 'postfixadmin.conf' }
+      - { src: 'rspamd.conf', dest: 'rspamd.conf' }
+      - { src: 'welcome.conf', dest: 'welcome.conf' }
+
+  - name:  add onlyoffice nginx config file
+    template: src=templates/nginx/sites-enabled/onlyoffice.conf dest=/mnt/repo-base/config-dynamic/nginx/sites-enabled/onlyoffice.conf
+    when: install_onlyoffice
+
+  - name:  generate docker-compose.yml with onlyoffice
+    copy: content={{ compose }} dest=/mnt/repo-base/docker-compose.yml
+    vars:
+      - { compose: "{{ lookup('file', 'templates/docker-compose/01-docker-compose-base.yml') }}\n{{ lookup('file', 'templates/docker-compose/02-docker-compose-onlyoffice.yml') }}\n{{ lookup('file', 'templates/docker-compose/03-docker-compose-networks.yml') }}\n" }
+    when: install_onlyoffice
+
+  - name:  generate docker-compose.yml without onlyoffice
+    copy: content={{ compose }} dest=/mnt/repo-base/docker-compose.yml
+    vars:
+      - { compose: "{{ lookup('file', 'templates/docker-compose/01-docker-compose-base.yml') }}\n{{ lookup('file', 'templates/docker-compose/03-docker-compose-networks.yml') }}\n" }
+    when: not install_onlyoffice
+
+  - name: request letsencrypt certificates
+    command: "bash /mnt/repo-base/scripts/ssl-renew.sh creates=/mnt/repo-base/config-dynamic/letsencrypt/certstore/live/{{item.domain}}/privkey.pem"
+    with_items:
+      - { domain: '{{domain}}' }
+      - { domain: 'autoconfig.{{domain}}' }
+      - { domain: 'autodiscover.{{domain}}' }
+      - { domain: 'mail.{{domain}}' }
+      - { domain: 'spam.{{domain}}' }
+      - { domain: 'welcome.{{domain}}' }
+
+  - name:  add welcome config file
+    file:
+      path: /mnt/repo-base/volumes/accounts/auth.file.done
+      state: touch
+      owner: www-data
+      modification_time: preserve
+      access_time: preserve
+
+  - name: enable and start docker service
+    systemd:
+      name: docker
+      enabled: yes
+      state: started
+
+  - name: start docker-compose
+    docker_compose:
+      project_src: /mnt/repo-base/
+      state: present
+      pull: yes
+      restarted: yes
+
+  # NOTE: It is not possible to get realtime output from ansible tasks.
+  # https://github.com/ansible/ansible/issues/3887#issuecomment-54672569
+  # TODO: fails with error Access denied for user 'root'@'localhost' (using password: YES)
+  # TODO: this works fine: MYSQL_RANDOM_ROOT_PASSWORD=yes
+  # TODO: also works when passing password directly, without var
+  - name: run postinstall script (this will take a while)
+    command: bash /mnt/repo-base/scripts/postinstall.sh
+    args:
+      creates: /mnt/repo-base/config-dynamic/.installation-complete
+
+  - name: remove unneeded lines from crontab
+    lineinfile: regexp={{item.regexp}} path=/var/spool/cron/crontabs/root state=absent
+    with_items:
+      - { regexp: 'Lines below here are managed by Salt, do not edit' }
+      - { regexp: 'SALT_CRON_IDENTIFIER:check-updates' }
+      - { regexp: 'SALT_CRON_IDENTIFIER:refresh-tls-certs' }
+      - { regexp: 'SALT_CRON_IDENTIFIER:sync-emails' }
+      - { regexp: 'bash /mnt/repo-base/scripts/sync-emails.sh' }
+      - { regexp: 'bash /mnt/repo-base/scripts/check-update.sh' }
+
+  - name: renew certbot certificates
+    cron:
+      special_time=daily
+      name=ssl-renew
+      job="bash /mnt/repo-base/scripts/ssl-renew.sh >> /mnt/repo-base/volumes/letsencrypt/letsencrypt-cron.log 2>&1"
+
