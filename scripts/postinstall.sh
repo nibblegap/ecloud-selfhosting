@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 
 source /mnt/repo-base/scripts/base.sh
 

@@ -39,7 +39,7 @@ $CONFIG = array (
   'mail_smtpauth' => 1,
   'mail_smtphost' => 'mail.{{ domain }}',
   'mail_smtpname' => 'drive@{{ domain }}',
-  'mail_smtppassword' => '@@@DRIVE_SMTP_PASSWORD@@@',
+  'mail_smtppassword' => '{{ drive_smtp_password }}',
   'mail_smtpport' => '587',
   'mail_smtpsecure' => 'tls',
   'installed' => false,
@@ -48,9 +48,9 @@ $CONFIG = array (
     'db_type' => 'mariadb',
     'db_host' => 'mariadb',
     'db_port' => '3306',
-    'db_name' => '{{ mysql_database_nextcloud }}',
-    'db_user' => '{{ mysql_user_nextcloud }}',
-    'db_password' => '{{ mysql_password_nextcloud }}',
+    'db_name' => '{{ postfix_database_name }}',
+    'db_user' => '{{ postfix_database_user }}',
+    'db_password' => '{{ postfix_database_password }}',
     'mariadb_charset' => 'utf8mb4',
     'queries' =>
     array (
@@ -71,10 +71,10 @@ $CONFIG = array (
   'app.mail.accounts.default' =>
     array (
       'email' => '%USERID%',
-      'imapHost' => '@@@DOMAIN@@@',
+      'imapHost' => '{{ domain }}',
       'imapPort' => 993,
       'imapSslMode' => 'ssl',
-      'smtpHost' => '@@@DOMAIN@@@',
+      'smtpHost' => '{{ domain }}',
       'smtpPort' => 25,
       'smtpSslMode' => 'tls',
     ),

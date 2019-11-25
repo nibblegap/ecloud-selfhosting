@@ -14,36 +14,36 @@
     - setup: # gather facts
 
   tasks:
-  - name: install dependencies
-    apt:
-      pkg: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'apache2-utils',
-            'docker.io', 'docker-compose', 'gnupg2', 'pass', 'certbot', 'dnsutils']
+  - name: create credentials folder
+    shell: mkdir -p credentials/{{ inventory_hostname }}/
+    delegate_to: localhost
+    become: no
 
-  - name: detect if ecloud selfhosting is already installed (compatibility with old versions)
-    shell: ls /mnt/repo-base/.git/ /mnt/repo-base/volumes/nextcloud/config/config.php && touch /mnt/repo-base/config-dynamic/.installation-complete
+  - name: detect if ecloud selfhosting is already installed
+    shell: "[[ -d /mnt/repo-base/.git/ && -f /mnt/repo-base/volumes/nextcloud/config/config.php && ! -f /mnt/repo-base/config-dynamic/.installation-complete ]]"
     args:
-      creates: /mnt/repo-base/config-dynamic/.installation-complete
+      executable: /bin/bash
     ignore_errors: yes
     register: installation_complete_result
 
   - name: fetch existing passwords from server
     block:
+      - name: create installation-complete file
+        shell: touch /a/config-dynamic/.installation-complete
+
       - name: fetch env file to read passwords
         fetch:
           src: /mnt/repo-base/.env
-          dest: credentials/env
+          dest: credentials/{{ inventory_hostname }}/env
           flat: yes
 
-      - name: create credentials folder
-        shell: mkdir -p credentials/{{ inventory_hostname }}/
-        delegate_to: localhost
-
       - name: read variables from env file and write to credentials folder
-        shell: grep {{ item.env_var }} credentials/env | cut -d '=' -f2 > credentials/{{ inventory_hostname }}/{{ item.credentials_var }}
+        shell: grep {{ item.env_var }} credentials/{{ inventory_hostname }}/env | cut -d '=' -f2 > credentials/{{ inventory_hostname }}/{{ item.credentials_var }}
         delegate_to: localhost
+        become: no
         with_items:
           - { env_var: 'RSPAMD_PASSWORD', credentials_var: 'rspamd_password' }
-          #- { env_var: 'NEXTCLOUD_ADMIN_USER', credentials_var: 'nextcloud_admin_user' }
+          - { env_var: 'NEXTCLOUD_ADMIN_USER', credentials_var: 'nextcloud_admin_user' }
           - { env_var: 'NEXTCLOUD_ADMIN_PASSWORD', credentials_var: 'nextcloud_admin_password' }
           - { env_var: 'MYSQL_USER_NC', credentials_var: 'mysql_user_nextcloud' }
           - { env_var: 'MYSQL_PASSWORD_NC', credentials_var: 'mysql_password_nextcloud' }
@@ -55,11 +55,19 @@
           - { env_var: 'POSTFIXADMIN_SSH_PASSWORD', credentials_var: 'postfixadmin_ssh_password' }
           - { env_var: 'CREATE_ACCOUNT_PASSWORD', credentials_var: 'create_account_password' }
           - { env_var: 'PFA_SUPERADMIN_PASSWORD', credentials_var: 'pfa_superadmin_password' }
+          - { env_var: 'PFDB_DB', credentials_var: 'postfix_database_name' }
+          - { env_var: 'PFDB_USR', credentials_var: 'postfix_database_user' }
 
       - name: remove local copy of env file
-        command: rm credentials/env
+        command: rm credentials/{{ inventory_hostname }}/env
         delegate_to: localhost
-    when: installation_complete_result is changed # meaning that an existing ecloud installation was found on the server
+        become: no
+    when: installation_complete_result is success # meaning that an existing ecloud installation was found on the server
+
+  - name: install dependencies
+    apt:
+      pkg: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'apache2-utils',
+            'docker.io', 'docker-compose', 'gnupg2', 'pass', 'certbot', 'dnsutils']
 
   - name: create folders
     file: path={{item.path}} state=directory owner={{item.owner}}
@@ -95,6 +103,7 @@
   - name: generate random usernames if they dont exist
     shell: if [ ! -e "credentials/{{ inventory_hostname }}/{{ item.name }}" ]; then echo "{{ item.prefix }}{{ item.random_id }}" > "credentials/{{ inventory_hostname }}/{{ item.name }}"; fi
     delegate_to: localhost
+    become: no
     vars:
       mysql_user_nextcloud:     "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=4') }}"
       nextcloud_admin_user:     "{{ lookup('password', '/dev/null chars=ascii_letters,digits length=4') }}"
@@ -127,6 +136,8 @@
       mysql_user_nextcloud:         "{{ lookup('file', 'credentials/{{ inventory_hostname }}/mysql_user_nextcloud') }}"
       nextcloud_admin_user:         "{{ lookup('file', 'credentials/{{ inventory_hostname }}/nextcloud_admin_user') }}"
       mysql_database_nextcloud:     "{{ lookup('file', 'credentials/{{ inventory_hostname }}/mysql_database_nextcloud') }}"
+      postfix_database_name:        "postfix"
+      postfix_database_user:        "postfix"
 
   - name:  add nginx config files
     template: src=templates/nginx/sites-enabled/{{item.src}} dest=/mnt/repo-base/config-dynamic/nginx/sites-enabled/{{item.dest}}
@@ -187,9 +198,6 @@
 
   # NOTE: It is not possible to get realtime output from ansible tasks.
   # https://github.com/ansible/ansible/issues/3887#issuecomment-54672569
-  # TODO: fails with error Access denied for user 'root'@'localhost' (using password: YES)
-  # TODO: this works fine: MYSQL_RANDOM_ROOT_PASSWORD=yes
-  # TODO: also works when passing password directly, without var
   - name: run postinstall script (this will take a while)
     command: bash /mnt/repo-base/scripts/postinstall.sh
     args:
@@ -210,4 +218,3 @@
       special_time=daily
       name=ssl-renew
       job="bash /mnt/repo-base/scripts/ssl-renew.sh >> /mnt/repo-base/volumes/letsencrypt/letsencrypt-cron.log 2>&1"
-
