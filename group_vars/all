@@ -1,0 +1,8 @@
+# MUST SPECIFY
+domain: ""
+additional_domains: []
+contact_email: "<user-email>"
+install_onlyoffice: false
+
+# DO NOT CHANGE UNLESS YOU KNOW WHAT YOU ARE DOING
+all_domains: "{{ [ domain ] + additional_domains }}"

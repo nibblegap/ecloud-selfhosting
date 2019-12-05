@@ -1,0 +1,63 @@
+---
+- hosts: all
+
+# TODO: create group_vars/all file
+# in particular with vars domain, additional_domains, all_domains
+# maybe passwords should also go in there for simplicity
+# https://gitlab.e.foundation/e/infra/ecloud-selfhosting/merge_requests/48/diffs#8dd78743113a572dc0dc13bb9d8b57e0809e5f04_0_1
+  tasks:
+  - name: create temporary file for dns records
+    tempfile:
+      state: file
+      prefix: ecloud-dns
+    register: dnstempfile
+
+  - name: generate data for dns records
+    shell: |
+      echo "RECORD,|,HOST,|,VALUE,|,PRIORITY" >> {{ dnstempfile.path }}
+      echo "------,|,----,|,-----,|,--------" >> {{ dnstempfile.path }}
+      echo "A,|,mail.{{ domain }},|,<Public IP>,|,-" >> {{ dnstempfile.path }}
+  - shell: |
+      echo "A,|,{{ item }},|,<Public IP>,|,-" >> {{ dnstempfile.path }}
+    with_items: "{{ all_domains }}"
+  - shell: |
+      echo "MX,|,{{ item }},|,<Public IP>,|,10" >> {{ dnstempfile.path }}
+    with_items: "{{ all_domains }}"
+  - shell: |
+      echo "PTR (For Reverse DNS),|,<Public IP>,|,mail.{{ domain }},|,-" >> {{ dnstempfile.path }}
+  - shell: |
+      echo "CNAME,|,autoconfig.{{ item }},|,<Public IP>,|,-" >> {{ dnstempfile.path }}
+      echo "CNAME,|,autodiscover.{{ item }},|,<Public IP>,|,-" >> {{ dnstempfile.path }}
+    with_items: "{{ all_domains }}"
+  - shell: |
+      echo "CNAME,|,spam.{{ domain }},|,mail.{{ domain }},|,-" >> {{ dnstempfile.path }}
+      echo "CNAME,|,welcome.{{ domain }},|,mail.{{ domain }},|,-" >> {{ dnstempfile.path }}
+      echo "CNAME,|,office.{{ domain }},|,mail.{{ domain }},|,-" >> {{ dnstempfile.path }}
+      column "{{ dnstempfile.path }}" -t -s ","
+    register: dnsrecords
+
+  - name: print dns records
+    debug:
+      msg: "{{ dnsrecords.stdout.split('\n') }}"
+
+  - name: remove dns records temp file
+    file:
+      path: "{{ dnstempfile.path }}"
+      state: absent
+
+  - name: confirm dns records
+    pause:
+      prompt: "Please verify that the DNS records are configured correctly! Press 'Enter' to continue."
+
+  - name: checking if dns is configured correctly
+    shell: |
+      IP=$(dig mail.{{ domain }}| grep mail.{{ domain }} | grep -v '^;' | awk '{ print $NF }')
+      if [ -z "$IP" ]; then
+          echo "mail.{{ domain }} not resolving to IP"
+          exit 1
+      fi
+      PTR=$(nslookup $IP | grep "name = mail.{{ domain }}" | wc -l)
+      if [ "1" != "$PTR" ]; then
+          echo "$IP not resolving to mail.{{ domain }} (PTR record missing or wrong)"
+          exit 1
+      fi
