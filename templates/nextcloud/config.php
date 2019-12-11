@@ -2,7 +2,7 @@
 $CONFIG = array (
   'lost_password_link' => 'https://mail.{{ domain }}/users/password-recover.php',
   'htaccess.RewriteBase' => '/',
-  'memcache.local' => '\OC\Memcache\APCu',
+  'memcache.local' => '\OC\Memcache\Redis',
   'memcache.locking' => '\OC\Memcache\Redis',
   'redis' => [
     'host' => 'redis',
