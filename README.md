@@ -140,9 +140,9 @@ is only necessary if you chose to install OnlyOffice.
 
 ## Available Services
 
-You can find login information for these services by running `bash /mnt/repo-base/scripts/showInfo.sh`.
+You can find login information for these services by running `bash /mnt/repo-base/scripts/show-info.sh`.
 
-Sample output of showInfo.sh:
+Sample output of show-info.sh:
 ```
 Your password for the SPAM filter mgmt UI (https://spam.yourdomain.com) is: secret
 Your admin credentials for nextcloud are (https://yourdomain.com) is:  user/password
