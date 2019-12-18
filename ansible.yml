@@ -1,5 +1,6 @@
 ---
 - hosts: all
+  become: yes
 
   # Install python if required
   # https://www.josharcher.uk/code/ansible-python-connection-failure-ubuntu-server-1604/
@@ -67,7 +68,7 @@
   - name: install dependencies
     apt:
       pkg: ['apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'apache2-utils',
-            'docker.io', 'docker-compose', 'gnupg2', 'pass', 'certbot', 'dnsutils']
+            'docker.io', 'docker-compose', 'gnupg2', 'pass', 'certbot', 'dnsutils', 'jq']
 
   - name: create folders
     file: path={{item.path}} state=directory owner={{item.owner}}

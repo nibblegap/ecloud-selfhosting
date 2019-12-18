@@ -101,7 +101,7 @@ services:
       - mariadb
 
   nextcloud:
-    image: nextcloud:16.0.5-fpm
+    image: nextcloud:16.0.6-fpm
     container_name: nextcloud
     restart: always
     networks:
