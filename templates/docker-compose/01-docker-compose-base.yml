@@ -32,6 +32,9 @@ services:
       - /mnt/repo-base/config-static/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
       - /mnt/repo-base/config-static/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
       - /mnt/repo-base/config-static/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+      - /mnt/repo-base/config-static/mail/rspamd/multimap.conf:/etc/rspamd/local.d/multimap.conf
+      - /mnt/repo-base/config-static/mail/rspamd/whitelist.sender.domain.map:/etc/rspamd/local.d/whitelist.sender.domain.map
+      - /mnt/repo-base/config-static/mail/rspamd/ratelimit.conf:/etc/rspamd/local.d/ratelimit.conf
     depends_on:
       - mariadb
       - redis
