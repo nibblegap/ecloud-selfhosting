@@ -15,8 +15,8 @@ cat "$CONFIG" | while read DOMAIN; do
             --config-dir="$CONFIG_DIR"
     else
         CERT_UPDATED_FILE="$LIVE_DIR/$DOMAIN/cert-updated"
-        certbot certonly -d "$DOMAIN" --non-interactive --webroot \
-            --webroot-path='/mnt/repo-base/config-dynamic/letsencrypt/acme-challenge/' \
+        certbot certonly -d "$DOMAIN" --non-interactive -m "$ALT_EMAIL" --agree-tos \
+            --webroot --webroot-path='/mnt/repo-base/config-dynamic/letsencrypt/acme-challenge/' \
             --config-dir="$CONFIG_DIR" \
             --deploy-hook "touch $CERT_UPDATED_FILE"
         # add the following parameters to test renewal (will install invalid certificates)
