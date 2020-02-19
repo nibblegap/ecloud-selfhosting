@@ -3,7 +3,8 @@ set -e
 
 source /mnt/repo-base/scripts/base.sh
 
-ACCOUNT=$1
+echo "Enter the email address to be deleted:"
+read ACCOUNT
 
 if ! docker-compose exec -T -u www-data nextcloud php occ user:info "$ACCOUNT" | grep "$ACCOUNT" --quiet; then
     echo "Error: The account $ACCOUNT does not exist"
