@@ -23,7 +23,7 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     # Fix #951
     # 2 files to update auth.file.done and auth.file
     FILE_MULTIPLE_REGISTRATION_CHECK=/mnt/repo-base/volumes/accounts/auth.file.done
-	AUTH_FILE=/mnt/repo-base/volumes/accounts/auth.file
+    AUTH_FILE=/mnt/repo-base/volumes/accounts/auth.file
     
     # delete line with $ACCOUNT : this is a  e.email
     # strip "e.email" suffix to get mbox
@@ -31,21 +31,21 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
     echo "Updating system persistent info"
     # grep |wc -l >> count result, if one line found in auth.file.done, delete it
-    if [[ $(grep -nR "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "1" ]]; then
+    if [[ $(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "1" ]]; then
     		
     		# Grab mail used to register from the line (to be used for $AUTH_FILE update in #2)
     		MAIL_USED=$(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK| cut -f1 -d":")
         	        	
         	echo "#1 Removing $MBOX from file $FILE_MULTIPLE_REGISTRATION_CHECK"
         	# sed pattern : \:$MBOX$ = line ending with $MBOX ($), and ':' before $MBOX to prevent accidental deletion 
-		    # ex : if $MBOX = doe do NOT delete all lines ending with "doe", "johndoe", "john-doe", only delete ":doe"
+        	# ex : if $MBOX = doe do NOT delete all lines ending with "doe", "johndoe", "john-doe", only delete ":doe"
         	sed -i "/\:$MBOX$/d" $FILE_MULTIPLE_REGISTRATION_CHECK
 
         	echo "#2 Deleting all lines with $MAIL_USED found in $AUTH_FILE"
         	# sed pattern : ^$MAIL_USED\: = line starting with $MAIL_USED (^), and ':' after $MAIL_USED to encapsulate it
         	sed -i "/^$MAIL_USED\:/d" $AUTH_FILE
 
-	elif [[ $(grep -nR "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "0" ]]
+	elif [[ $(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "0" ]]
 	then
 	        echo "$MBOX not found in $FILE_MULTIPLE_REGISTRATION_CHECK"
 	else
