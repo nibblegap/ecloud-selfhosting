@@ -25,9 +25,9 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     FILE_MULTIPLE_REGISTRATION_CHECK=/mnt/repo-base/volumes/accounts/auth.file.done
     AUTH_FILE=/mnt/repo-base/volumes/accounts/auth.file
     
-    # delete line with $ACCOUNT : this is a  e.email
-    # strip "e.email" suffix to get mbox
-    MBOX=${ACCOUNT%"@e.email"}
+    # delete line with $ACCOUNT : @ACCOUNT is a $MBOX@DOMAIN
+    # strip @ANDEVERYTHINGAFTER suffix to get mbox only, to be more generic
+    MBOX=${ACCOUNT%%@*}
 
     echo "Updating system persistent info"
     # grep |wc -l >> count result, if one line found in auth.file.done, delete it
