@@ -20,9 +20,8 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Deleting email account"
     docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox delete "$ACCOUNT"
 
-    # Fix #951
     # 2 files to update auth.file.done and auth.file
-    FILE_MULTIPLE_REGISTRATION_CHECK=/mnt/repo-base/volumes/accounts/auth.file.done
+    AUTH_FILE_DONE=/mnt/repo-base/volumes/accounts/auth.file.done
     AUTH_FILE=/mnt/repo-base/volumes/accounts/auth.file
     
     # delete line with $ACCOUNT : @ACCOUNT is a $MBOX@DOMAIN
@@ -30,26 +29,32 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     MBOX=${ACCOUNT%%@*}
 
     echo "Updating system persistent info"
-    # grep |wc -l >> count result, if one line found in auth.file.done, delete it
-    if [[ $(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "1" ]]; then
+    NB_LINES = $(grep -R "\:$MBOX$" $AUTH_FILE_DONE |wc -l)
+    # if ONLY one line found in auth.file.done, delete it
+    if [[ $NB_LINES = "1" ]]; then
     		
     		# Grab mail used to register from the line (to be used for $AUTH_FILE update in #2)
-    		MAIL_USED=$(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK| cut -f1 -d":")
+    		MAIL_USED=$(grep -R "\:$MBOX$" $AUTH_FILE_DONE| cut -f1 -d":")
         	        	
-        	echo "#1 Removing $MBOX from file $FILE_MULTIPLE_REGISTRATION_CHECK"
-        	# sed pattern : \:$MBOX$ = line ending with $MBOX ($), and ':' before $MBOX to prevent accidental deletion 
-        	# ex : if $MBOX = doe do NOT delete all lines ending with "doe", "johndoe", "john-doe", only delete ":doe"
-        	sed -i "/\:$MBOX$/d" $FILE_MULTIPLE_REGISTRATION_CHECK
+        	echo "#1 Removing $MBOX from file $AUTH_FILE_DONE"
+        	# sed pattern : \:$MBOX$ 
+        	# use $ after $MBOX to get line ending with $MBOX, 
+        	# ':' before $MBOX to prevent accidental deletion 
+        	# ex : if $MBOX = doe  only delete line ending with ":doe"
+        	# do NOT delete all lines ending with ":doe", ":johndoe" or ":john-doe"
+        	sed -i "/\:$MBOX$/d" $AUTH_FILE_DONE
 
         	echo "#2 Deleting all lines with $MAIL_USED found in $AUTH_FILE"
-        	# sed pattern : ^$MAIL_USED\: = line starting with $MAIL_USED (^), and ':' after $MAIL_USED to encapsulate it
+        	# sed pattern : ^$MAIL_USED\: 
+        	# use ^ before $MAIL_USED to get only line STARTING WITH $MAIL_USED, 
+        	# ':' after $MAIL_USED to encapsulate it		
         	sed -i "/^$MAIL_USED\:/d" $AUTH_FILE
 
-	elif [[ $(grep -R "\:$MBOX$" $FILE_MULTIPLE_REGISTRATION_CHECK |wc -l) = "0" ]]
+	elif [[ $NB_LINES = "0" ]]
 	then
-	        echo "$MBOX not found in $FILE_MULTIPLE_REGISTRATION_CHECK"
+	        echo "$MBOX not found in $AUTH_FILE_DONE"
 	else
-	        echo "More than one line to be deleted for $MBOX, check $FILE_MULTIPLE_REGISTRATION_CHECK please"
+	        echo "More than one line to be deleted for $MBOX, check $AUTH_FILE_DONE please"
 	fi
 
 
