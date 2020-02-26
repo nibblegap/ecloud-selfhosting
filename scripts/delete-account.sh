@@ -6,6 +6,11 @@ source /mnt/repo-base/scripts/base.sh
 echo "Enter the email address to be deleted:"
 read ACCOUNT
 
+# strip @ANDEVERYTHINGAFTER suffix to get mbox only
+MBOX=${ACCOUNT%%@*}
+# strip EVERYTHINGBEFOREAND@ prefix to get domain only
+MAIL_DOMAIN=${ACCOUNT##*@}
+
 if ! docker-compose exec -T -u www-data nextcloud php occ user:info "$ACCOUNT" | grep "$ACCOUNT" --quiet; then
     echo "Error: The account $ACCOUNT does not exist"
     exit
@@ -19,6 +24,21 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
     echo "Deleting email account"
     docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox delete "$ACCOUNT"
+
+    # remove user's maildir as postfixadmin-cli mailbox delete "$ACCOUNT" is not doing it
+    MAILDIR="/mnt/repo-base/volumes/mail/vhosts/$MAIL_DOMAIN/$MBOX"
+
+    if [[ -n "$MBOX" && -n "$MAIL_DOMAIN" ]]; then
+    	# double check on $MBOX and $MAIL_DOMAIN not empty
+    	# as we don't want to remove entire /mnt/repo-base/volumes/mail/vhosts/ !!
+    	if [ -d $MAILDIR ]; then
+		    echo "Deleting email folder in $MAILDIR for this account"
+    		rm -rf $MAILDIR
+    	else
+    		echo "$MAILDIR does not exit"
+    	fi
+    fi
+    
 
     # 2 files to update auth.file.done and auth.file
     AUTH_FILE_DONE=/mnt/repo-base/volumes/accounts/auth.file.done
@@ -59,4 +79,7 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
 
 
     # TODO: delete onlyoffice account???
+
+
+
 fi
