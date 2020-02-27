@@ -1,17 +1,15 @@
 #!/usr/bin/env bash
 set -ex
 
+# TODO: it looks like this script is executed twice when installing with ansible
+
 source /mnt/repo-base/scripts/base.sh
 
 echo -e "\nHack: restart everything to ensure that database and nextcloud are initialized"
 docker-compose restart
 
 printf "$(date): Waiting for Nextcloud to finish installation"
-# sleep for 300 seconds
-for i in {0..300}; do
-  sleep 1
-  printf "."
-done
+sleep 300
 
 # Create Nextcloud mysql database and user
 docker-compose exec -T mariadb mysql --user=root --password="$MYSQL_ROOT_PASSWORD" \
