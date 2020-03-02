@@ -49,7 +49,7 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     MBOX=${ACCOUNT%%@*}
 
     echo "Updating system persistent info"
-    NB_LINES = $(grep -R "\:$MBOX$" $AUTH_FILE_DONE |wc -l)
+    NB_LINES=$(grep -R "\:$MBOX$" $AUTH_FILE_DONE |wc -l)
     # if ONLY one line found in auth.file.done, delete it
     if [[ $NB_LINES = "1" ]]; then
     		
