@@ -15,7 +15,7 @@ then
 fi
 
 echo "New version is $LATEST_TAG
-Changelog: https://gitlab.e.foundation/e/priv/infra/compose/tags/$LATEST_TAG
+Changelog: https://gitlab.e.foundation/e/infra/ecloud-selfhosting/tags/$LATEST_TAG
 Do you want to upgrade? [y/N]"
 read  answer
 
