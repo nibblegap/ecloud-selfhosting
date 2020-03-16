@@ -1,5 +1,4 @@
 # MUST SPECIFY
-# TODO: need to do something about these variables so they are not committed to git
 domain: ""
 additional_domains: []
 contact_email: "<user-email>"
