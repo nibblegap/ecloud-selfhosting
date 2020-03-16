@@ -88,7 +88,6 @@
       - { path: '/mnt/repo-base/config-dynamic/letsencrypt/autorenew', owner: root }
       - { path: '/mnt/repo-base/config-dynamic/nginx/sites-enabled', owner: root }
       - { path: '/mnt/repo-base/volumes/accounts/', owner: www-data }
-      - { path: '/mnt/repo-base/volumes/create-account/', owner: 900 }
 
   # NOTE: This does not delete files that have been deleted from the repo, need to do that manually.
   - name: copy static config files
