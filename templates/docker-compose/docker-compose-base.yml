@@ -51,6 +51,8 @@ services:
       - POSTFIXADMIN_SSH_PASSWORD=${POSTFIXADMIN_SSH_PASSWORD}
       - SMTPHOST=${SMTP_HOST}
       - ADMIN_SMTP_PASSWORD=${DRIVE_SMTP_PASSWORD}
+    volumes:
+      - /mnt/repo-base/volumes/mail:/var/mail
     depends_on:
       - eelomailserver
       - mariadb
@@ -82,7 +84,7 @@ services:
       - /mnt/repo-base/volumes/redis/db:/data
 
   welcome:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:1.0.1
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:auto-delete-account
     container_name: welcome
     environment:
       - DOMAINS=${VHOSTS_ACCOUNTS}
@@ -92,6 +94,7 @@ services:
       - PFDB_DB=${PFDB_DB}
       - PFDB_USR=${PFDB_USR}
       - PFDB_PW=${DBPASS}
+      - POSTFIXADMIN_SSH_PASSWORD=${POSTFIXADMIN_SSH_PASSWORD}
       - SMTP_HOST=${SMTP_HOST}
       - SMTP_FROM=${SMTP_FROM}
       - SMTP_PW=${SMTP_PW}
