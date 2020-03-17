@@ -50,6 +50,9 @@ elif ! echo "$VALIDATED_ADD_DOMAINS" | grep -q "$VALIDATED_DOMAIN" ; then
     sed -i '/ADD_DOMAINS/d' "$ENVFILE"
     echo "ADD_DOMAINS=$VALIDATED_ADD_DOMAINS,$VALIDATED_DOMAIN" >> "$ENVFILE"
 fi
+
+echo "WELCOME_SECRET_SHA=$(echo -n $WSECRET |sha1sum | awk '{print $1}')" >> "$ENVFILE"
+
 source /mnt/repo-base/scripts/base.sh
 
 DC_DIR="templates/docker-compose/"

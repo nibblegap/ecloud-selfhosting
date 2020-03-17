@@ -28,6 +28,7 @@ DRIVE_SMTP_PASSWORD=$(grep ^DRIVE_SMTP_PASSWORD= "$ENVFILE" | awk -F= '{ print $
 PFA_SUPERADMIN_PASSWORD=$(grep ^PFA_SUPERADMIN_PASSWORD= "$ENVFILE" | awk -F= '{ print $NF }')
 
 WELCOME_SECRET=$(grep ^WELCOME_SECRET= "$ENVFILE" | awk -F= '{ print $NF }')
+WELCOME_SECRET_SHA=$(grep ^WELCOME_SECRET_SHA= "$ENVFILE" | awk -F= '{ print $NF }')
 
 PFDB_DB=$(grep ^PFDB_DB= "$ENVFILE" | awk -F= '{ print $NF }')
 PFDB_USR=$(grep ^PFDB_USR= "$ENVFILE" | awk -F= '{ print $NF }')
