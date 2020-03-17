@@ -31,6 +31,8 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
+git clone --single-branch https://framagit.org/tcit/drop_user.git volumes/nextcloud/custom_apps/drop_account
+docker-compose exec -T --user www-data nextcloud php occ app:enable drop_account
 
 echo "Installing custom ecloud drop account plugin"
 # Add WELCOME_SECRET from .env file as a system config value, to be used by our ecloud_drop_account plugin
@@ -38,7 +40,6 @@ docker-compose exec -T --user www-data nextcloud php occ config:system:set e_wel
 git clone --single-branch https://gitlab.e.foundation/e/infra/selfhost/nextcloud-apps/ecloud-drop-account.git volumes/nextcloud/custom_apps/ecloud_drop_account
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud_drop_account
 
-docker-compose exec -T --user www-data nextcloud php occ app:enable ecloud_drop_account
 
 echo "Installing Nextcloud theme"
 wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz" -O "/tmp/nextcloud-theme.tar.gz"
