@@ -67,6 +67,11 @@ curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 echo "Adding Postfix admin superadmin account"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
 
+# adding sudo to postfixadmin container
+docker-compose exec -T postfixadmin apk add sudo
+# giving pfexec user a specific sudo perm ONLY for launching the bind-mounted mailbox-postdeletion script
+docker-compose exec -T postfixadmin bash -c 'echo "" >> /etc/sudoers && echo "#pfexec single command perm" >> /etc/sudoers && echo "pfexec ALL=(root) NOPASSWD: /usr/local/bin/postfixadmin-mailbox-postdeletion.sh" >> /etc/sudoers'
+
 # Adding domains to postfix is done by docker exec instead of docker-compose exec on purpose. Reason: with compose the loop aborts after the first item for an unknown reason
 echo "Adding domains to Postfix"
 # The password_expiry parameter is only a workaround, and does not have any effect

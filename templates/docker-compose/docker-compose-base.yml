@@ -53,6 +53,7 @@ services:
       - ADMIN_SMTP_PASSWORD=${DRIVE_SMTP_PASSWORD}
     volumes:
       - /mnt/repo-base/volumes/mail:/var/mail
+      - /mnt/repo-base/scripts/postfixadmin-mailbox-postdeletion.sh:/usr/local/bin/postfixadmin-mailbox-postdeletion.sh
     depends_on:
       - eelomailserver
       - mariadb
