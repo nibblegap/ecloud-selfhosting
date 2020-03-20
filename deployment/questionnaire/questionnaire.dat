@@ -25,7 +25,6 @@ CREATE_ACCOUNT_PASSWORD=@@@generate@@@:20@
 PFA_SUPERADMIN_PASSWORD=1@@@generate@@@:16@2
 
 WELCOME_SECRET=@@@generate@@@:20@
-WEBSITE_SECRET=not_defined
 
 # fixed defaults
 ENABLE_POP3=false;default

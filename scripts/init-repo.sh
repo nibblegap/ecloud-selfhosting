@@ -51,7 +51,8 @@ elif ! echo "$VALIDATED_ADD_DOMAINS" | grep -q "$VALIDATED_DOMAIN" ; then
     echo "ADD_DOMAINS=$VALIDATED_ADD_DOMAINS,$VALIDATED_DOMAIN" >> "$ENVFILE"
 fi
 
-echo "WELCOME_SECRET_SHA=$(echo -n $WSECRET |sha1sum | awk '{print $1}')" >> "$ENVFILE"
+echo "WELCOME_SECRET_SHA=$(echo -n $WELCOME_SECRET |sha1sum | awk '{print $1}')" >> "$ENVFILE"
+echo "WEBSITE_SECRET=not_defined" >> "$ENVFILE"
 
 source /mnt/repo-base/scripts/base.sh
 
