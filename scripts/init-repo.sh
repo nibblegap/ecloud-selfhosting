@@ -190,9 +190,12 @@ docker-compose up -d
 echo -e "\nHack: restart everything to ensure that database and nextcloud are initialized"
 docker-compose restart
 
+# needed to store accounts to create, and needs to be writable by welcome
+touch /mnt/repo-base/volumes/accounts/auth.file
 # needed to store created accounts, and needs to be writable by welcome
 touch /mnt/repo-base/volumes/accounts/auth.file.done
 ACCOUNTS_UID=$(docker-compose exec --user www-data welcome id -u | tr -d '\r')
+chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file
 chown "$ACCOUNTS_UID:$ACCOUNTS_UID" /mnt/repo-base/volumes/accounts/auth.file.done
 
 printf "$(date): Waiting for Nextcloud to finish installation"
