@@ -37,6 +37,8 @@ docker-compose exec -T --user www-data nextcloud php occ app:enable drop_account
 echo "Installing custom ecloud drop account plugin"
 # Add WELCOME_SECRET from .env file as a system config value, to be used by our ecloud_drop_account plugin
 docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_secret --value="$WELCOME_SECRET"
+# Add VHOST_ACCOUNTS from .env file as a system config value, to be used by our ecloud_drop_account plugin
+docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_domain --value="$VHOST_ACCOUNTS"
 git clone --single-branch https://gitlab.e.foundation/e/infra/selfhost/nextcloud-apps/ecloud-drop-account.git volumes/nextcloud/custom_apps/ecloud_drop_account
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud_drop_account
 
