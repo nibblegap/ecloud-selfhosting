@@ -31,6 +31,17 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
+git clone --single-branch https://framagit.org/tcit/drop_user.git volumes/nextcloud/custom_apps/drop_account
+docker-compose exec -T --user www-data nextcloud php occ app:enable drop_account
+
+echo "Installing custom ecloud drop account plugin"
+# Add WELCOME_SECRET from .env file as a system config value, to be used by our ecloud_drop_account plugin
+docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_secret --value="$WELCOME_SECRET"
+# Add VHOST_ACCOUNTS from .env file as a system config value, to be used by our ecloud_drop_account plugin
+docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_domain --value="welcome.$DOMAIN"
+git clone --single-branch https://gitlab.e.foundation/e/infra/selfhost/nextcloud-apps/ecloud-drop-account.git volumes/nextcloud/custom_apps/ecloud_drop_account
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud_drop_account
+
 
 echo "Installing Nextcloud theme"
 wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz" -O "/tmp/nextcloud-theme.tar.gz"
@@ -57,6 +68,11 @@ curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
 
 echo "Adding Postfix admin superadmin account"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
+
+# adding sudo to postfixadmin container
+docker-compose exec -T postfixadmin apk add sudo
+# giving pfexec user a specific sudo perm ONLY for launching the bind-mounted mailbox-postdeletion script
+docker-compose exec -T postfixadmin bash -c 'echo "" >> /etc/sudoers && echo "#pfexec single command perm" >> /etc/sudoers && echo "pfexec ALL=(root) NOPASSWD: /usr/local/bin/postfixadmin-mailbox-postdeletion.sh" >> /etc/sudoers'
 
 # Adding domains to postfix is done by docker exec instead of docker-compose exec on purpose. Reason: with compose the loop aborts after the first item for an unknown reason
 echo "Adding domains to Postfix"
