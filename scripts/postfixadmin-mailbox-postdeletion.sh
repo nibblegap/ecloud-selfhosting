@@ -37,7 +37,7 @@ if [[ -n "$1" && -n "$2" ]]; then
 
     if [ ! -e "$maildir" ]; then
         # not maildir empty, doing nothing
-        exit 1
+        exit 0
     fi
 
 
