@@ -83,9 +83,10 @@ services:
     command: redis-server --appendonly yes
     volumes:
       - /mnt/repo-base/volumes/redis/db:/data
+      - /mnt/repo-base/volumes/redis/tmp:/tmp/redis
 
   welcome:
-    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:auto-delete-account
+    image: registry.gitlab.e.foundation:5000/e/infra/docker-welcome:1.1.0
     container_name: welcome
     environment:
       - DOMAINS=${VHOSTS_ACCOUNTS}
@@ -123,6 +124,7 @@ services:
       - /mnt/repo-base/volumes/nextcloud/data:/var/www/html/data/
       - /mnt/repo-base/config-dynamic/nextcloud/x-fpm-overloads.conf:/usr/local/etc/php-fpm.d/x-fpm-overloads.conf
       - /mnt/repo-base/config-dynamic/nextcloud/x-php-overloads.ini:/usr/local/etc/php/conf.d/x-php-overloads.ini
+      - /mnt/repo-base/volumes/redis/tmp:/tmp/redis/
     depends_on:
       - mariadb
 
