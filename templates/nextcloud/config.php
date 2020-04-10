@@ -58,6 +58,7 @@ $CONFIG = array (
       'user_exists' => 'SELECT EXISTS(SELECT 1 FROM mailbox WHERE username = :username)',
       'get_users' => 'select username as fqda from mailbox where username like :search or name like :search',
       'set_password_hash_for_user' => 'UPDATE mailbox SET password = CONCAT(\'{SHA512-CRYPT}\',:new_password_hash) WHERE username = BINARY :username',
+      'delete_user' => 'SELECT EXISTS(SELECT 1 FROM mailbox WHERE username = :username)',
       'get_display_name' => 'SELECT name FROM mailbox where username = BINARY :username',
       'set_display_name' => 'UPDATE mailbox SET name = :new_display_name WHERE username = BINARY :username',
       'count_users' => 'SELECT COUNT(*) FROM mailbox',
