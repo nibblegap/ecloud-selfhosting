@@ -31,7 +31,7 @@ docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:insta
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
-git clone --single-branch https://framagit.org/tcit/drop_user.git volumes/nextcloud/custom_apps/drop_account
+git clone --single-branch https://framagit.org/framasoft/nextcloud/drop_account.git volumes/nextcloud/custom_apps/drop_account
 docker-compose exec -T --user www-data nextcloud php occ app:enable drop_account
 
 echo "Installing custom ecloud drop account plugin"
