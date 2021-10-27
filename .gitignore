@@ -3,7 +3,7 @@
 *.iml
 
 # docker config files
-docker-compose.yml
+./docker-compose.yml
 .env
 
 # data for the local installation

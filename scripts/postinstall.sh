@@ -18,38 +18,52 @@ docker-compose exec -T --user www-data nextcloud php occ maintenance:install \
     --admin-user="$NEXTCLOUD_ADMIN_USER" --admin-pass="$NEXTCLOUD_ADMIN_PASSWORD" \
     --admin-email="$ALT_EMAIL" --database="mysql" --database-pass="$MYSQL_PASSWORD_NC" \
     --database-name="$MYSQL_DATABASE_NC" --database-host="mariadb" --database-user="$MYSQL_USER_NC" \
-    --database-port="3306" --database-table-prefix=""
+    --database-port="3306" --data-dir="/var/www/data"
 docker-compose exec -T --user www-data nextcloud php occ db:convert-filecache-bigint --no-interaction
 
 # Nextcloud resets trusted_domains to localhost during installation, so we have to set it again
 docker-compose exec -T --user www-data nextcloud php occ config:system:set trusted_domains 0 --value="$DOMAIN"
+docker-compose exec -T --user www-data nextcloud php occ app:disable theming
 
-echo "Installing nextcloud plugins"
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install calendar
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install notes
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install user_backend_sql_raw
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install rainloop
+# Set background jobs to use system cron
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ background:cron
+
+# add crontab on the server to run cron.php every 5 minutes
+crontab -l | {
+    cat
+    echo "*/5 * * * * cd /mnt/repo-base && /usr/bin/docker-compose exec -T -u www-data nextcloud php -f /var/www/html/cron.php 2>&1 | /usr/bin/logger -t NC_CRON"
+} | crontab -
+
+# Update theme
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ maintenance:theme:update
+
+echo "Enabling nextcloud apps"
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable calendar
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable notes
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable user_backend_sql_raw
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable rainloop
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable quota_warning
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable contacts
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable news
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable email-recovery
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud_drop_account
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud-theme-helper
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud-launcher
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:disable firstrunwizard
 docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:app:set rainloop rainloop-autologin --value 1
-git clone --single-branch https://framagit.org/tcit/drop_user.git volumes/nextcloud/custom_apps/drop_account
-docker-compose exec -T --user www-data nextcloud php occ app:enable drop_account
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install tasks
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:install drop_account
+
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:system:set integrity.check.disabled --value='true' --type=boolean
 
 echo "Installing custom ecloud drop account plugin"
 # Add WELCOME_SECRET from .env file as a system config value, to be used by our ecloud_drop_account plugin
 docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_secret --value="$WELCOME_SECRET"
 # Add VHOST_ACCOUNTS from .env file as a system config value, to be used by our ecloud_drop_account plugin
 docker-compose exec -T --user www-data nextcloud php occ config:system:set e_welcome_domain --value="welcome.$DOMAIN"
-git clone --single-branch https://gitlab.e.foundation/e/infra/selfhost/nextcloud-apps/ecloud-drop-account.git volumes/nextcloud/custom_apps/ecloud_drop_account
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ app:enable ecloud_drop_account
 
-
-echo "Installing Nextcloud theme"
-wget "https://gitlab.e.foundation/api/v4/projects/315/repository/archive.tar.gz" -O "/tmp/nextcloud-theme.tar.gz"
-tar -xzf "/tmp/nextcloud-theme.tar.gz" -C "volumes/nextcloud/html/themes/" --strip-components=1
-chown www-data:www-data "volumes/nextcloud/html/themes/" -R
-rm "/tmp/nextcloud-theme.tar.gz"
-
-docker-compose exec -T --user www-data nextcloud php /var/www/html/occ config:system:set theme --value eelo
+# Add missing indices
+docker-compose exec -T --user www-data nextcloud php /var/www/html/occ db:add-missing-indices
 
 docker-compose exec -T --user www-data nextcloud php occ maintenance:mode --off
 
@@ -64,15 +78,10 @@ done
 chown www-data:www-data /mnt/repo-base/volumes/nextcloud/ -R
 
 echo "Creating postfix database schema"
-curl --silent -L https://mail.$DOMAIN/setup.php > /dev/null
+curl --silent -L https://mail.$DOMAIN/setup.php >/dev/null
 
 echo "Adding Postfix admin superadmin account"
-docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin
-
-# adding sudo to postfixadmin container
-docker-compose exec -T postfixadmin apk add sudo
-# giving pfexec user a specific sudo perm ONLY for launching the bind-mounted mailbox-postdeletion script
-docker-compose exec -T postfixadmin bash -c 'echo "" >> /etc/sudoers && echo "#pfexec single command perm" >> /etc/sudoers && echo "pfexec ALL=(root) NOPASSWD: /usr/local/bin/postfixadmin-mailbox-postdeletion.sh" >> /etc/sudoers'
+docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli admin add $ALT_EMAIL --password $PFA_SUPERADMIN_PASSWORD --password2 $PFA_SUPERADMIN_PASSWORD --superadmin 1
 
 # Adding domains to postfix is done by docker exec instead of docker-compose exec on purpose. Reason: with compose the loop aborts after the first item for an unknown reason
 echo "Adding domains to Postfix"
@@ -84,10 +93,19 @@ echo "Adding email accounts used by system senders (drive, ...)"
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add drive@$DOMAIN --password $DRIVE_SMTP_PASSWORD --password2 $DRIVE_SMTP_PASSWORD --name "drive" --email-other $ALT_EMAIL
 docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox add $SMTP_FROM --password $SMTP_PW --password2 $SMTP_PW --name "welcome" --email-other $ALT_EMAIL
 
+
+echo "Setting the right domain in welcome templates"
+docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/ecloud.global/$DOMAIN/g" {} \;
+docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/e.email/$DOMAIN/g" {} \;
+docker-compose exec -T welcome find /var/www/html/ -type f -name '*.html' -exec sed -i "s/e.email/$DOMAIN/g" {} \;
+
 # display DKIM DNS setup info/instructions to the user
 echo -e "\n\n\n"
 echo -e "Please add the following records to your domain's DNS configuration:\n"
-find /mnt/repo-base/volumes/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do DOMAIN=$(basename $line); echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/public.key; done
+find /mnt/repo-base/volumes/mail/dkim/ -maxdepth 1 -mindepth 1 -type d | while read line; do
+    DOMAIN=$(basename $line)
+    echo "  - DKIM record (TXT) for $DOMAIN:" && cat $line/mail.public.key
+done
 
 echo "================================================================================================================================="
 echo "================================================================================================================================="

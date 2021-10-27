@@ -10,7 +10,7 @@ This way, a user can use [/e/OS](https://e.foundation/products/) on a smartphone
  5. tasks
  6. device configuration...
 
-The setup, which is relying on NextCloud, OnlyOffice, Postfix, and other open source components, is very close to the one used on [ecloud.global](https://ecloud.global).
+The setup, which is relying on NextCloud, Postfix, and other open source components, is very close to the one used on [ecloud.global](https://ecloud.global).
 
 Important note: this project is currently in beta. You should have some experience with Linux server
 administration if you want to use it. The current setup makes updates difficult,
@@ -24,12 +24,6 @@ For the full setup, the following server hardware is recommended:
 - 2 core CPU (x86/x86-64 only, ARM not supported yet)
 - 4 GB RAM
 - 20 GB disk space
-
-For the setup without OnlyOffice, requirements are a bit lower:
-
-- 1 core CPU (x86/x86-64 only, ARM not supported yet)
-- 2 GB RAM
-- 15 GB disk space
 
 Disk space only refers to the basic installation. You will need additional space for any emails,
 documents and files you store on the server.
@@ -46,7 +40,7 @@ Note about TLS certificates: a certificate will be added automatically during se
 
 ### Create an Ubuntu server instance
 
-The project should work with any Ubuntu server (Virtual Private Server (VPS), dedicated server...) versions 18.04 (should work on 16.04). 
+The project should work with any Ubuntu server (Virtual Private Server (VPS), dedicated server...) version 20.04 
 
 Debian server should work as well, though it has not been tested yet.
 
@@ -58,6 +52,10 @@ Suggestions include (non-exhaustive list):
 Hosting at home is also possible in principle, but you will probably have problems with sending email (email providers may classify your email as spam).
 
 First, create your hosting server. Please follow your hoster documentation to create your server or VPS.
+
+- Please run the following commands and then reboot your server before installation:
+    - `apt update`
+    - `apt upgrade`
 
 ### Set your server with proper DNS settings
 
@@ -80,18 +78,21 @@ In the following text, `$DOMAIN` refers to the domain (`youdomain.com`) that you
 
 Login to the server via ssh as root (on Linux/macOS the ssh client is available out of the box, on Windows you need to use an ssh client like [Putty](https://www.putty.org/) for example).
 
-Execute this command and follow its on-screen instructions:
+- Please note that for Ubuntu 20.04+, you will have to add the repository for "SaltStack" using the [instructions](https://repo.saltproject.io/#ubuntu)
+
+Execute these commands and follow the on-screen instructions:
 
 ```
 $ ssh root@$DOMAIN
-# wget https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-generic.sh
-# bash bootstrap-generic.sh https://gitlab.e.foundation/e/infra/ecloud-selfhosting
+# git clone https://gitlab.e.foundation/e/infra/ecloud-selfhosting.git --single-branch --branch master /mnt/repo-base
+# cd /mnt/repo-base
+# bash scripts/bootstrap.sh
 ```
 The setup script will ask you to input some details of your setup (like your domain name) and to setup additional DNS records (the two A records plus the PTR record were set already above).
 
 Example session for yourdomain.com:
 ```
-bash bootstrap-generic.sh https://gitlab.e.foundation/e/infra/ecloud-selfhosting
+bash bootstrap.sh
 [...]
 Resolving deltas: 100% (681/681), done.
 System update and packages installation ..
@@ -103,8 +104,6 @@ Optionally enter additional domain(s) (comma separated, no white spaces) to hand
 
 Enter alternative email:
 someone@example.org
-Do you want to install OnlyOffice? [y/n]
-n
 Your management domain is: yourdomain.com
 Your additional domains are: [N/A]
 Is this correct? (yes or no) yes
@@ -139,8 +138,11 @@ A few services can't be configured automatically and need manual account creatio
 To change it, visit `https://$DOMAIN/apps/rainloop/app/?admin` and enter username: `admin` and password: `12345`.
 Go to the security tab to change the password.
 
-**OnlyOffice**: Open `office.$DOMAIN`, then follow the instructions to add a new admin user. This
-is only necessary if you chose to install OnlyOffice.
+## Background job configuration
+
+- Many background jobs(e.g. jobs run when an account is deleted) need to run for eCloud to work correctly
+- In this installation, background jobs are set to use system cron and crontab for this is added
+- Please follow the instructions [here](https://docs.nextcloud.com/server/latest/admin_manual/configuration_server/background_jobs_configuration.html) to change background job configuration
 
 ## Available Services
 
@@ -158,13 +160,13 @@ Your credentials for postfix admin (https://mail.yourdomain.com) are:  user/pass
            [rainloop](https://www.rainloop.net/)
 - `welcome.$DOMAIN`: Allows users to sign up for a new account (you can create signup links with
                    `bash /mnt/repo-base/scripts/generate-signup-link.sh`, account creation with this "self service" is only possible when such a link is generated)
-- `office.$DOMAIN`: Create and edit office documents ([OnlyOffice](https://www.onlyoffice.com/))
-  (only when you answered yes to the question "Install OnlyOffice?" during setup obviously)
 
 ## Administration
 
 - `spam.$DOMAIN`: Email spam filter ([rspamd](https://www.rspamd.com/))
 - `mail.$DOMAIN`: Administrate email and create accounts ([postfixadmin](http://postfixadmin.sourceforge.net/)) when not using the "self service" `welcome.$DOMAIN` - this requires you to set a intermediate password during account creation.
+- Post installation, please navigate to https://$DOMAIN/settings/admin/overview to check if there are any configuration warnings related to your installation
+- Please note that we have not used http2 protocol in nginx because of nextcloud's notably [slow performance](https://github.com/nextcloud/server/issues/25297) with http2
 
 ## Setting up /e/ OS with /e/ selfhosting
 

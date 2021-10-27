@@ -1,11 +1,10 @@
 DOMAIN=Enter your mailserver (management) domain (e.g. domainA.com):
 ADD_DOMAINS=Optionally enter additional domain(s) (comma separated, no white spaces) to handle mail for (e.g. domainB.com,domainC.com) or just press enter if you need none:
 ALT_EMAIL=Enter alternative email:
-INSTALL_ONLYOFFICE=Do you want to install OnlyOffice? [y/n]||||^[yY|nN]$;;;;Please enter 'y' or 'n'
 
 # Generate and display
 RSPAMD_PASSWORD=@@@generate@@@:20@
-NEXTCLOUD_ADMIN_USER=ncadmin_@@@generate@@@:4@
+NEXTCLOUD_ADMIN_USER=ncadmin_@@@generate@@@:l:4@
 NEXTCLOUD_ADMIN_PASSWORD=@@@generate@@@:20@
 
 
@@ -26,6 +25,8 @@ PFA_SUPERADMIN_PASSWORD=1@@@generate@@@:16@2
 
 WELCOME_SECRET=@@@generate@@@:20@
 
+NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET=@@@generate@@@:15@
+
 # fixed defaults
 ENABLE_POP3=false;default
 DISABLE_RATELIMITING=false;default
@@ -34,3 +35,4 @@ DISABLE_RATELIMITING=false;default
 #SMTP_FROM=welcome@domainA.com
 #VIRTUAL_HOST (for each domain two subdomains autoconfig/autodiscover)
 #VHOSTS_ACCOUNTS=welcome.domainA.com
+#NC_HOST_IP
