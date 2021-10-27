@@ -118,8 +118,6 @@ services:
       - default
     volumes:
       - /mnt/repo-base/volumes/accounts:/var/accounts
-    depends_on:
-      - mariadb
     extra_hosts:
       - "${DOMAIN}:${NC_HOST_IP}"
 
@@ -148,6 +146,7 @@ services:
       - /mnt/repo-base/volumes/redis/db:/tmp/redis
     depends_on:
       - mariadb
+      - redis
 
   automx:
     image: registry.gitlab.e.foundation/e/infra/docker-mailstack:automx-0.1.0
