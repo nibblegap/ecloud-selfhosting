@@ -92,7 +92,7 @@ services:
       - /mnt/repo-base/volumes/redis/tmp:/tmp/redis
 
   welcome:
-    image: registry.gitlab.e.foundation/e/infra/docker-welcome:2.1.2
+    image: registry.gitlab.e.foundation/e/infra/docker-welcome:2.1.3
     container_name: welcome
     environment:
       - DOMAINS=${VHOSTS_ACCOUNTS}
@@ -118,6 +118,7 @@ services:
       - default
     volumes:
       - /mnt/repo-base/volumes/accounts:/var/accounts
+      - /mnt/repo-base/config/welcome/apache2/remoteip.conf:/etc/apache2/conf-available/remoteip.conf
     extra_hosts:
       - "${DOMAIN}:${NC_HOST_IP}"
 
