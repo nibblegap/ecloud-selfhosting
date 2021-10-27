@@ -29,4 +29,4 @@ echo -e "to:$EMAIL
 from:drive@$DOMAIN
 subject:Signup for $DOMAIN
 You can now sign up for your $DOMAIN account at $SIGNUP_URL" | \
-    docker exec -i $(docker-compose ps -q eelomailserver) sendmail -t
+    docker exec -i $(docker-compose ps -q mailserver) sendmail -t

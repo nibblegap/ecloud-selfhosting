@@ -7,7 +7,7 @@
 
 
 # the script is actually run by the pfexec user
-# the script handles deletion in a bind-mounted dir shared with eelomailserver
+# the script handles deletion in a bind-mounted dir shared with mailserver
 # so pfexec user has no right over it. it needs a specific sudo perm 
 #to be able to only run this script
 # the /etc/sudoers line added to the container during install :

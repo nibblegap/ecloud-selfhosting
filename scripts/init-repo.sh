@@ -6,7 +6,7 @@ function validateDomains {
     (INPUT=$(echo "$INPUT"| sed 's@;@,@g' | sed 's@ @,@g'); IFS=','; for DOMAIN in $INPUT; do echo "$DOMAIN" | xargs; done) | while read line; do echo "$line"; done | sort -u | while read line; do echo $line | grep -P '(?=^.{4,253}$)(^(?:[a-zA-Z0-9](?:(?:[a-zA-Z0-9\-]){0,61}[a-zA-Z0-9])?\.)+[a-zA-Z]{2,}$)'; done | tr "\n" "," | sed 's@,$@@g'
 }
 
-source <(curl -s https://gitlab.e.foundation/e/infra/bootstrap/raw/master/bootstrap-commons.sh)
+source /mnt/repo-base/scripts/bootstrap-commons.sh
 
 cd "/mnt/repo-base/"
 ENVFILE="/mnt/repo-base/.env"
@@ -57,19 +57,8 @@ echo "WEBSITE_SECRET=not_defined" >> "$ENVFILE"
 source /mnt/repo-base/scripts/base.sh
 
 DC_DIR="templates/docker-compose/"
-case $INSTALL_ONLYOFFICE in
-    [Yy]* )
-    cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-onlyoffice.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml;
-    cat "templates/nginx/sites-enabled/onlyoffice.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/onlyoffice.conf"
-    OFFICE_DOMAIN=",office.$DOMAIN"
-    OFFICE_LETSENCRYPT_KEY="config-dynamic/letsencrypt/certstore/live/office.$DOMAIN/privkey.pem"
-    NUM_CERTIFICATES="4"
-    ;;
-    [Nn]* )
-    cat "${DC_DIR}docker-compose-base.yml" "${DC_DIR}docker-compose-networks.yml" > docker-compose.yml
-    NUM_CERTIFICATES="3"
-    ;;
-esac
+cat "${DC_DIR}docker-compose.yml" > docker-compose.yml
+NUM_CERTIFICATES="3"
 
 # To be constructed repo specific
 echo "VHOSTS_ACCOUNTS=welcome.$DOMAIN" >> "$ENVFILE"
@@ -83,32 +72,32 @@ echo "VIRTUAL_HOST=$VIRTUAL_HOST" >> "$ENVFILE"
 # finished .env file generation
 
 # fill autorenew config
-rm -f "/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat"
-echo "$DOMAIN,$VIRTUAL_HOST,mail.$DOMAIN,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
-    echo "$CURDOMAIN" >> config-dynamic/letsencrypt/autorenew/ssl-domains.dat
+rm -f "/mnt/repo-base/config/letsencrypt/autorenew/ssl-domains.dat"
+echo "$DOMAIN,$VIRTUAL_HOST,mail.$DOMAIN,spam.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+    echo "$CURDOMAIN" >> config/letsencrypt/autorenew/ssl-domains.dat
 :; done
 
 
 # Configure automx
-cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/automx/automx.conf"
-chown www-data:www-data "config-dynamic/automx/automx.conf"
+cat templates/automx/automx.conf | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/automx/automx.conf"
+chown www-data:www-data "config/automx/automx.conf"
+
+# Configure rspamd whitelist
+cat templates/mail/rspamd/whitelist.sender.domain.map | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/mail/rspamd/whitelist.sender.domain.map"
 
 # Configure nginx vhost
 
 # automx
 echo "$DOMAIN,$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
-    cat "templates/nginx/sites-enabled/autoconfig.conf" | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > "config-dynamic/nginx/sites-enabled/autoconfig.$CURDOMAIN.conf"
-    cat "templates/nginx/sites-enabled/autoconfig.conf" | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > "config-dynamic/nginx/sites-enabled/autodiscover.$CURDOMAIN.conf"
+    cat "templates/nginx/sites-enabled/autoconfig.conf" | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autoconfig/g" > "config/nginx/sites-enabled/autoconfig.$CURDOMAIN.conf"
+    cat "templates/nginx/sites-enabled/autoconfig.conf" | sed "s/@@@DOMAIN@@@/$CURDOMAIN/g" | sed "s/@@@SERVICE@@@/autodiscover/g" > "config/nginx/sites-enabled/autodiscover.$CURDOMAIN.conf"
 :; done
 
 # other hosts
-cat "templates/nginx/sites-enabled/nextcloud.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/nextcloud.conf"
-cat "templates/nginx/sites-enabled/postfixadmin.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/postfixadmin.conf"
-cat "templates/nginx/sites-enabled/rspamd.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/rspamd.conf"
-cat "templates/nginx/sites-enabled/welcome.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config-dynamic/nginx/sites-enabled/welcome.conf"
-
-cp "templates/nextcloud/x-fpm-overloads.conf" "config-dynamic/nextcloud/x-fpm-overloads.conf"
-cp "templates/nextcloud/x-php-overloads.ini" "config-dynamic/nextcloud/x-php-overloads.ini"
+cat "templates/nginx/sites-enabled/nextcloud.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/nginx/sites-enabled/nextcloud.conf"
+cat "templates/nginx/sites-enabled/postfixadmin.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/nginx/sites-enabled/postfixadmin.conf"
+cat "templates/nginx/sites-enabled/rspamd.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/nginx/sites-enabled/rspamd.conf"
+cat "templates/nginx/sites-enabled/welcome.conf" | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "config/nginx/sites-enabled/welcome.conf"
 
 # confirm DNS is ready
 echo ""
@@ -128,7 +117,7 @@ echo "$ADD_DOMAINS" | tr "," "\n" | while read CURDOMAIN; do
 :; done
 echo "PTR(For reverse DNS),|,<Public IP>,|,mail.$DOMAIN,|,-" >> "$tempfile"
 echo ""
-echo "$VIRTUAL_HOST,spam.$DOMAIN,welcome.$DOMAIN$OFFICE_DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
+echo "$VIRTUAL_HOST,spam.$DOMAIN,welcome.$DOMAIN" | tr "," "\n" | while read CURDOMAIN; do
     echo "CNAME,|,$CURDOMAIN,|,mail.$DOMAIN,|,-" >> "$tempfile"
 :; done
 column "$tempfile" -t -s ","
@@ -160,12 +149,15 @@ then
     exit 1
 fi
 
+# Add NC_HOST_IP env variable to .env
+echo "NC_HOST_IP=$IP" >> "$ENVFILE"
+
 # Run LE cert request
 bash scripts/ssl-renew.sh
 
 # verify LE status
-CTR_LE=$(find config-dynamic/letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem config-dynamic/letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem $OFFICE_LETSENCRYPT_KEY 2>/dev/null| wc -l)
-CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find config-dynamic/letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
+CTR_LE=$(find config/letsencrypt/certstore/live/mail.$DOMAIN/privkey.pem config/letsencrypt/certstore/live/spam.$DOMAIN/privkey.pem config/letsencrypt/certstore/live/welcome.$DOMAIN/privkey.pem 2>/dev/null| wc -l)
+CTR_AC_LE=$(echo "$VIRTUAL_HOST" | tr "," "\n" | while read CURDOMAIN; do find config/letsencrypt/certstore/live/$CURDOMAIN/privkey.pem 2>/dev/null | grep $CURDOMAIN && echo found || echo missing; done  | grep missing | wc  -l)
 
 if [ "$CTR_LE$CTR_AC_LE" = "${NUM_CERTIFICATES}0" ]
 then
@@ -178,12 +170,13 @@ else
 fi
 
 # create nextcloud config
-mkdir -p "/mnt/repo-base/volumes/nextcloud/config/"
+mkdir -p /mnt/repo-base/volumes/nextcloud/{html,data,log}
+mkdir  "/mnt/repo-base/volumes/nextcloud/html/config/"
 cat /mnt/repo-base/templates/nextcloud/config.php | sed "s/@@@DOMAIN@@@/$DOMAIN/g" | \
     sed "s/@@@DRIVE_SMTP_PASSWORD@@@/$DRIVE_SMTP_PASSWORD/g" | sed "s/@@@PFDB_DB@@@/$PFDB_DB/g" | \
     sed "s/@@@PFDB_USR@@@/$PFDB_USR/g" | sed "s/@@@DBPASS@@@/$PFDB_DBPASS/g" > \
-    "/mnt/repo-base/volumes/nextcloud/config/config.php"
-chown www-data:www-data "/mnt/repo-base/volumes/nextcloud/" -R
+    "/mnt/repo-base/volumes/nextcloud/html/config/config.php"
+chown -R www-data: "/mnt/repo-base/volumes/nextcloud/"
 
 docker-compose up -d
 

@@ -1,0 +1,188 @@
+version: '3'
+
+services:
+  mailserver:
+    image: mailserver2/mailserver:1.1.4
+    container_name: mailserver
+    domainname: ${DOMAIN} # Mail server A/MX/FQDN & reverse PTR = mail.${DOMAIN}.
+    hostname: mail
+    restart: always
+    networks:
+      - default
+    ports:
+      - "25:25"       # SMTP                - Required
+      - "110:110"     # POP3       STARTTLS - Optional - For webmails/desktop clients
+      - "143:143"     # IMAP       STARTTLS - Optional - For webmails/desktop clients
+    # - "465:465"     # SMTPS      SSL/TLS  - Optional - Enabled for compatibility reason, otherwise disabled
+      - "587:587"     # Submission STARTTLS - Optional - For webmails/desktop clients
+      - "993:993"     # IMAPS      SSL/TLS  - Optional - For webmails/desktop clients
+      - "995:995"     # POP3S      SSL/TLS  - Optional - For webmails/desktop clients
+      - "4190:4190"   # SIEVE      STARTTLS - Optional - Recommended for mail filtering
+    environment:
+      - DBPASS=${DBPASS}
+      - RSPAMD_PASSWORD=${RSPAMD_PASSWORD}
+      - ADD_DOMAINS=${ADD_DOMAINS}
+      - ENABLE_POP3=${ENABLE_POP3}
+      - DISABLE_RATELIMITING=${DISABLE_RATELIMITING}
+      - RELAY_NETWORKS=172.16.0.0/12
+      # Full list of options: https://github.com/hardware/mailserver#environment-variables
+    volumes:
+      - /mnt/repo-base/volumes/mail:/var/mail
+      - /mnt/repo-base/config/letsencrypt/certstore:/etc/letsencrypt
+      - /mnt/repo-base/config/mail/dovecot/10-mail.conf:/etc/dovecot/conf.d/10-mail.conf
+      - /mnt/repo-base/config/mail/dovecot/90-quota.conf:/etc/dovecot/conf.d/90-quota.conf
+      - /mnt/repo-base/config/mail/dovecot/90-sieve.conf:/etc/dovecot/conf.d/90-sieve.conf
+      - /mnt/repo-base/config/mail/rspamd/multimap.conf:/etc/rspamd/local.d/multimap.conf
+      - /mnt/repo-base/config/mail/rspamd/whitelist.sender.domain.map:/etc/rspamd/local.d/whitelist.sender.domain.map
+      - /mnt/repo-base/config/mail/rspamd/ratelimit.conf:/etc/rspamd/local.d/ratelimit.conf
+      - /mnt/repo-base/config/mail/clamav/freshclam.conf:/etc/clamav/freshclam.conf
+    depends_on:
+      - mariadb
+      - redis
+
+  postfixadmin:
+    image: registry.gitlab.e.foundation/e/infra/docker-postfixadmin:2.0.1
+    container_name: postfixadmin
+    restart: always
+    networks:
+      - default
+    environment:
+      - DBPASS=${DBPASS}
+      - DBHOST=mariadb
+      - DOMAIN=${DOMAIN}
+      - DRIVE_SMTP_PASSWORD=${DRIVE_SMTP_PASSWORD}
+      - POSTFIXADMIN_SSH_PASSWORD=${POSTFIXADMIN_SSH_PASSWORD}
+      - POSTFIXADMIN_DB_TYPE=mysqli
+      - POSTFIXADMIN_DB_HOST=mariadb
+      - POSTFIXADMIN_DB_USER=postfix
+      - POSTFIXADMIN_DB_NAME=postfix
+      - POSTFIXADMIN_DB_PASSWORD=${DBPASS}
+      - POSTFIXADMIN_SMTP_SERVER=mail.${DOMAIN}
+      - POSTFIXADMIN_SMTP_PORT=587
+    volumes:
+      - /mnt/repo-base/volumes/mail:/var/mail
+    depends_on:
+      - mailserver
+      - mariadb
+
+  mariadb:
+    image: mariadb:10.3
+    container_name: mariadb
+    restart: always
+    networks:
+      - default
+    environment:
+      # Note: These variables are only used for the first start. Later changes are ignored.
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_DATABASE=${PFDB_DB}
+      - MYSQL_USER=${PFDB_USR}
+      - MYSQL_PASSWORD=${DBPASS}
+    volumes:
+      - /mnt/repo-base/volumes/mysql/db/data:/var/lib/mysql
+      - /mnt/repo-base/config/mariadb/:/etc/mysql/conf.d/:ro
+  redis:
+    image: redis:6.0-alpine
+    container_name: redis
+    restart: always
+    networks:
+      - default
+    command: redis-server --appendonly yes
+    volumes:
+      - /mnt/repo-base/volumes/redis/db:/data
+      - /mnt/repo-base/volumes/redis/tmp:/tmp/redis
+
+  welcome:
+    image: registry.gitlab.e.foundation/e/infra/docker-welcome:2.1.2
+    container_name: welcome
+    environment:
+      - DOMAINS=${VHOSTS_ACCOUNTS}
+      - DOMAIN=${DOMAIN}
+      - IS_WELCOME=true
+      - PFDB_HOST=mariadb
+      - PFDB_DB=${PFDB_DB}
+      - PFDB_USR=${PFDB_USR}
+      - PFDB_PW=${DBPASS}
+      - POSTFIXADMIN_SSH_PASSWORD=${POSTFIXADMIN_SSH_PASSWORD}
+      - WELCOME_SECRET_SHA=${WELCOME_SECRET_SHA}
+      - WEBSITE_SECRET=${WEBSITE_SECRET}
+      - SMTP_HOST=${SMTP_HOST}
+      - SMTP_FROM=${SMTP_FROM}
+      - SMTP_PW=${SMTP_PW}
+      - SMTP_PORT=587
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET=${NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET}
+      - CREATE_ACCOUNT_PASSWORD=${CREATE_ACCOUNT_PASSWORD}
+    restart: always
+    networks:
+      - default
+    volumes:
+      - /mnt/repo-base/volumes/accounts:/var/accounts
+    depends_on:
+      - mariadb
+    extra_hosts:
+      - "${DOMAIN}:${NC_HOST_IP}"
+
+  nextcloud:
+    image: registry.gitlab.e.foundation/e/infra/ecloud/nextcloud:316db4e0
+    container_name: nextcloud
+    restart: always
+    networks:
+      - default
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE_NC}
+      - MYSQL_USER=${MYSQL_USER_NC}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD_NC}
+      - MYSQL_HOST=mariadb
+      - NEXTCLOUD_ADMIN_USER=${NEXTCLOUD_ADMIN_USER}
+      #  below ENV disabled so NC container do not start install
+      # - NEXTCLOUD_ADMIN_PASSWORD=${NEXTCLOUD_ADMIN_PASSWORD}
+      - OVERWRITEPROTOCOL=https 
+      - NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET=${NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET}
+    volumes:
+      - /mnt/repo-base/volumes/nextcloud/html:/var/www/html/
+      - /mnt/repo-base/volumes/nextcloud/data:/var/www/data/
+      - /mnt/repo-base/config/nextcloud/x-fpm-overloads.conf:/usr/local/etc/php-fpm.d/x-fpm-overloads.conf
+      - /mnt/repo-base/config/nextcloud/x-php-overloads.ini:/usr/local/etc/php/conf.d/x-php-overloads.ini
+      - /mnt/repo-base/volumes/nextcloud/log:/var/www/log/
+      - /mnt/repo-base/volumes/redis/db:/tmp/redis
+    depends_on:
+      - mariadb
+
+  automx:
+    image: registry.gitlab.e.foundation/e/infra/docker-mailstack:automx-0.1.0
+    container_name: automx
+    hostname: automx
+    environment:
+      - VIRTUAL_HOST=${VIRTUAL_HOST}
+      - DOMAIN=${DOMAIN}
+      - HOSTNAME=automx
+    restart: always
+    networks:
+      - default
+    volumes:
+      - /mnt/repo-base/config/automx/automx.conf:/etc/automx.conf
+
+  nginx:
+    image: nginx:1.19-alpine
+    container_name: nginx
+    restart: unless-stopped
+    networks:
+      - default
+    ports:
+      - "80:8000"
+      - "443:4430"
+    volumes:
+      - /mnt/repo-base/config/nginx/sites-enabled:/etc/nginx/conf.d/
+      - /mnt/repo-base/config/nginx/params:/etc/nginx/params/
+      - /mnt/repo-base/config/letsencrypt/certstore:/certs
+      - /mnt/repo-base/config/nginx/passwds:/passwds
+      - /mnt/repo-base/config/letsencrypt/acme-challenge:/etc/letsencrypt/acme-challenge
+      - /mnt/repo-base/volumes/nextcloud/html:/var/www/html
+    depends_on:
+      - nextcloud
+      - automx
+      - postfixadmin
+      - welcome
+      - mailserver
+

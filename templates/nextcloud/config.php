@@ -1,8 +1,8 @@
 <?php
 $CONFIG = array (
-  'lost_password_link' => 'https://mail.@@@DOMAIN@@@/users/password-recover.php',
   'htaccess.RewriteBase' => '/',
   'memcache.local' => '\OC\Memcache\APCu',
+  'memcache.distributed' => '\OC\Memcache\Redis',
   'memcache.locking' => '\OC\Memcache\Redis',
   'redis' => [
     'host' => 'redis',
@@ -27,7 +27,7 @@ $CONFIG = array (
   array (
     0 => '@@@DOMAIN@@@',
   ),
-  'datadirectory' => '/var/www/html/data',
+  'datadirectory' => '/var/www/data',
   'overwrite.cli.url' => 'https://@@@DOMAIN@@@',
   'overwriteprotocol' => 'https',
   'mysql.utf8mb4' => true,
@@ -65,9 +65,13 @@ $CONFIG = array (
     ),
     'hash_algorithm_for_new_passwords' => 'sha512',
   ),
-  'theme' => 'eelo',
+  'theme' => 'eCloud',
   'loglevel' => 2,
+  'logfile' => '/var/www/log/nextcloud.log',
+  'filelocking.enabled' => true,
+  'cron_log' => true,
   'preview_max_x' => 1024,
   'preview_max_y' => 1024,
+  'skeletondirectory' => '/var/www/skeleton/',
 );
 ?>

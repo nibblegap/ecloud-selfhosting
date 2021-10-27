@@ -19,5 +19,4 @@ if [[ $response =~ ^([yY][eE][sS]|[yY])$ ]]; then
     echo "Deleting email account"
     docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailbox delete "$ACCOUNT"
 
-    # TODO: delete onlyoffice account???
 fi

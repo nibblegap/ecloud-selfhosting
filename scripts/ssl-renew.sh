@@ -3,8 +3,8 @@
 
 source /mnt/repo-base/scripts/base.sh
 
-CONFIG=/mnt/repo-base/config-dynamic/letsencrypt/autorenew/ssl-domains.dat
-CONFIG_DIR=/mnt/repo-base/config-dynamic/letsencrypt/certstore
+CONFIG=/mnt/repo-base/config/letsencrypt/autorenew/ssl-domains.dat
+CONFIG_DIR=/mnt/repo-base/config/letsencrypt/certstore
 LIVE_DIR=$CONFIG_DIR/live
 
 cat "$CONFIG" | while read DOMAIN; do
@@ -16,7 +16,7 @@ cat "$CONFIG" | while read DOMAIN; do
     else
         CERT_UPDATED_FILE="$LIVE_DIR/$DOMAIN/cert-updated"
         certbot certonly -d "$DOMAIN" --non-interactive -m "$ALT_EMAIL" --agree-tos \
-            --webroot --webroot-path='/mnt/repo-base/config-dynamic/letsencrypt/acme-challenge/' \
+            --webroot --webroot-path='/mnt/repo-base/config/letsencrypt/acme-challenge/' \
             --config-dir="$CONFIG_DIR" \
             --deploy-hook "touch $CERT_UPDATED_FILE"
         # add the following parameters to test renewal (will install invalid certificates)
@@ -27,7 +27,7 @@ cat "$CONFIG" | while read DOMAIN; do
             echo "Certificate for $DOMAIN renewed and is valid until: $VALID_UNTIL"
             docker-compose exec -T nginx nginx -s reload
             if [ "$DOMAIN" = "$MAILHOST" ]; then
-                docker-compose restart eelomailserver
+                docker-compose restart mailserver
             fi
         fi
     fi

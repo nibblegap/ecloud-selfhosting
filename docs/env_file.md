@@ -8,7 +8,6 @@ selfhosting (ie, the domain you entered during setup).
 DOMAIN=example.com # the main domain for your installation
 ADD_DOMAINS=example.com, example2.com # one or more domains that are used for email
 ALT_EMAIL=myname@some-other-domain.com # admin email address
-INSTALL_ONLYOFFICE=n # y or n, whether Onlyoffice is installed
 ```
 
 ## Nextcloud
