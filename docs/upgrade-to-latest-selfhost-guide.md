@@ -185,6 +185,7 @@
     - Update image to `registry.gitlab.e.foundation/e/infra/docker-mailstack:automx-0.1.0`
     - Remove volume entry `/mnt/repo-base/config-dynamic/automx/automx.conf:/etc/automx.conf`
     - Add volume entry `/mnt/repo-base/config/automx/automx.conf:/etc/automx.conf`
-1. Pull and update the latest versions
+1. Pull, clean up and update to the latest versions
     - Run `docker-compose pull`
+    - Run `docker system prune -a`
     - Run `docker-compose up --force-recreate -d` 
