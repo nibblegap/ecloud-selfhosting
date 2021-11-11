@@ -44,7 +44,7 @@
 1. Networking
     - Remove the `serverbase` network entry as we move to using the `default` docker network`
     - Replace  `serverbase` with `default` in the `networks` entry for each service
-1. `eelomailserver`(to be renamed to `mailserver`)
+1. `eelomailserver`
     - Rename the service `eelomailserver` to `mailserver`
     - Update `eelomailserver` in config to `mailserver``
       - Change `eelomailserver` in `/mnt/repo-base/config/nginx/sites-enabled/rspamd.conf` to `mailserver`
