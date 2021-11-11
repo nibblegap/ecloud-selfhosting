@@ -187,5 +187,5 @@
     - Add volume entry `/mnt/repo-base/config/automx/automx.conf:/etc/automx.conf`
 1. Pull, clean up and update to the latest versions
     - Run `docker system prune -a`
-    - Run `docker-compose pull`
     - Run `docker-compose up --force-recreate -d` 
+    - If you face errors with the `default` network, please retry after deleting `/var/lib/docker/network/files/local-kv.db`
