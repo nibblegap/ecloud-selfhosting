@@ -8,37 +8,36 @@
   - `docker-compose down`
 
 
-### Update configuration, folder and file names
+### Update environment variables, folder and file locations
 1. Add/Move config to new location
-  - Move `config-static` to `config`
     - `mv /mnt/repo-base/config-static/ /mnt/repo-base/config`
-  - Certstore
-    - `mv /mnt/repo-base/config-dynamic/letsencrypt /mnt/repo-base/config/letsencrypt`
-  - Nginx configuration
-    - `mv /mnt/repo-base/config-dynamic/nginx/* /mnt/repo-base/config/nginx/`
-  - Automx configuration
-    - `mv /mnt/repo-base/config-dynamic/automx /mnt/repo-base/config/`
-  - Nextcloud configuration
-    - `mv /mnt/repo-base/config-dynamic/nextcloud /mnt/repo-base/config/nextcloud`
-    - Add [x-fpm-overloads.conf](../config/nextcloud/x-fpm-overloads.conf) to `/mnt/repo-base/config/nextcloud`
-    - Add [x-php-overloads.conf](../config/nextcloud/x-php-overloads.conf) to `/mnt/repo-base/config/nextcloud/`
-  - Mailserver configuration
-    - `mv /mnt/repo-base/config-dynamic/mail/* /mnt/repo-base/config/mail/`
-  - Welcome configuration
-    - Add the folder for welcome in config:
-      `mkdir -p /mnt/repo-base/config/welcome/apache2`
-    - Add [remoteip.conf](../config/welcome/apache2/remoteip.conf) to `/mnt/repo-base/config/apache2/`
-  - Remove your OnlyOffice domain from `/mnt/repo-base/config/letsencrypt/autorenew/ssl-domains.dat`
+    - Certstore
+      - `mv /mnt/repo-base/config-dynamic/letsencrypt /mnt/repo-base/config/letsencrypt`
+    - Nginx configuration
+      - `mv /mnt/repo-base/config-dynamic/nginx/* /mnt/repo-base/config/nginx/`
+    - Automx configuration
+      - `mv /mnt/repo-base/config-dynamic/automx /mnt/repo-base/config/`
+    - Nextcloud configuration
+      - `mv /mnt/repo-base/config-dynamic/nextcloud /mnt/repo-base/config/nextcloud`
+      - Add [x-fpm-overloads.conf](../config/nextcloud/x-fpm-overloads.conf) to `/mnt/repo-base/config/nextcloud`
+      - Add [x-php-overloads.conf](../config/nextcloud/x-php-overloads.conf) to `/mnt/repo-base/config/nextcloud/`
+    - Mailserver configuration
+      - `mv /mnt/repo-base/config-dynamic/mail/* /mnt/repo-base/config/mail/`
+    - Welcome configuration
+      - Add the folder for welcome in config:
+        `mkdir -p /mnt/repo-base/config/welcome/apache2`
+      - Add [remoteip.conf](../config/welcome/apache2/remoteip.conf) to `/mnt/repo-base/config/apache2/`
+    - Remove your OnlyOffice domain from `/mnt/repo-base/config/letsencrypt/autorenew/ssl-domains.dat`
 2. Move data to new locations
-  - Move mariadb data
-    - `mv /mnt/repo-base/volumes/mysql/db /mnt/repo-base/volumes/mysql/db/data/`
-  - Move nextcloud files
-    - `mv /mnt/repo-base/volumes/nextcloud/custom_apps /mnt/repo-base/volumes/nextcloud/html/`
-    - `mv /mnt/repo-base/volumes/nextcloud/config /mnt/repo-base/volumes/nextcloud/html/`
+    - Move mariadb data
+      - `mv /mnt/repo-base/volumes/mysql/db /mnt/repo-base/volumes/mysql/db/data/`
+    - Move nextcloud files
+      - `mv /mnt/repo-base/volumes/nextcloud/custom_apps /mnt/repo-base/volumes/nextcloud/html/`
+      - `mv /mnt/repo-base/volumes/nextcloud/config /mnt/repo-base/volumes/nextcloud/html/`
  3. Add/update required environment variables in `.env` file
-  - Add a random 15 character password for `NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET` in `/mnt/repo-base/.env`
-    - Example entry might look like: `NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET=SvezyGztu28%1fb`
-  - Set `NC_HOST_IP` in `/mnt/repo-base/.env` to your server's public IP
+    - Add a random 15 character password for `NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET` in `/mnt/repo-base/.env`
+      - Example entry might look like: `NEXTCLOUD_EMAIL_RECOVERY_APP_SECRET=SvezyGztu28%1fb`
+    - Set `NC_HOST_IP` in `/mnt/repo-base/.env` to your server's public IP
 
 ### Update your docker-compose.yml file and configuration files for your services
 1. Update `version` to  '3'
