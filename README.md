@@ -176,6 +176,13 @@ Your credentials for postfix admin (https://mail.yourdomain.com) are:  user/pass
   - Users cannot find each other on search unless they use the full email address
   - User statuses are not available globally for other users to view
   - Global contacts menu for searching contacts is disabled
+- To disable group sharing and username autocompletion in the share dialog, please run the following commands on your server:
+  - `docker exec -u www-data nextcloud /var/www/html/occ config:app:set core shareapi_allow_group_sharing --value no`
+  - `docker exec -u www-data nextcloud /var/www/html/occ config:app:set core shareapi_allow_share_dialog_user_enumeration --value no`
+- It is also recommended to disable the following two options under "Federated Cloud Sharing" in admin sharing settings:
+  - "Search global and public address book for users"
+  - "Allow users to publish their data to a global and public address book"
+
 
 ## Setting up /e/ OS with /e/ selfhosting
 
