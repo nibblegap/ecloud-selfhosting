@@ -123,7 +123,7 @@ services:
       - "${DOMAIN}:${NC_HOST_IP}"
 
   nextcloud:
-    image: registry.gitlab.e.foundation/e/infra/ecloud/nextcloud:316db4e0
+    image: registry.gitlab.e.foundation/e/infra/ecloud/nextcloud:selfhost
     container_name: nextcloud
     restart: always
     networks:

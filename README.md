@@ -168,6 +168,15 @@ Your credentials for postfix admin (https://mail.yourdomain.com) are:  user/pass
 - Post installation, please navigate to https://$DOMAIN/settings/admin/overview to check if there are any configuration warnings related to your installation
 - Please note that we have not used http2 protocol in nginx because of nextcloud's notably [slow performance](https://github.com/nextcloud/server/issues/25297) with http2
 
+## Privacy
+
+- The default behaviour of nextcloud is that all users on a server can see and share with each other. As this may make sense on a company or family environment, we keep this behaviour in the  `selfhost` image tag.
+- For public instances like our [ecloud](https://ecloud.global), we provide the `selfhost-privacy` tag with the enhanced privacy approach.
+- Some of the improvements are:
+  - Users cannot find each other on search unless they use the full email address
+  - User statuses are not available globally for other users to view
+  - Global contacts menu for searching contacts is disabled
+
 ## Setting up /e/ OS with /e/ selfhosting
 
 For a new installation, enter login (email address - username@yourdomain.com), password and selfhosting domain FQDN in the fist time usage wizard.
