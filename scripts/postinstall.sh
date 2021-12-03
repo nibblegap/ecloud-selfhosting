@@ -95,9 +95,9 @@ docker-compose exec -T postfixadmin /postfixadmin/scripts/postfixadmin-cli mailb
 
 
 echo "Setting the right domain in welcome templates"
-docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/ecloud.global/$DOMAIN/g" {} \;
-docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/e.email/$DOMAIN/g" {} \;
-docker-compose exec -T welcome find /var/www/html/ -type f -name '*.html' -exec sed -i "s/e.email/$DOMAIN/g" {} \;
+docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/ecloud\.global/$DOMAIN/g" {} \;
+docker-compose exec -T welcome find /var/www/html/invite_template/ -type f -exec sed -i "s/e\.email/$DOMAIN/g" {} \;
+docker-compose exec -T welcome find /var/www/html/ -type f -name '*.html' -exec sed -i "s/e\.email/$DOMAIN/g" {} \;
 
 # display DKIM DNS setup info/instructions to the user
 echo -e "\n\n\n"
