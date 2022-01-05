@@ -75,6 +75,10 @@ mkdir -p "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default
 echo "$ADD_DOMAINS" | tr "," "\n" | while read add_domain; do
     cp "templates/rainloop/domain-config.ini" "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/domains/$add_domain.ini"
 done
+
+mkdir "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/configs/"
+cat templates/rainloop/application.ini | sed "s/@@@DOMAIN@@@/$DOMAIN/g" > "/mnt/repo-base/volumes/nextcloud/data/rainloop-storage/_data_/_default_/configs/application.ini"
+
 chown www-data:www-data /mnt/repo-base/volumes/nextcloud/ -R
 
 echo "Creating postfix database schema"
